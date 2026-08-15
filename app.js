@@ -484,7 +484,7 @@ function renderQuestionOverlay() {
   }
   const q = state.question;
   const difficulty = DIFFICULTIES[state.difficulty];
-  return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="eyebrow">Jawaban ${state.players[state.activePlayer]?.name || 'pemain'}</p><span class="difficulty-pill" style="color:${difficulty.color}">${difficulty.label}</span></div><h3>Jawab untuk membuka pelemparan</h3><p class="question-text">${q.text} = ?</p><div class="answer-display ${state.answer ? '' : 'empty'}">${state.answer ? escapeHtml(state.answer) : 'ketik jawabanmu'}</div><div class="numeric-keyboard">${['1','2','3','4','5','6','7','8','9','-','0','⌫'].map((key) => `<button class="key-btn ${key === '⌫' ? 'control' : ''}" data-action="answer-key" data-key="${key === '⌫' ? 'backspace' : key}">${key}</button>`).join('')}<button class="key-btn control" data-action="answer-key" data-key="clear">Hapus</button><button class="key-btn ok" data-action="submit-answer">OK</button></div><p class="question-hint">Tekan OK untuk lanjut.</p></div></div>`;
+  return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="eyebrow">Jawaban ${state.players[state.activePlayer]?.name || 'pemain'}</p><span class="difficulty-pill" style="color:${difficulty.color}">${difficulty.label}</span></div><h3>Jawab untuk membuka pelemparan</h3><p class="question-text">${q.text} = ?</p><div id="answer-display" class="answer-display ${state.answer ? '' : 'empty'}">${state.answer ? escapeHtml(state.answer) : 'ketik jawabanmu'}</div><div class="numeric-keyboard">${['1','2','3','4','5','6','7','8','9','-','0','⌫'].map((key) => `<button class="key-btn ${key === '⌫' ? 'control' : ''}" data-action="answer-key" data-key="${key === '⌫' ? 'backspace' : key}">${key}</button>`).join('')}<button class="key-btn control" data-action="answer-key" data-key="clear">Hapus</button><button class="key-btn ok" data-action="submit-answer">OK</button></div><p class="question-hint">Tekan OK untuk lanjut.</p></div></div>`;
 }
 
 function renderShop() {
@@ -678,13 +678,20 @@ function startAITurn() {
   }, 1250);
 }
 
+function syncAnswerDisplay() {
+  const display = document.getElementById('answer-display');
+  if (!display) return;
+  display.textContent = state.answer || 'ketik jawabanmu';
+  display.classList.toggle('empty', !state.answer);
+}
+
 function handleAnswerKey(key) {
   if (!state.question || state.aiThinking) return;
   if (key === 'clear') state.answer = '';
   else if (key === 'backspace') state.answer = state.answer.slice(0, -1);
   else if (key === '-') state.answer = state.answer.startsWith('-') ? state.answer.slice(1) : `-${state.answer}`;
   else if (/^\d$/.test(key) && state.answer.replace('-', '').length < 7) state.answer += key;
-  render();
+  syncAnswerDisplay();
 }
 
 function submitAnswer() {

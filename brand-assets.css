@@ -13,3 +13,9 @@
   .login-full-logo { width: min(94%, 390px); max-height: 160px; margin: 14px 0 3px; }
   .home-brand-logo { width: 105px; max-height: 58px; }
 }
+
+/* The supplied logo already includes its own board and dice artwork. */
+.login-board-preview { display: none !important; }
+.login-full-logo { width: min(100%, 560px); max-height: 360px; margin: 18px 0 8px; }
+@media (max-width: 900px) { .login-full-logo { width: min(94%, 470px); max-height: 220px; margin: 13px 0 5px; } }
+@media (max-width: 560px) { .login-full-logo { width: min(98%, 400px); max-height: 185px; margin: 10px 0 2px; } }

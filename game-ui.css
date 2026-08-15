@@ -128,3 +128,10 @@ body {
 .login-full-logo { position: relative; z-index: 3; display: block; width: min(100%, 570px); height: auto; max-height: 300px; margin: 24px 0 10px; object-fit: contain; object-position: left center; filter: drop-shadow(0 22px 22px rgba(0,0,0,.42)) drop-shadow(0 0 24px rgba(255,190,51,.13)); }
 @media (max-width: 900px) { .login-full-logo { width: min(90%, 430px); max-height: 190px; margin: 19px 0 7px; } }
 @media (max-width: 560px) { .login-full-logo { width: min(94%, 390px); max-height: 160px; margin: 14px 0 3px; } }
+
+/* The supplied logo already contains the board, dice and crown. Do not stack another
+   decorative board underneath it on the splash screen. */
+.login-board-preview { display: none !important; }
+.login-full-logo { width: min(100%, 560px); max-height: 360px; margin: 18px 0 8px; }
+@media (max-width: 900px) { .login-full-logo { width: min(94%, 470px); max-height: 220px; margin: 13px 0 5px; } }
+@media (max-width: 560px) { .login-full-logo { width: min(98%, 400px); max-height: 185px; margin: 10px 0 2px; } }
