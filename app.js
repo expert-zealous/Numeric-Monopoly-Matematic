@@ -63,7 +63,7 @@ const TILE_BLUEPRINT = [
   { name: 'SKYLINE', icon: '◈', type: 'property', color: '#8ee6a5', price: 200, rent: 46 },
   { name: 'PRISON', icon: '▦', type: 'corner', color: '#ff9b78', detail: 'Hanya berkunjung' },
   { name: 'SOLARA', icon: '◈', type: 'property', color: '#ffd976', price: 220, rent: 50 },
-  { name: 'ENERGI', icon: 'ϟ', type: 'utility', color: '#ffd976', price: 150, rent: 34 },
+  { name: 'AIRPORT', icon: '✈', type: 'utility', color: '#ffd976', price: 150, rent: 34 },
   { name: 'VELVET CITY', icon: '◈', type: 'property', color: '#ffd976', price: 240, rent: 55 },
   { name: 'SOAL BONUS', icon: '✎', type: 'chance', color: '#8b77ff', detail: 'Hadiah atau kejutan' },
   { name: 'AURORA', icon: '◈', type: 'property', color: '#ff9b78', price: 260, rent: 60 },
@@ -71,7 +71,7 @@ const TILE_BLUEPRINT = [
   { name: 'CRYSTAL', icon: '◈', type: 'property', color: '#ff9b78', price: 280, rent: 65 },
   { name: 'KARTU MISTERI', icon: '✧', type: 'chance', color: '#8b77ff', detail: 'Hadiah atau kejutan' },
   { name: 'MOONLIGHT', icon: '◈', type: 'property', color: '#ff9b78', price: 300, rent: 70 },
-  { name: 'GO TO PRISON', icon: '↘', type: 'corner', color: '#ff75bf', detail: 'Teleport ke Prison' },
+  { name: 'FREE PARKING', icon: '✦', type: 'corner', color: '#5be4ff', detail: 'Zona bonus' },
   { name: 'NEBULA', icon: '◈', type: 'property', color: '#c28bff', price: 320, rent: 75 },
   { name: 'SOAL BONUS', icon: '✎', type: 'chance', color: '#8b77ff', detail: 'Hadiah atau kejutan' },
   { name: 'QUANTUM', icon: '◈', type: 'property', color: '#c28bff', price: 340, rent: 80 },
@@ -81,7 +81,7 @@ const TILE_BLUEPRINT = [
   { name: 'GOLDEN HARBOR', icon: '◈', type: 'property', color: '#c28bff', price: 390, rent: 92 },
   { name: 'KARTU MISTERI', icon: '✧', type: 'chance', color: '#8b77ff', detail: 'Hadiah atau kejutan' },
   { name: 'INFINITY', icon: '◈', type: 'property', color: '#e1a1ff', price: 420, rent: 100 },
-  { name: 'FINISH', icon: '★', type: 'corner', color: '#ffd976', detail: 'Kembali ke START' },
+  { name: 'GO TO PRISON', icon: '↘', type: 'corner', color: '#ff75bf', detail: 'Teleport ke Prison' },
   { name: 'PRISM', icon: '◈', type: 'property', color: '#65d7ff', price: 440, rent: 108 },
   { name: 'SOAL BONUS', icon: '✎', type: 'chance', color: '#8b77ff', detail: 'Hadiah atau kejutan' },
   { name: 'MIRAGE', icon: '◈', type: 'property', color: '#65d7ff', price: 460, rent: 115 },
@@ -95,10 +95,10 @@ const TILE_BLUEPRINT = [
 
 const TILE_ASSET_KEYS = [
   'start', 'lumina', 'soal-bonus-01', 'nova-park', 'pajak', 'orbit', 'deep-space', 'pixel-bay',
-  'kartu-misteri-01', 'skyline', 'prison', 'solara', 'energi', 'velvet-city', 'soal-bonus-02',
-  'aurora', 'free-zone', 'crystal', 'kartu-misteri-02', 'moonlight', 'go-to-prison', 'nebula',
+  'kartu-misteri-01', 'skyline', 'prison', 'solara', 'airport', 'velvet-city', 'soal-bonus-02',
+  'aurora', 'free-zone', 'crystal', 'kartu-misteri-02', 'moonlight', 'free-parking', 'nebula',
   'soal-bonus-03', 'quantum', 'pajak-premium', 'royal-arc', 'hyperloop', 'golden-harbor',
-  'kartu-misteri-03', 'infinity', 'finish', 'prism', 'soal-bonus-04', 'mirage', 'pajak-aura',
+  'kartu-misteri-03', 'infinity', 'go-to-prison', 'prism', 'soal-bonus-04', 'mirage', 'pajak-aura',
   'starlight', 'soal-bonus-05', 'eclipse', 'lucky-lab', 'nexus'
 ];
 TILE_BLUEPRINT.forEach((tile, index) => {
@@ -108,29 +108,29 @@ TILE_BLUEPRINT.forEach((tile, index) => {
 const SHOP_DATA = {
   dice: [
     { id: 'dice-standard', name: 'Standard Nova', description: 'Dadu klasik untuk semua pemain.', cost: 0, glyph: '6', asset: 'assets/themes/dice-theme-00-standard.png' },
-    { id: 'dice-01', name: 'Neon Prism', description: 'Cahaya cyan dengan energi futuristik.', cost: 200, glyph: '✦', asset: 'assets/themes/dice-theme-01-neon-prism.png' },
-    { id: 'dice-02', name: 'Cosmic Orbit', description: 'Nuansa galaksi untuk pemain visioner.', cost: 450, glyph: '◉', asset: 'assets/themes/dice-theme-02-cosmic-orbit.png' },
-    { id: 'dice-03', name: 'Royal Gold', description: 'Kilau emas, aura juara papan.', cost: 700, glyph: '7', asset: 'assets/themes/dice-theme-03-royal-gold.png' },
-    { id: 'dice-04', name: 'Sakura Bloom', description: 'Pastel lembut dengan kelopak digital.', cost: 1000, glyph: '✿', asset: 'assets/themes/dice-theme-04-sakura-bloom.png' },
-    { id: 'dice-05', name: 'Cyber Pulse', description: 'Gelombang listrik untuk level tertinggi.', cost: 1500, glyph: 'ϟ', asset: 'assets/themes/dice-theme-05-cyber-pulse.png' },
+    { id: 'dice-01', name: 'Neon Prism', description: 'Cahaya cyan dengan energi futuristik.', cost: 500, glyph: '✦', asset: 'assets/themes/dice-theme-01-neon-prism.png' },
+    { id: 'dice-02', name: 'Cosmic Orbit', description: 'Nuansa galaksi untuk pemain visioner.', cost: 1200, glyph: '◉', asset: 'assets/themes/dice-theme-02-cosmic-orbit.png' },
+    { id: 'dice-03', name: 'Royal Gold', description: 'Kilau emas, aura juara papan.', cost: 2400, glyph: '7', asset: 'assets/themes/dice-theme-03-royal-gold.png' },
+    { id: 'dice-04', name: 'Sakura Bloom', description: 'Pastel lembut dengan kelopak digital.', cost: 4000, glyph: '✿', asset: 'assets/themes/dice-theme-04-sakura-bloom.png' },
+    { id: 'dice-05', name: 'Cyber Pulse', description: 'Gelombang listrik untuk level tertinggi.', cost: 7000, glyph: 'ϟ', asset: 'assets/themes/dice-theme-05-cyber-pulse.png' },
     { id: 'dice-custom', name: 'Slot Custom', description: 'Tempat tema dadu PNG milikmu sendiri.', cost: null, custom: true, glyph: '+' }
   ],
   board: [
     { id: 'board-standard', name: 'Classic Midnight', description: 'Papan dasar Numeric Monopoly.', cost: 0, glyph: '✦', asset: 'assets/themes/board-theme-00-classic-midnight.png' },
-    { id: 'board-01', name: 'Aurora Valley', description: 'Gradasi aurora yang tenang dan terang.', cost: 250, glyph: '✧', asset: 'assets/themes/board-theme-01-aurora-valley.png' },
-    { id: 'board-02', name: 'Velvet Royale', description: 'Ungu beludru, emas, dan nuansa eksklusif.', cost: 500, glyph: '♛', asset: 'assets/themes/board-theme-02-velvet-royale.png' },
-    { id: 'board-03', name: 'Oceanic Glass', description: 'Biru kaca dengan kilau bawah laut.', cost: 800, glyph: '◒', asset: 'assets/themes/board-theme-03-oceanic-glass.png' },
-    { id: 'board-04', name: 'Midnight Gold', description: 'Hitam elegan dengan aksen emas.', cost: 1200, glyph: '◆', asset: 'assets/themes/board-theme-04-midnight-gold.png' },
-    { id: 'board-05', name: 'Cyber City', description: 'Kota neon untuk master strategi.', cost: 1800, glyph: '⌁', asset: 'assets/themes/board-theme-05-cyber-city.png' },
+    { id: 'board-01', name: 'Aurora Valley', description: 'Gradasi aurora yang tenang dan terang.', cost: 800, glyph: '✧', asset: 'assets/themes/board-theme-01-aurora-valley.png' },
+    { id: 'board-02', name: 'Velvet Royale', description: 'Ungu beludru, emas, dan nuansa eksklusif.', cost: 1800, glyph: '♛', asset: 'assets/themes/board-theme-02-velvet-royale.png' },
+    { id: 'board-03', name: 'Oceanic Glass', description: 'Biru kaca dengan kilau bawah laut.', cost: 3200, glyph: '◒', asset: 'assets/themes/board-theme-03-oceanic-glass.png' },
+    { id: 'board-04', name: 'Midnight Gold', description: 'Hitam elegan dengan aksen emas.', cost: 5200, glyph: '◆', asset: 'assets/themes/board-theme-04-midnight-gold.png' },
+    { id: 'board-05', name: 'Cyber City', description: 'Kota neon untuk master strategi.', cost: 9000, glyph: '⌁', asset: 'assets/themes/board-theme-05-cyber-city.png' },
     { id: 'board-custom', name: 'Slot Custom', description: 'Tempat tema papan PNG milikmu sendiri.', cost: null, custom: true, glyph: '+' }
   ],
   character: [
     { id: 'character-standard', name: 'Nova Starter', description: 'Karakter awal yang seimbang.', cost: 0, glyph: '🧠', asset: 'assets/characters/character-00-nova-starter.png' },
-    { id: 'character-01', name: 'Astro Fox', description: 'Lincah, berani, dan siap mengorbit.', cost: 300, glyph: '🦊', asset: 'assets/characters/character-01-astro-fox.png' },
-    { id: 'character-02', name: 'Robo Knight', description: 'Penjaga data dengan armor premium.', cost: 600, glyph: '🤖', asset: 'assets/characters/character-02-robo-knight.png' },
-    { id: 'character-03', name: 'Crystal Golem', description: 'Kokoh seperti angka yang tak terbantahkan.', cost: 900, glyph: '💎', asset: 'assets/characters/character-03-crystal-golem.png' },
-    { id: 'character-04', name: 'Dragon Spark', description: 'Api kecil, ambisi besar, langkah cepat.', cost: 1300, glyph: '🐉', asset: 'assets/characters/character-04-dragon-spark.png' },
-    { id: 'character-05', name: 'Void Prince', description: 'Karakter 3D langka dari dimensi tak hingga.', cost: 2000, glyph: '🪐', asset: 'assets/characters/character-05-void-prince.png' },
+    { id: 'character-01', name: 'Astro Fox', description: 'Lincah, berani, dan siap mengorbit.', cost: 1000, glyph: '🦊', asset: 'assets/characters/character-01-astro-fox.png' },
+    { id: 'character-02', name: 'Robo Knight', description: 'Penjaga data dengan armor premium.', cost: 2200, glyph: '🤖', asset: 'assets/characters/character-02-robo-knight.png' },
+    { id: 'character-03', name: 'Crystal Golem', description: 'Kokoh seperti angka yang tak terbantahkan.', cost: 3800, glyph: '💎', asset: 'assets/characters/character-03-crystal-golem.png' },
+    { id: 'character-04', name: 'Dragon Spark', description: 'Api kecil, ambisi besar, langkah cepat.', cost: 6200, glyph: '🐉', asset: 'assets/characters/character-04-dragon-spark.png' },
+    { id: 'character-05', name: 'Void Prince', description: 'Karakter 3D langka dari dimensi tak hingga.', cost: 10000, glyph: '🪐', asset: 'assets/characters/character-05-void-prince.png' },
     { id: 'character-custom', name: 'Slot Custom', description: 'Tempat karakter 3D PNG milikmu sendiri.', cost: null, custom: true, glyph: '+' }
   ]
 };
@@ -148,9 +148,13 @@ function freshState() {
     session: false,
     player: { name: 'Mathematician', avatar: '🧠', level: 7 },
     mode: 'ai',
+    battleCount: 4,
+    diceCount: 2,
+    gameMenuOpen: false,
     difficulty: 'medium',
     screen: 'dashboard',
     diamond: 1280,
+    bankBalance: 100000,
     stats: { games: 12, wins: 7, correct: 83, streak: 5, points: 6240 },
     inventory: {
       dice: ['dice-standard'],
@@ -172,10 +176,15 @@ function freshState() {
     answer: '',
     canRoll: false,
     rolling: false,
+    moving: false,
+    moveStep: 0,
     aiThinking: false,
     turnCount: 0,
     lastRoll: 5,
+    lastDice: [2, 3],
     activity: [],
+    answerNotice: null,
+    pendingPayment: null,
     modal: null,
     room: null,
     localPlayerIndex: 0,
@@ -193,6 +202,7 @@ state.selectedThemes = Object.assign(freshState().selectedThemes, persisted?.sel
 
 let deferredInstallPrompt = null;
 let roomUnsubscribe = null;
+let answerNoticeTimer = null;
 let cloudStatus = { configured: false, user: null };
 
 function loadPersisted() {
@@ -234,7 +244,7 @@ function formatNumber(value) {
 }
 
 function formatCurrency(value) {
-  return `${formatNumber(value)} cr`;
+  return `Rp ${formatNumber(value * 1000)}`;
 }
 
 function selectedItem(type) {
@@ -365,22 +375,28 @@ function renderShell() {
 
 function renderNav(mobile) {
   const items = [
-    ['dashboard', '⌂', 'Home'],
-    ['game', '◈', 'Play'],
-    ['shop', '◇', 'Themes'],
-    ['leaderboard', '♛', 'Ranking'],
-    ['profile', '◎', 'Profile']
+    ['dashboard', '⌂', 'Beranda'],
+    ['game', '◈', 'Main'],
+    ['battle', '⚔', 'Battle'],
+    ['auction', '⚖', 'Lelang'],
+    ['properties', '⌂', 'Aset'],
+    ['shop', '◇', 'Tema'],
+    ['leaderboard', '♛', 'Peringkat'],
+    ['profile', '◎', 'Profil']
   ];
   return items.map(([id, icon, label]) => `<button class="nav-btn ${state.screen === id ? 'active' : ''}" data-action="go-screen" data-screen="${id}"><span>${icon}</span><span>${label}</span></button>`).join('');
 }
 
 function screenTitle(screen) {
-  return ({ dashboard: 'HOME', game: 'ARENA', shop: 'VAULT', leaderboard: 'RANKING', profile: 'PROFILE', online: 'ONLINE' }[screen] || 'HOME');
+  return ({ dashboard: 'HOME', game: 'ARENA', battle: 'BATTLE ARENA', auction: 'AUCTION', properties: 'ASSETS', shop: 'VAULT', leaderboard: 'RANKING', profile: 'PROFILE', online: 'ONLINE' }[screen] || 'HOME');
 }
 
 function renderPage() {
   if (state.screen === 'dashboard') return renderDashboard();
   if (state.screen === 'game') return renderGame();
+  if (state.screen === 'battle') return renderBattle();
+  if (state.screen === 'auction') return renderAuction();
+  if (state.screen === 'properties') return renderPropertiesScreen();
   if (state.screen === 'shop') return renderShop();
   if (state.screen === 'leaderboard') return renderLeaderboard();
   if (state.screen === 'online') return renderOnline();
@@ -393,7 +409,7 @@ function renderDashboard() {
     <section class="game-home">
       <article class="home-hero panel">
         <img class="home-brand-logo" src="assets/logo-numeric-monopoly-matematic.png" alt="" onerror="this.remove()" />
-        <div class="home-hero-copy"><div class="hero-badge"><i class="live-dot"></i> SEASON 08 <span>•</span> ${DIFFICULTIES[state.difficulty].label.toUpperCase()}</div><p class="eyebrow">WELCOME, ${escapeHtml(state.player.name).toUpperCase()}</p><h2>READY<br /><span class="gradient-text">TO ROLL?</span></h2><div class="home-actions"><button class="btn btn-primary btn-lg" data-action="begin-game"><span>PLAY</span><span>↗</span></button><button class="btn btn-ghost btn-icon btn-lg" data-action="go-screen" data-screen="online" aria-label="Online">🌐</button></div></div>
+        <div class="home-hero-copy"><div class="hero-badge"><i class="live-dot"></i> SEASON 08 <span>•</span> ${DIFFICULTIES[state.difficulty].label.toUpperCase()}</div><p class="eyebrow">WELCOME, ${escapeHtml(state.player.name).toUpperCase()}</p><h2>READY<br /><span class="gradient-text">TO ROLL?</span></h2><div class="home-actions"><button class="btn btn-primary btn-lg" data-action="quick-start" data-mode="ai"><span>1 VS AI</span><span>↗</span></button><button class="btn btn-ghost btn-lg" data-action="quick-start" data-mode="local"><span>1 VS 1</span></button><button class="btn btn-ghost btn-lg" data-action="quick-start" data-mode="online"><span>1 VS 1 ONLINE</span></button></div></div>
         <div class="home-hero-art" aria-hidden="true"><div class="hero-ring ring-a"></div><div class="hero-ring ring-b"></div><div class="hero-dice">${selectedItem('dice')?.glyph || '6'}</div><div class="hero-pawn">${state.player.avatar}</div><div class="hero-spark spark-a">✦</div><div class="hero-spark spark-b">◆</div></div>
       </article>
       <div class="quick-stats"><article class="quick-stat panel"><span class="quick-stat-icon">♛</span><div><strong>${winRate}%</strong><small>WIN RATE</small></div></article><article class="quick-stat panel"><span class="quick-stat-icon">⚡</span><div><strong>${state.stats.correct}%</strong><small>ACCURACY</small></div></article><article class="quick-stat panel"><span class="quick-stat-icon diamond">◆</span><div><strong>${formatNumber(state.diamond)}</strong><small>DIAMONDS</small></div></article></div>
@@ -417,43 +433,113 @@ function renderMiniLeaderboard() {
 }
 
 function boardGridPosition(index) {
-  if (index <= 10) return { row: 1, col: index + 1 };
-  if (index <= 20) return { row: index - 10 + 1, col: 11 };
-  if (index <= 30) return { row: 11, col: 30 - index + 1 };
-  return { row: 41 - index, col: 1 };
+  // Monopoly klasik: START di kanan bawah, PRISON di kiri bawah,
+  // FREE PARKING kiri atas, GO TO PRISON kanan atas.
+  if (index === 0) return { row: 11, col: 11 };
+  if (index <= 10) return { row: 11, col: 11 - index };
+  if (index < 20) return { row: 21 - index, col: 1 };
+  if (index === 20) return { row: 1, col: 1 };
+  if (index <= 30) return { row: 1, col: index - 20 + 1 };
+  return { row: index - 29, col: 11 };
 }
 
 function tokenMarkup(player, playerIndex) {
   const offset = playerIndex === 0 ? { left: '8%', top: '8%' } : { left: '50%', top: '48%' };
   const character = playerIndex === 0 ? selectedItem('character') : (SHOP_DATA.character.find((item) => item.id === 'character-01') || SHOP_DATA.character[0]);
-  return `<span class="token ${playerIndex === 1 ? 'ai' : ''} ${state.rolling ? 'pulse' : ''}" style="left:${offset.left};top:${offset.top}" title="${escapeHtml(player.name)}"><img src="${character.asset}" alt="" onerror="this.style.display='none'" /><span class="token-fallback">${player.avatar}</span></span>`;
+  return `<span class="token ${playerIndex === 1 ? 'ai' : ''}" data-player-index="${playerIndex}" style="left:${offset.left};top:${offset.top}" title="${escapeHtml(player.name)}"><img src="${character.asset}" alt="" onerror="this.style.display='none'" /><span class="token-fallback">${player.avatar}</span></span>`;
+}
+
+function renderAnswerNotice() {
+  if (!state.answerNotice) return '';
+  const notice = state.answerNotice;
+  return `<div class="answer-notice ${notice.correct ? 'correct' : 'wrong'}"><div class="answer-notice-icon">${notice.correct ? '✓' : '!'}</div><div><strong>${notice.correct ? 'BENAR' : 'SALAH'}</strong><span>${escapeHtml(notice.message)}</span></div></div>`;
+}
+
+function setAnswerNotice(correct, message) {
+  state.answerNotice = { correct, message };
+  window.clearTimeout(answerNoticeTimer);
+  answerNoticeTimer = window.setTimeout(() => {
+    state.answerNotice = null;
+    if (state.screen === 'game') render();
+  }, 6000);
+}
+
+function renderPlayerCashStrip() {
+  return `<div class="player-cash-strip">${state.players.map((player, index) => `<div class="cash-player ${state.activePlayer === index ? 'active' : ''}" style="--player-color:${playerColor(index)}"><span class="cash-player-avatar">${player.avatar}</span><span><b>${escapeHtml(player.name.slice(0, 8))}</b><small>${player.eliminated ? 'OUT' : formatCurrency(player.cash)}</small></span></div>`).join('')}</div>`;
 }
 
 function renderGame() {
-  const board = state.tiles.length ? state.tiles : TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null }));
+  const board = state.tiles.length ? state.tiles : TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null, houses: 0, hotel: false }));
   const active = state.players[state.activePlayer] || { name: state.player.name, cash: 1500, position: 0 };
   const currentDice = selectedItem('dice');
+  const diceValue = state.rolling ? '?' : (state.lastRoll || '—');
+  const diceA = state.rolling ? '?' : (state.lastDice?.[0] || '—');
+  const diceB = state.rolling ? '?' : (state.lastDice?.[1] || '—');
+  const isMoving = state.moving;
+  const turnStatus = isMoving ? 'BERJALAN' : state.canRoll ? 'SIAP LEMPAR' : state.aiThinking ? 'BERPIKIR' : 'JAWAB SOAL';
+  const activeColor = playerColor(state.activePlayer);
+  const rollLocked = !state.canRoll || state.rolling || state.moving || state.aiThinking || (state.mode === 'ai' && state.activePlayer === 1) || (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex) || (state.mode === 'online' && state.activePlayer !== state.localPlayerIndex);
+  const rollLabel = state.rolling ? 'MENGGELINDING…' : state.moving ? 'BERJALAN…' : 'LEMPAR DADU';
   return `
     <section class="game-screen">
-      <div class="game-header"><div><p class="eyebrow">${MODE_LABELS[state.mode]}</p><h2 class="title-lg">Taklukkan papan</h2></div><div class="game-chips"><span class="soft-chip active-turn">● ${escapeHtml(active.name)} bergerak</span><span class="soft-chip">${DIFFICULTIES[state.difficulty].label}</span><span class="soft-chip">Turn ${Math.max(1, state.turnCount + 1)}</span></div></div>
+      <button class="game-menu-toggle" data-action="toggle-game-menu" aria-label="Menu permainan">☰</button>
+      <div class="game-header compact-game-header"><div class="turn-focus-banner" style="--player-color:${activeColor}"><span class="turn-focus-avatar">${active.avatar}</span><span class="turn-focus-copy"><small>GILIRAN</small><strong>${escapeHtml(active.name)}</strong></span><b>${turnStatus}</b></div>${renderPlayerCashStrip()}<div class="game-header-actions"><div class="game-chips"><span class="soft-chip active-turn">● ${escapeHtml(active.name)}</span><span class="soft-chip">${state.mode === 'battle' ? `${state.players.length} PEMAIN` : DIFFICULTIES[state.difficulty].label}</span><span class="soft-chip">GILIRAN ${Math.max(1, state.turnCount + 1)}</span></div>${state.mode === 'battle' ? '<button class="btn btn-danger battle-leave-btn" data-action="leave-battle">LEAVE</button>' : ''}</div></div>
+      ${renderAnswerNotice()}
       <div class="game-layout">
         <div class="board-wrap ${themeClass()}" style="isolation:isolate">
           <img class="board-theme-image" src="${selectedItem('board')?.asset || ''}" alt="" onerror="this.style.display='none'" />
-          <div class="board" aria-label="Papan permainan">
-            <div class="board-center"><div class="board-center-copy"><div class="board-center-mark">∑</div><h2>NUMERIC<br /><span class="gradient-text">MONOPOLY</span></h2><p>Jawaban cerdas. Langkah berani.<br />Diamond untuk gaya, strategi untuk menang.</p><span class="center-mode">${MODE_LABELS[state.mode]}</span></div></div>
+          <div class="board-camera" id="board-camera">
+            <div class="board" aria-label="Papan permainan">
+              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark">∑</div><h2>NUMERIC<br /><span class="gradient-text">MONOPOLY</span></h2><p>Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><i id="center-die-a">${diceA}</i><em>+</em><i id="center-die-b">${diceB}</i></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
             ${board.map((tile, index) => renderBoardCell(tile, index)).join('')}
+            </div>
           </div>
           <div class="board-vignette"></div>
           ${state.question || state.aiThinking ? renderQuestionOverlay() : ''}
         </div>
         <aside class="game-side">
-          <section class="turn-card panel"><div class="turn-heading"><h3>Turn tracker</h3><span class="turn-status">${state.canRoll ? 'Bisa lempar' : state.aiThinking ? 'AI berpikir' : 'Jawab soal'}</span></div>${state.players.map((player, index) => renderPlayerLine(player, index)).join('')}</section>
-          <section class="dice-panel panel"><div class="dice-visual ${state.rolling ? 'rolling' : ''}"><img src="${currentDice?.asset || ''}" alt="" onerror="this.style.display='none'" /><span>${state.rolling ? '?' : (currentDice?.glyph || state.lastRoll)}</span></div><div class="dice-copy"><h3>${currentDice?.name || 'Standard Nova'}</h3><p>${state.canRoll ? 'Kunci jawaban benar. Saatnya lempar.' : 'Jawab soal untuk membuka dadu.'}</p></div><button class="btn btn-primary roll-btn" data-action="roll-dice" ${(!state.canRoll || state.rolling || state.aiThinking || (state.mode === 'ai' && state.activePlayer === 1) || (state.mode === 'online' && state.activePlayer !== state.localPlayerIndex)) ? 'disabled' : ''}>${state.rolling ? 'Menggelinding…' : 'Lempar dadu'}</button></section>
-          <section class="activity-card panel"><h3>Live activity</h3><div class="activity-list">${renderActivity()}</div></section>
+          <section class="turn-card panel"><div class="turn-heading"><h3>GILIRAN</h3><span class="turn-status">${turnStatus}</span></div>${state.players.map((player, index) => renderPlayerLine(player, index)).join('')}</section>
+          ${renderOwnershipLegend()}
+          <section class="dice-panel panel"><div class="dice-visual ${state.rolling ? 'rolling' : isMoving ? 'dice-moving' : ''}"><img src="${currentDice?.asset || ''}" alt="" onerror="this.style.display='none'" /><span class="dice-number" id="dice-number">${diceValue}</span></div><div class="dice-copy"><h3 id="dice-label">${isMoving ? `PINDAH ${state.moveStep}/${state.lastRoll}` : `DADU ${diceValue}`}</h3><p>${state.canRoll ? 'SIAP' : isMoving ? 'BERJALAN' : 'JAWAB SOAL'}</p></div><button class="btn btn-primary roll-btn" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></section>
+          ${renderBankPanel()}
+          ${renderOwnedProperties()}
+          <section class="activity-card panel"><h3>AKTIVITAS</h3><div class="activity-list">${renderActivity()}</div></section>
         </aside>
       </div>
     </section>
   `;
+}
+
+function getRent(tile) {
+  if (!tile) return 0;
+  if (tile.hotel) return Math.round(tile.rent * 6);
+  return Math.round(tile.rent * (1 + (tile.houses || 0) * .55));
+}
+
+function houseCost(tile) {
+  return Math.max(80, Math.round((tile?.price || 100) * .35));
+}
+
+function ownsFullGroup(tile, owner) {
+  if (!tile || tile.type !== 'property') return false;
+  const group = state.tiles.filter((candidate) => candidate.type === 'property' && candidate.color === tile.color);
+  return group.length > 1 && group.every((candidate) => candidate.owner === owner);
+}
+
+function renderOwnedProperties() {
+  const owner = state.activePlayer;
+  const owned = (state.tiles || []).map((tile, index) => ({ tile, index })).filter(({ tile }) => tile.type === 'property' && tile.owner === owner);
+  if (!owned.length) return `<section class="property-panel panel"><div class="property-panel-head"><h3>PROPERTI</h3><span>0</span></div><div class="empty-properties">Belum ada</div></section>`;
+  return `<section class="property-panel panel"><div class="property-panel-head"><h3>PROPERTI</h3><span>${owned.length}</span></div><div class="owned-properties">${owned.slice(0, 5).map(({ tile, index }) => {
+    const buildings = tile.hotel ? '🏨' : tile.houses ? '▴'.repeat(tile.houses) : '—';
+    const canManage = state.players[state.activePlayer]?.position === index;
+    const house = tile.hotel || tile.houses >= 4 ? `<button class="property-action" data-action="buy-hotel" data-tile-index="${index}" title="Hotel" ${canManage ? '' : 'disabled'}>🏨</button>` : `<button class="property-action" data-action="buy-house" data-tile-index="${index}" title="Rumah" ${canManage ? '' : 'disabled'}>＋</button>`;
+    return `<div class="owned-property"><span class="property-color" style="background:${tile.color}"></span><div class="owned-property-copy"><strong>${escapeHtml(tile.name)}</strong><small>${buildings} · rent ${formatCurrency(getRent(tile))}</small></div>${house}<button class="property-action sell" data-action="sell-property" data-tile-index="${index}" title="Jual" ${canManage ? '' : 'disabled'}>↗</button></div>`;
+  }).join('')}</div></section>`;
+}
+
+function playerColor(index) {
+  return ['#5be4ff', '#ff75bf', '#ffd976', '#c6ef68', '#a895ff', '#ff9d70'][index % 6];
 }
 
 function renderBoardCell(tile, index) {
@@ -461,12 +547,23 @@ function renderBoardCell(tile, index) {
   const owner = tile.owner;
   const playersHere = (state.players || []).map((player, pIndex) => player.position === index ? tokenMarkup(player, pIndex) : '').join('');
   const name = tile.type === 'property' ? tile.name : tile.name;
-  const price = tile.price ? `<div class="cell-price">${formatCurrency(tile.price)}</div>` : `<div class="cell-price">${tile.detail || '—'}</div>`;
-  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${tile.color}" title="${escapeHtml(tile.name)}"><img class="cell-art" src="${tile.asset || ''}" alt="" onerror="this.remove()" /><div class="cell-content"><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${owner !== null && owner !== undefined ? `<div class="cell-owners"><span class="owner-dot ${owner === 1 ? 'ai' : ''}"></span></div>` : ''}${playersHere}</div>`;
+  const price = tile.price ? `<div class="cell-price">${formatCurrency(tile.price)} · ${formatCurrency(getRent(tile))}</div>` : `<div class="cell-price">${tile.detail || '—'}</div>`;
+  const building = tile.hotel ? '<span class="building-badge hotel">🏨</span>' : tile.houses ? `<span class="building-badge">${'▴'.repeat(tile.houses)}</span>` : '';
+  const ownerColor = owner !== null && owner !== undefined ? playerColor(owner) : tile.color;
+  const ownerPlayer = owner !== null && owner !== undefined ? state.players[owner] : null;
+  const ownerLabel = ownerPlayer ? `${escapeHtml(ownerPlayer.name.slice(0, 7))}` : '';
+  const isBuyable = tile.type === 'property' || tile.type === 'utility';
+  const ownerBadge = isBuyable ? (ownerPlayer ? `<div class="owner-badge" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}"><span>${ownerPlayer.avatar}</span><b>${ownerLabel}</b></div>` : '<div class="unowned-badge">OPEN</div>') : '';
+  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${ownerColor};--cell-opacity:${owner !== null && owner !== undefined ? 1 : .22}" title="${escapeHtml(tile.name)}"><img class="cell-art" src="${tile.asset || ''}" alt="" onerror="this.remove()" />${building}<div class="cell-content"><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${ownerBadge}${playersHere}</div>`;
 }
 
 function renderPlayerLine(player, index) {
-  return `<div class="player-line ${state.activePlayer === index ? 'active' : ''} ${index === 1 ? 'ai' : ''}"><div class="avatar">${player.avatar}</div><div class="player-copy"><div class="player-label">${escapeHtml(player.name)} ${state.activePlayer === index ? '<span style="color:var(--cyan)">•</span>' : ''}</div><div class="player-money">${formatCurrency(player.cash)} • petak ${player.position + 1}</div></div><div class="player-position">${index === 0 ? 'YOU' : state.mode === 'ai' ? 'AI' : 'P2'}</div></div>`;
+  const role = index === 0 ? 'YOU' : state.mode === 'battle' ? `P${index + 1}` : state.mode === 'ai' ? 'AI' : 'P2';
+  return `<div class="player-line ${state.activePlayer === index ? 'active' : ''} ${index > 0 ? 'ai' : ''} ${player.eliminated ? 'eliminated' : ''}" style="--player-color:${playerColor(index)}"><div class="avatar" style="background:${playerColor(index)}">${player.avatar}</div><div class="player-copy"><div class="player-label">${escapeHtml(player.name)} ${state.activePlayer === index && !player.eliminated ? '<span class="active-turn-badge">TURN</span>' : ''}</div><div class="player-money">${player.eliminated ? 'OUT' : `${formatCurrency(player.cash)} • petak ${player.position + 1}${player.debt ? ` • hutang ${formatCurrency(player.debt)}` : ''}`}</div></div><div class="player-position">${player.eliminated ? 'OUT' : role}</div></div>`;
+}
+
+function renderOwnershipLegend() {
+  return `<section class="ownership-legend panel"><div class="ownership-title">WARNA PEMILIK</div><div class="ownership-list">${state.players.map((player, index) => `<span class="ownership-item"><i style="background:${playerColor(index)}"></i>${escapeHtml(player.name.slice(0, 8))}</span>`).join('')}</div></section>`;
 }
 
 function renderActivity() {
@@ -480,11 +577,29 @@ function renderQuestionOverlay() {
     return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="eyebrow">Online realtime</p><span class="difficulty-pill">LIVE</span></div><div class="thinking" aria-label="Menunggu lawan"><span></span><span></span><span></span></div><h3>Menunggu ${escapeHtml(state.players[state.activePlayer]?.name || 'lawan')}…</h3><p class="muted small">Giliran lawan sedang menjawab atau melempar dadu.</p></div></div>`;
   }
   if (state.aiThinking) {
-    return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="eyebrow">Giliran AI</p><span class="difficulty-pill">${DIFFICULTIES[state.difficulty].label}</span></div><div class="thinking" aria-label="AI sedang menghitung"><span></span><span></span><span></span></div><h3>${escapeHtml(state.players[1]?.name || 'AI')} sedang menghitung…</h3><p class="muted small">Kesempatanmu bisa direbut jika AI salah.</p></div></div>`;
+    const thinkingPlayer = state.players[state.activePlayer] || { name: 'AI' };
+    return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="question-for"><span>GILIRAN</span><strong>${escapeHtml(thinkingPlayer.name)}</strong></p><span class="difficulty-pill">${DIFFICULTIES[state.difficulty].label}</span></div><div class="thinking" aria-label="AI sedang menghitung"><span></span><span></span><span></span></div><h3>${escapeHtml(thinkingPlayer.name)} sedang berpikir</h3><p class="muted small">Jika salah, dadu direbut.</p></div></div>`;
   }
   const q = state.question;
   const difficulty = DIFFICULTIES[state.difficulty];
-  return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="eyebrow">Jawaban ${state.players[state.activePlayer]?.name || 'pemain'}</p><span class="difficulty-pill" style="color:${difficulty.color}">${difficulty.label}</span></div><h3>Jawab untuk membuka pelemparan</h3><p class="question-text">${q.text} = ?</p><div id="answer-display" class="answer-display ${state.answer ? '' : 'empty'}">${state.answer ? escapeHtml(state.answer) : 'ketik jawabanmu'}</div><div class="numeric-keyboard">${['1','2','3','4','5','6','7','8','9','-','0','⌫'].map((key) => `<button class="key-btn ${key === '⌫' ? 'control' : ''}" data-action="answer-key" data-key="${key === '⌫' ? 'backspace' : key}">${key}</button>`).join('')}<button class="key-btn control" data-action="answer-key" data-key="clear">Hapus</button><button class="key-btn ok" data-action="submit-answer">OK</button></div><p class="question-hint">Tekan OK untuk lanjut.</p></div></div>`;
+  const targetPlayer = state.players[state.activePlayer] || { name: 'Pemain' };
+  return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="question-for"><span>SOAL UNTUK</span><strong>${escapeHtml(targetPlayer.name)}</strong></p><span class="difficulty-pill" style="color:${difficulty.color}">${difficulty.label}</span></div><h3>Jawab untuk membuka dadu</h3><p class="question-text">${q.text} = ?</p><div id="answer-display" class="answer-display ${state.answer ? '' : 'empty'}">${state.answer ? escapeHtml(state.answer) : 'ketik jawabanmu'}</div><div class="numeric-keyboard">${['1','2','3','4','5','6','7','8','9','-','0','⌫'].map((key) => `<button class="key-btn ${key === '⌫' ? 'control' : ''}" data-action="answer-key" data-key="${key === '⌫' ? 'backspace' : key}">${key}</button>`).join('')}<button class="key-btn control" data-action="answer-key" data-key="clear">Hapus</button><button class="key-btn ok" data-action="submit-answer">OK</button></div><p class="question-hint">Tekan OK untuk lanjut.</p></div></div>`;
+}
+
+function renderBattle() {
+  const counts = [3, 4, 6];
+  return `<section class="battle-screen"><div class="battle-hero panel"><div class="battle-hero-copy"><p class="eyebrow">MULTI PLAYER MODE</p><h2>Fight for the <span class="gradient-text">crown.</span></h2><div class="battle-badges"><span class="soft-chip">⚔ ELIMINATION</span><span class="soft-chip">◆ RANKED</span><span class="soft-chip">LIVE TURNS</span></div></div><div class="battle-orb" aria-hidden="true"><span>⚔</span></div></div><div class="battle-grid">${counts.map((count) => `<button class="battle-count-card panel ${state.battleCount === count ? 'active' : ''}" data-action="battle-count" data-count="${count}"><span class="battle-count">${count}</span><span class="battle-count-label">PLAYERS</span><span class="battle-avatars">${Array.from({ length: count }, (_, index) => `<i>${['🧠','🤖','🦊','🐉','🤖','🪐'][index]}</i>`).join('')}</span></button>`).join('')}</div><div class="battle-controls panel"><div><p class="eyebrow">BATTLE RULES</p><div class="battle-rule-row"><span>✓</span><strong>Jawab untuk dadu</strong><span>•</span><strong>Salah = direbut</strong><span>•</span><strong>Cash 0 = OUT</strong></div></div><button class="btn btn-primary btn-lg" data-action="start-battle">START BATTLE ↗</button></div><div class="battle-exit-note"><span>Yang kalah boleh keluar kapan saja.</span><button class="link-btn" data-action="go-screen" data-screen="leaderboard">VIEW RANKING</button></div></section>`;
+}
+
+function renderAuction() {
+  const tiles = state.tiles.length ? state.tiles : TILE_BLUEPRINT;
+  const available = tiles.map((tile, index) => ({ tile, index })).filter(({ tile }) => (tile.type === 'property' || tile.type === 'utility') && (tile.owner === null || tile.owner === undefined));
+  return `<section class="auction-screen"><div class="shop-head"><div><p class="eyebrow">RUMAH LELANG</p><h2 class="title-lg">Tawar <span class="gradient-text">properti.</span></h2><p>Properti hanya dilelang dari menu ini.</p></div><div class="shop-balance"><div class="shop-balance-label">Uangmu</div><div class="shop-balance-value" style="color:var(--cyan)">${state.players[0] ? formatCurrency(state.players[0].cash) : 'Mulai arena'}</div></div></div><div class="auction-list">${available.length ? available.map(({ tile, index }) => `<article class="auction-property panel"><span class="auction-property-color" style="background:${tile.color}"></span><div class="auction-property-art">${tile.icon}</div><div class="auction-property-copy"><strong>${escapeHtml(tile.name)}</strong><small>${formatCurrency(tile.price)} · rent ${formatCurrency(getRent(tile))}</small></div><button class="btn btn-primary" data-action="auction-menu-open" data-tile-index="${index}" ${state.players.length ? '' : 'disabled'}>LELANG</button></article>`).join('') : '<div class="empty-auction panel">Semua properti sudah dimiliki.</div>'}</div></section>`;
+}
+
+function renderPropertiesScreen() {
+  const owned = state.tiles.map((tile, index) => ({ tile, index })).filter(({ tile }) => tile.owner === 0);
+  return `<section class="properties-screen"><div class="shop-head"><div><p class="eyebrow">ASET KAMU</p><h2 class="title-lg">Penyimpanan <span class="gradient-text">properti.</span></h2><p>Jual properti kapan saja untuk menambah modal.</p></div><div class="shop-balance"><div class="shop-balance-label">Nilai aset</div><div class="shop-balance-value" style="color:var(--gold)">${state.players.length ? formatCurrency(playerAssetsValue(0)) : 'Mulai arena'}</div></div></div><div class="properties-grid">${owned.length ? owned.map(({ tile, index }) => `<article class="asset-card panel"><div class="asset-card-art" style="--asset-color:${tile.color}">${tile.icon}</div><div class="asset-card-copy"><strong>${escapeHtml(tile.name)}</strong><small>Sewa ${formatCurrency(getRent(tile))} · ${tile.hotel ? 'Hotel' : `${tile.houses || 0} rumah`}</small></div><button class="btn btn-danger" data-action="sell-property" data-tile-index="${index}" ${state.players[0]?.position === index ? '' : 'disabled'}>${state.players[0]?.position === index ? 'JUAL' : 'DI PETAK LAIN'}</button></article>`).join('') : '<div class="empty-auction panel">Belum ada properti. Mulai arena untuk membeli.</div>'}</div><button class="btn btn-primary" data-action="go-screen" data-screen="game" ${state.players.length ? '' : 'disabled'}>KEMBALI KE ARENA</button></section>`;
 }
 
 function renderShop() {
@@ -551,7 +666,31 @@ function renderModal() {
   if (!state.modal) return '';
   const modal = state.modal;
   if (modal.type === 'purchase') {
-    return `<div class="modal-layer"><div class="modal-card"><p class="eyebrow">Property landing</p><h3>${escapeHtml(modal.tile.name)} tersedia</h3><p>Kamu mendarat di <strong style="color:#fff">${escapeHtml(modal.tile.name)}</strong>. Beli properti ini seharga <strong style="color:var(--gold)">${formatCurrency(modal.tile.price)}</strong> dan tagih rent kepada lawan.</p><div class="row between" style="margin-top:15px"><span class="muted small">Saldo ${formatCurrency(state.players[state.activePlayer]?.cash || 0)}</span><span style="color:var(--success);font-size:.72rem">+ strategi</span></div><div class="modal-actions"><button class="btn btn-ghost" data-action="modal-skip">Lewati</button><button class="btn btn-primary" data-action="modal-buy">Beli properti</button></div></div></div>`;
+    return `<div class="modal-layer"><div class="modal-card property-modal"><div class="modal-property-icon">◈</div><p class="eyebrow">PROPERTY</p><h3>${escapeHtml(modal.tile.name)}</h3><p><strong style="color:var(--gold)">${formatCurrency(modal.tile.price)}</strong> · rent ${formatCurrency(getRent(modal.tile))}</p><div class="row between" style="margin-top:15px"><span class="muted small">Saldo ${formatCurrency(state.players[state.activePlayer]?.cash || 0)}</span><span style="color:var(--success);font-size:.72rem">+ LAND</span></div><div class="modal-actions"><button class="btn btn-ghost" data-action="modal-skip">Lewati</button><button class="btn btn-primary" data-action="modal-buy">Beli</button></div></div></div>`;
+  }
+  if (modal.type === 'turn-end') {
+    return `<div class="modal-layer turn-end-layer"><div class="modal-card turn-end-modal"><div class="turn-end-icon">✓</div><p class="eyebrow">PETAK TUJUAN</p><h3>${escapeHtml(modal.tile?.name || 'Giliran selesai')}</h3><p>${escapeHtml(modal.message || 'Giliran selesai.')}</p><button class="btn btn-primary btn-wide" data-action="continue-turn">LANJUT</button></div></div>`;
+  }
+  if (modal.type === 'emergency') {
+    const player = state.players[state.activePlayer];
+    const need = Math.max(0, modal.amount - (player?.cash || 0));
+    const maxLoan = maxBankLoan(state.activePlayer);
+    const owned = state.tiles.map((tile, index) => ({ tile, index })).filter(({ tile }) => tile.owner === state.activePlayer);
+    return `<div class="modal-layer"><div class="modal-card emergency-modal"><div class="modal-property-icon">🏦</div><p class="eyebrow">DANA DARURAT</p><h3>${escapeHtml(modal.reason || (modal.paymentType === 'rent' ? 'Bayar rent' : 'Bayar pajak'))}</h3><p>Butuh <strong style="color:var(--danger)">${formatCurrency(need)}</strong> lagi. Pilih pinjaman bank atau jual properti.</p><div class="emergency-summary"><span>Uang ${formatCurrency(player?.cash || 0)}</span><span>Pinjaman max ${formatCurrency(maxLoan)}</span></div><div class="emergency-assets">${owned.length ? owned.map(({ tile, index }) => `<button class="emergency-asset" data-action="emergency-sell" data-tile-index="${index}"><span style="--asset-color:${tile.color}">${tile.icon}</span><b>${escapeHtml(tile.name)}</b><small>Jual ${formatCurrency(Math.floor(tile.price * .6))}</small></button>`).join('') : '<span class="muted small">Tidak ada properti untuk dijual.</span>'}</div><div class="modal-actions">${maxLoan > 0 ? `<button class="btn btn-primary" data-action="borrow-bank" data-loan-amount="${Math.min(need, maxLoan)}">Pinjam ${formatCurrency(Math.min(need, maxLoan))}</button>` : ''}<button class="btn btn-danger" data-action="declare-bankruptcy">Bangkrut</button></div></div></div>`;
+  }
+  if (modal.type === 'manage') {
+    const tile = modal.tile;
+    const houseButton = tile.hotel ? '<span class="soft-chip">HOTEL AKTIF</span>' : tile.houses >= 4 ? `<button class="btn btn-primary" data-action="buy-hotel" data-tile-index="${modal.tileIndex}" data-from-landing="true">Beli hotel</button>` : `<button class="btn btn-primary" data-action="buy-house" data-tile-index="${modal.tileIndex}" data-from-landing="true">Beli rumah</button>`;
+    return `<div class="modal-layer"><div class="modal-card property-modal"><div class="modal-property-icon">⌂</div><p class="eyebrow">PROPERTI MILIKMU</p><h3>${escapeHtml(tile.name)}</h3><p>${tile.houses || 0} rumah · rent ${formatCurrency(getRent(tile))}</p><div class="modal-actions"><button class="btn btn-ghost" data-action="modal-skip">Lanjutkan</button>${houseButton}</div></div></div>`;
+  }
+  if (modal.type === 'auction') {
+    return `<div class="modal-layer"><div class="modal-card auction-modal"><div class="modal-property-icon">⚖</div><p class="eyebrow">AUCTION</p><h3>${escapeHtml(modal.tile.name)}</h3><div class="auction-bid"><span>CURRENT BID</span><strong>${formatCurrency(modal.bid)}</strong></div><p class="muted small">Naikkan tawaran atau menangkan properti.</p><div class="modal-actions"><button class="btn btn-ghost" data-action="auction-cancel">Batal</button><button class="btn btn-ghost" data-action="auction-raise">+50</button><button class="btn btn-primary" data-action="auction-accept">Menang</button></div></div></div>`;
+  }
+  if (modal.type === 'chance') {
+    return `<div class="modal-layer"><div class="modal-card chance-modal"><div class="chance-card-large">${modal.card.icon}</div><p class="eyebrow">CHANCE CARD</p><h3>${escapeHtml(modal.card.title)}</h3><p>${escapeHtml(modal.card.message)}</p><div class="modal-actions"><button class="btn btn-primary" data-action="resolve-chance">Ambil kartu</button></div></div></div>`;
+  }
+  if (modal.type === 'sell') {
+    return `<div class="modal-layer"><div class="modal-card"><div class="modal-property-icon">↗</div><p class="eyebrow">SELL PROPERTY</p><h3>${escapeHtml(modal.tile.name)}</h3><p>Jual kembali untuk <strong style="color:var(--gold)">${formatCurrency(Math.floor(modal.tile.price * .6))}</strong>.</p><div class="modal-actions"><button class="btn btn-ghost" data-action="modal-close">Batal</button><button class="btn btn-danger" data-action="confirm-sell">Jual</button></div></div></div>`;
   }
   if (modal.type === 'notice') {
     return `<div class="modal-layer"><div class="modal-card"><p class="eyebrow">${modal.good ? 'Nice move' : 'Attention'}</p><h3>${escapeHtml(modal.title)}</h3><p>${modal.message}</p><div class="modal-actions"><button class="btn btn-primary" data-action="modal-close">Lanjutkan</button></div></div></div>`;
@@ -576,29 +715,42 @@ function resetGame() {
     const host = state.room?.host || { name: 'Host', avatar: '♛' };
     const guest = state.room?.opponent || { name: 'Menunggu lawan', avatar: '🌐' };
     players = [
-      { id: 0, name: host.name, avatar: host.avatar, position: 0, cash: 1500 },
-      { id: 1, name: guest.name, avatar: guest.avatar, position: 0, cash: 1500 }
+      { id: 0, name: host.name, avatar: host.avatar, position: 0, cash: 1500, debt: 0 },
+      { id: 1, name: guest.name, avatar: guest.avatar, position: 0, cash: 1500, debt: 0 }
     ];
+  } else if (state.mode === 'battle') {
+    const names = ['Luna Logic', 'Astro Fox', 'Robo Knight', 'Dragon Spark', 'Crystal Golem'];
+    const avatars = ['🤖', '🦊', '🤖', '🐉', '💎'];
+    const count = Math.max(3, Math.min(6, Number(state.battleCount) || 4));
+    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 1500, debt: 0, eliminated: false }];
+    for (let i = 1; i < count; i += 1) players.push({ id: i, name: names[i - 1] || `Rival ${i}`, avatar: avatars[i - 1] || '🤖', position: 0, cash: 1500, debt: 0, eliminated: false });
   } else {
-    const opponent = state.mode === 'ai' ? { id: 1, name: 'Luna Logic', avatar: '🤖', position: 0, cash: 1500 } : { id: 1, name: 'Pemain 2', avatar: '🦊', position: 0, cash: 1500 };
-    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 1500 }, opponent];
+    const opponent = state.mode === 'ai' ? { id: 1, name: 'Luna Logic', avatar: '🤖', position: 0, cash: 1500, debt: 0, eliminated: false } : { id: 1, name: 'Pemain 2', avatar: '🦊', position: 0, cash: 1500, debt: 0, eliminated: false };
+    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 1500, debt: 0, eliminated: false }, opponent];
   }
   state.players = players;
-  state.tiles = TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null }));
+  state.tiles = TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null, houses: 0, hotel: false }));
   state.activePlayer = 0;
   state.question = null;
   state.answer = '';
   state.canRoll = false;
   state.rolling = false;
+  state.moving = false;
+  state.moveStep = 0;
   state.aiThinking = false;
   state.turnCount = 0;
   state.lastRoll = 5;
+  state.lastDice = [2, 3];
+  state.bankBalance = 100000;
   state.activity = [];
+  state.answerNotice = null;
+  state.pendingPayment = null;
   state.modal = null;
 }
 
 function startGame(mode = state.mode) {
   state.mode = mode;
+  state.gameMenuOpen = false;
   if (mode === 'online') {
     state.screen = 'online';
     render();
@@ -610,6 +762,58 @@ function startGame(mode = state.mode) {
   persist();
   render();
   updateMusic();
+}
+
+function startBattle() {
+  state.mode = 'battle';
+  state.gameMenuOpen = false;
+  state.localPlayerIndex = 0;
+  resetGame();
+  state.screen = 'game';
+  askQuestion();
+  persist();
+  render();
+  updateMusic();
+}
+
+function leaveBattle() {
+  if (state.mode !== 'battle') return;
+  const player = state.players[state.localPlayerIndex];
+  if (player) player.eliminated = true;
+  addActivity('↪', `<strong>${escapeHtml(player?.name || 'Pemain')}</strong> keluar dari Battle Arena.`);
+  state.question = null;
+  state.answer = '';
+  state.aiThinking = false;
+  state.canRoll = false;
+  state.modal = null;
+  state.screen = 'battle';
+  persist();
+  render();
+  showToast('Kamu keluar dari Battle Arena.', '');
+}
+
+function nextAlivePlayer(fromIndex = state.activePlayer) {
+  if (!state.players.length) return 0;
+  for (let step = 1; step <= state.players.length; step += 1) {
+    const index = (fromIndex + step) % state.players.length;
+    if (!state.players[index].eliminated) return index;
+  }
+  return fromIndex;
+}
+
+function playerAssetsValue(playerIndex) {
+  return state.tiles.filter((tile) => tile.owner === playerIndex).reduce((total, tile) => total + (tile.price || 0) + (tile.houses || 0) * houseCost(tile) + (tile.hotel ? houseCost(tile) * 2 : 0), 0);
+}
+
+function isBankrupt(playerIndex) {
+  const player = state.players[playerIndex];
+  return Boolean(player && player.cash <= 0 && playerAssetsValue(playerIndex) <= 0);
+}
+
+function markEliminatedPlayers() {
+  state.players.forEach((player) => {
+    if (isBankrupt(player.id)) player.eliminated = true;
+  });
 }
 
 function generateQuestion(level = state.difficulty) {
@@ -637,6 +841,7 @@ function generateQuestion(level = state.difficulty) {
 
 function askQuestion() {
   if (state.mode === 'ai' && state.activePlayer === 1) return startAITurn();
+  if (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex) return startAITurn();
   if (state.mode === 'online' && state.activePlayer !== state.localPlayerIndex) {
     state.aiThinking = false;
     state.question = null;
@@ -651,6 +856,8 @@ function askQuestion() {
 }
 
 function startAITurn() {
+  const aiIndex = state.activePlayer;
+  const aiPlayer = state.players[aiIndex];
   state.question = generateQuestion();
   state.answer = '';
   state.canRoll = false;
@@ -664,15 +871,17 @@ function startAITurn() {
     state.question = null;
     if (correct) {
       state.canRoll = true;
-      addActivity('✓', `<strong>${escapeHtml(state.players[1].name)}</strong> menjawab benar dan mendapat dadu.`);
+      addActivity('✓', `<strong>${escapeHtml(aiPlayer?.name || 'AI')}</strong> benar dan mendapat dadu.`);
       render();
       window.setTimeout(() => rollDice(true), 650);
     } else {
-      state.canRoll = false;
-      state.activePlayer = 0;
-      addActivity('↺', `<strong>${escapeHtml(state.players[1].name)}</strong> salah. Lemparan direbut kamu!`);
-      showToast('Lemparan direbut kamu karena AI salah menjawab.', 'good');
-      askQuestion();
+      const next = state.mode === 'battle' ? nextAlivePlayer(aiIndex) : 0;
+      state.activePlayer = next;
+      state.canRoll = true;
+      addActivity('↺', `<strong>${escapeHtml(aiPlayer?.name || 'AI')}</strong> salah. Lemparan direbut lawan.`);
+      showToast(`Lemparan ${aiPlayer?.name || 'AI'} direbut lawan.`, 'good');
+      if (state.mode === 'battle' && next !== state.localPlayerIndex) window.setTimeout(() => rollDice(true), 650);
+      else if (state.mode !== 'battle') askQuestion();
       render();
     }
   }, 1250);
@@ -711,11 +920,13 @@ function submitAnswer() {
     state.canRoll = true;
     playSound('correct');
     addActivity('✓', `<strong>${escapeHtml(playerName)}</strong> benar. Dadu terbuka.`);
+    setAnswerNotice(true, `Dadu terbuka untuk ${playerName}.`);
     showToast('Benar! Lemparan dadu terbuka.', 'good');
   } else {
     state.canRoll = false;
     playSound('wrong');
     addActivity('↺', `<strong>${escapeHtml(playerName)}</strong> salah. Lemparan direbut lawan.`);
+    setAnswerNotice(false, `Jawaban ${correctAnswer}. Dadu direbut lawan.`);
     showToast(`Belum tepat. Jawaban benar: ${correctAnswer}. Lemparan direbut lawan.`, 'bad');
     if (state.mode === 'ai') {
       state.activePlayer = 1;
@@ -724,93 +935,269 @@ function submitAnswer() {
       window.setTimeout(() => rollDice(true), 700);
       return;
     }
-    state.activePlayer = state.activePlayer === 0 ? 1 : 0;
+    state.activePlayer = state.mode === 'battle' ? nextAlivePlayer(state.activePlayer) : state.activePlayer === 0 ? 1 : 0;
     state.canRoll = true;
+    if (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex) window.setTimeout(() => rollDice(true), 650);
   }
   persist();
   if (state.mode === 'online') syncOnlineGame();
   render();
 }
 
+function updateMoveHud() {
+  const dice = document.getElementById('dice-number');
+  const label = document.getElementById('dice-label');
+  const center = document.getElementById('center-roll-value');
+  const dieA = document.getElementById('center-die-a');
+  const dieB = document.getElementById('center-die-b');
+  const progress = document.getElementById('center-roll-progress');
+  if (dice) dice.textContent = state.lastRoll || '—';
+  if (label) label.textContent = `PINDAH ${state.moveStep}/${state.lastRoll}`;
+  if (center) center.textContent = state.lastRoll || '—';
+  if (dieA) dieA.textContent = state.lastDice?.[0] || '—';
+  if (dieB) dieB.textContent = state.lastDice?.[1] || '—';
+  if (progress) progress.textContent = `${state.moveStep}/${state.lastRoll}`;
+}
+
+function moveTokenInDom(playerIndex, position) {
+  const token = document.querySelector(`.token[data-player-index="${playerIndex}"]`);
+  const cell = document.querySelector(`.board-cell[data-tile-index="${position}"]`);
+  if (!token || !cell) return;
+  cell.appendChild(token);
+  token.classList.remove('step-hop');
+  void token.offsetWidth;
+  token.classList.add('step-hop');
+  window.setTimeout(() => token.classList.remove('step-hop'), 240);
+  focusActiveToken();
+}
+
+function animateTokenMovement(playerIndex, path, onComplete) {
+  let step = 0;
+  const advance = () => {
+    if (state.screen !== 'game' || !state.players[playerIndex]) return;
+    state.players[playerIndex].position = path[step];
+    state.moveStep = step + 1;
+    moveTokenInDom(playerIndex, path[step]);
+    updateMoveHud();
+    if (step < path.length - 1) {
+      step += 1;
+      window.setTimeout(advance, 330);
+    } else {
+      state.moving = false;
+      onComplete?.();
+    }
+  };
+  advance();
+}
+
 function rollDice(isAi = false) {
-  if (!state.canRoll || state.rolling) return;
+  if (!state.canRoll || state.rolling || state.moving) return;
   if (state.mode === 'ai' && state.activePlayer === 1 && !isAi) return;
+  if (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex && !isAi) return;
   if (state.mode === 'online' && state.activePlayer !== state.localPlayerIndex) return;
   state.rolling = true;
   state.canRoll = false;
   playSound('roll');
   render();
   window.setTimeout(() => {
-    const roll = randomInt(1, 6);
+    const dieA = randomInt(1, 6);
+    const dieB = state.diceCount === 2 ? randomInt(1, 6) : 0;
+    const roll = dieA + dieB;
+    state.lastDice = [dieA, dieB];
     state.lastRoll = roll;
-    const player = state.players[state.activePlayer];
+    state.rolling = false;
+    state.moving = false;
+    state.moveStep = 0;
+    const playerIndex = state.activePlayer;
+    const player = state.players[playerIndex];
     const oldPosition = player.position;
-    const newPosition = (oldPosition + roll) % state.tiles.length;
+    const path = Array.from({ length: roll }, (_, step) => (oldPosition + step + 1) % state.tiles.length);
+    const newPosition = path[path.length - 1];
     if (oldPosition + roll >= state.tiles.length) {
       player.cash += 200;
-      addActivity('✦', `<strong>${escapeHtml(player.name)}</strong> melewati START dan mendapat bonus 200 cr.`);
+      bankWithdraw(200);
+      addActivity('✦', `<strong>${escapeHtml(player.name)}</strong> melewati START dan mendapat bonus ${formatCurrency(200)}.`);
     }
-    player.position = newPosition;
-    state.rolling = false;
-    addActivity('◈', `<strong>${escapeHtml(player.name)}</strong> melempar ${roll} dan mendarat di <strong>${escapeHtml(state.tiles[newPosition].name)}</strong>.`);
-    resolveLanding(newPosition);
-    if (state.mode === 'online') syncOnlineGame();
+    // Beri jeda agar angka dadu terlihat dulu sebelum pion mulai berjalan.
     render();
+    window.setTimeout(() => {
+      state.moving = true;
+      render();
+      animateTokenMovement(playerIndex, path, () => {
+        addActivity('◈', `<strong>${escapeHtml(player.name)}</strong> melempar ${roll} dan tiba di <strong>${escapeHtml(state.tiles[newPosition].name)}</strong>.`);
+        resolveLanding(newPosition);
+        if (state.mode === 'online') syncOnlineGame();
+        render();
+      });
+    }, 700);
   }, 850);
+}
+
+function maxBankLoan(playerIndex) {
+  const player = state.players[playerIndex];
+  return Math.max(0, playerAssetsValue(playerIndex) - Number(player?.debt || 0));
+}
+
+function requestEmergencyFunds(amount, type, ownerIndex = null) {
+  const player = state.players[state.activePlayer];
+  const need = Math.max(0, amount - player.cash);
+  state.pendingPayment = { amount, type, ownerIndex, reason: type === 'rent' ? 'Bayar rent' : 'Bayar pajak' };
+  if (state.activePlayer !== state.localPlayerIndex && state.mode !== 'local') {
+    const loan = Math.min(need, maxBankLoan(state.activePlayer));
+    if (loan > 0) {
+      player.cash += loan;
+      player.debt = (player.debt || 0) + loan;
+      bankWithdraw(loan);
+    }
+    if (player.cash < amount) {
+      const owned = state.tiles.map((tile, index) => ({ tile, index })).filter(({ tile }) => tile.owner === state.activePlayer);
+      for (const item of owned) {
+        if (player.cash >= amount) break;
+        const payout = Math.floor(item.tile.price * .6) + (item.tile.houses || 0) * houseCost(item.tile) * .5 + (item.tile.hotel ? houseCost(item.tile) : 0);
+        player.cash += payout;
+        bankWithdraw(payout);
+        item.tile.owner = null;
+        item.tile.houses = 0;
+        item.tile.hotel = false;
+      }
+    }
+    if (player.cash >= amount) completePendingPayment();
+    else { player.eliminated = true; state.pendingPayment = null; finishTurn(); }
+    return;
+  }
+  state.modal = { type: 'emergency', amount, paymentType: type, ownerIndex, reason: type === 'rent' ? 'Bayar rent' : 'Bayar pajak' };
+  render();
+}
+
+function completePendingPayment() {
+  const pending = state.pendingPayment;
+  const player = state.players[state.activePlayer];
+  if (!pending || !player) return;
+  if (player.cash < pending.amount) {
+    state.modal = { type: 'emergency', amount: pending.amount, paymentType: pending.type, ownerIndex: pending.ownerIndex, reason: pending.type === 'rent' ? 'Bayar rent' : 'Bayar pajak' };
+    render();
+    return;
+  }
+  player.cash -= pending.amount;
+  if (pending.type === 'rent' && state.players[pending.ownerIndex]) {
+    state.players[pending.ownerIndex].cash += pending.amount;
+    moneyFX(pending.amount, 'rent');
+  } else {
+    bankDeposit(pending.amount);
+  }
+  addActivity(pending.type === 'rent' ? '◆' : '◌', `<strong>${escapeHtml(player.name)}</strong> membayar ${pending.type === 'rent' ? 'rent' : 'pajak'} ${formatCurrency(pending.amount)}.`);
+  state.pendingPayment = null;
+  showTurnEnd(state.tiles[player.position], `${pending.type === 'rent' ? 'Sewa' : 'Pajak'} sudah dibayar.`);
+  render();
+}
+
+function emergencySellProperty(tileIndex) {
+  const tile = state.tiles[tileIndex];
+  const player = state.players[state.activePlayer];
+  if (!tile || tile.owner !== state.activePlayer || !player) return;
+  const payout = Math.floor(tile.price * .6) + (tile.houses || 0) * houseCost(tile) * .5 + (tile.hotel ? houseCost(tile) : 0);
+  player.cash += payout;
+  bankWithdraw(payout);
+  tile.owner = null;
+  tile.houses = 0;
+  tile.hotel = false;
+  addActivity('↗', `<strong>${escapeHtml(player.name)}</strong> menjual ${escapeHtml(tile.name)} ke bank.`);
+  if (state.pendingPayment && player.cash >= state.pendingPayment.amount) completePendingPayment();
+  else { state.modal = { type: 'emergency', amount: state.pendingPayment?.amount || 0, paymentType: state.pendingPayment?.type || 'rent', ownerIndex: state.pendingPayment?.ownerIndex ?? null, reason: state.pendingPayment?.type === 'tax' ? 'Bayar pajak' : 'Bayar rent' }; render(); }
+}
+
+function borrowFromBank(amount) {
+  const player = state.players[state.activePlayer];
+  const requested = Math.max(0, Number(amount) || 0);
+  const allowed = Math.min(requested, maxBankLoan(state.activePlayer));
+  if (!player || allowed <= 0) {
+    showToast('Pinjaman melebihi nilai properti.', 'bad');
+    return;
+  }
+  player.cash += allowed;
+  player.debt = (player.debt || 0) + allowed;
+  bankWithdraw(allowed);
+  addActivity('🏦', `<strong>${escapeHtml(player.name)}</strong> meminjam ${formatCurrency(allowed)} dari bank.`);
+  completePendingPayment();
+}
+
+function declareBankruptcy() {
+  const player = state.players[state.activePlayer];
+  if (player) { player.cash = 0; player.eliminated = true; }
+  state.pendingPayment = null;
+  state.modal = null;
+  addActivity('OUT', `<strong>${escapeHtml(player?.name || 'Pemain')}</strong> bangkrut.`);
+  finishTurn();
+}
+
+function showTurnEnd(tile, message) {
+  state.modal = { type: 'turn-end', tile, message };
 }
 
 function resolveLanding(index) {
   const tile = state.tiles[index];
   const player = state.players[state.activePlayer];
-  if (tile.type === 'property') {
+  if (tile.type === 'property' || tile.type === 'utility') {
     if (tile.owner === null || tile.owner === undefined) {
       if (state.mode === 'online') {
         if (player.cash >= tile.price) {
           player.cash -= tile.price;
+          bankDeposit(tile.price);
           tile.owner = state.activePlayer;
           addActivity('♛', `<strong>${escapeHtml(player.name)}</strong> otomatis membeli ${escapeHtml(tile.name)} di room online.`);
+          showTurnEnd(tile, `${tile.name} dibeli otomatis.`);
         } else {
-          addActivity('!', `<strong>${escapeHtml(player.name)}</strong> belum cukup saldo untuk ${escapeHtml(tile.name)}.`);
+          showTurnEnd(tile, `${tile.name} belum terbeli.`);
         }
-        finishTurnSoon();
         return;
       }
       if (player.cash >= tile.price) {
         state.modal = { type: 'purchase', tile };
         return;
       }
-      addActivity('!', `<strong>${escapeHtml(player.name)}</strong> belum cukup saldo untuk ${escapeHtml(tile.name)}.`);
-      finishTurnSoon();
+      showTurnEnd(tile, `Saldo belum cukup untuk membeli ${tile.name}.`);
       return;
     }
     if (tile.owner !== state.activePlayer) {
       const owner = state.players[tile.owner];
-      const rent = Math.min(player.cash, tile.rent);
+      const rent = getRent(tile);
+      if (player.cash < rent) {
+        requestEmergencyFunds(rent, 'rent', tile.owner);
+        return;
+      }
       player.cash -= rent;
       owner.cash += rent;
-      addActivity('◆', `<strong>${escapeHtml(player.name)}</strong> membayar rent ${formatCurrency(rent)} kepada ${escapeHtml(owner.name)}.`);
-      showToast(`Membayar rent ${formatCurrency(rent)} ke ${owner.name}.`, 'bad');
+      moneyFX(rent, 'rent');
+      addActivity('◆', `<strong>${escapeHtml(player.name)}</strong> membayar sewa ${formatCurrency(rent)} kepada ${escapeHtml(owner.name)}.`);
+      showToast(`Membayar sewa ${formatCurrency(rent)} ke ${owner.name}.`, 'bad');
+      showTurnEnd(tile, `Sewa ${formatCurrency(rent)} dibayar ke ${owner.name}.`);
     } else {
       addActivity('★', `<strong>${escapeHtml(player.name)}</strong> kembali ke properti miliknya.`);
+      if (tile.type === 'property') {
+        state.modal = { type: 'manage', tile, tileIndex: index };
+        return;
+      }
+      showTurnEnd(tile, 'Kamu berada di tempat milikmu.');
     }
-    finishTurnSoon();
   } else if (tile.type === 'tax') {
-    const tax = Math.min(player.cash, tile.price || 80);
+    const tax = tile.price || 80;
+    if (player.cash < tax) {
+      requestEmergencyFunds(tax, 'tax');
+      return;
+    }
     player.cash -= tax;
+    bankDeposit(tax);
     addActivity('◌', `<strong>${escapeHtml(player.name)}</strong> membayar pajak ${formatCurrency(tax)}.`);
-    finishTurnSoon();
+    showTurnEnd(tile, `Pajak ${formatCurrency(tax)} masuk ke bank.`);
   } else if (tile.type === 'chance') {
-    const reward = randomInt(20, 100);
-    player.cash += reward;
-    addActivity('✧', `<strong>${escapeHtml(player.name)}</strong> mendapat bonus kartu ${formatCurrency(reward)}.`);
-    showToast(`Kartu misteri memberi bonus ${formatCurrency(reward)}.`, 'good');
-    finishTurnSoon();
+    state.modal = { type: 'chance', card: randomChanceCard() };
   } else if (tile.name === 'GO TO PRISON') {
     player.position = 10;
     addActivity('↘', `<strong>${escapeHtml(player.name)}</strong> dikirim ke PRISON.`);
-    finishTurnSoon();
+    showTurnEnd(tile, 'Pion dipindahkan ke PRISON.');
   } else {
-    finishTurnSoon();
+    const specialMessage = tile.name === 'FREE PARKING' || tile.name === 'FREE ZONE' ? `${tile.name} adalah petak aman dan tidak bisa dibeli.` : `Berhenti di ${tile.name}.`;
+    showTurnEnd(tile, specialMessage);
   }
 }
 
@@ -822,7 +1209,23 @@ function finishTurnSoon() {
 
 function finishTurn() {
   state.turnCount += 1;
-  if (state.turnCount >= 18 || state.players.some((player) => player.cash <= 0)) {
+  if (state.mode === 'battle') {
+    markEliminatedPlayers();
+    const alive = state.players.filter((player) => !player.eliminated);
+    if (alive.length <= 1) {
+      finishGame();
+      return;
+    }
+    state.activePlayer = nextAlivePlayer(state.activePlayer);
+    state.canRoll = false;
+    state.question = null;
+    state.answer = '';
+    if (state.activePlayer === state.localPlayerIndex) askQuestion();
+    else startAITurn();
+    render();
+    return;
+  }
+  if (state.players.some((player) => isBankrupt(player.id))) {
     finishGame();
     return;
   }
@@ -842,9 +1245,11 @@ function finishTurn() {
 }
 
 function finishGame() {
-  const winner = state.players[0].cash >= state.players[1].cash ? 0 : 1;
-  const points = winner === 0 ? 240 : 75;
-  const diamond = winner === 0 ? 180 : 40;
+  const contenders = state.mode === 'battle' ? state.players.filter((player) => !player.eliminated) : state.players.filter((player) => !isBankrupt(player.id));
+  const winnerPlayer = contenders.slice().sort((a, b) => (b.cash + playerAssetsValue(b.id)) - (a.cash + playerAssetsValue(a.id)))[0] || state.players[0];
+  const winner = winnerPlayer.id;
+  const points = winner === 0 ? (state.mode === 'battle' ? 450 : 240) : 75;
+  const diamond = winner === 0 ? (state.mode === 'battle' ? 320 : 180) : 40;
   state.stats.games += 1;
   if (winner === 0) { state.stats.wins += 1; state.stats.points += points; state.diamond += diamond; }
   else { state.stats.points += points; state.diamond += diamond; }
@@ -867,12 +1272,173 @@ function buyProperty() {
     return;
   }
   player.cash -= tile.price;
+  bankDeposit(tile.price);
   const index = state.tiles.findIndex((candidate) => candidate.name === tile.name && candidate.owner === null);
   if (index >= 0) state.tiles[index].owner = state.activePlayer;
   addActivity('♛', `<strong>${escapeHtml(player.name)}</strong> membeli ${escapeHtml(tile.name)}.`);
   showToast(`${tile.name} resmi menjadi milikmu.`, 'good');
+  showTurnEnd(tile, `${tile.name} menjadi milikmu.`);
+  render();
+}
+
+function randomChanceCard() {
+  const cards = [
+    { icon: '◆', title: 'BONUS INVESTOR', message: `Dapatkan ${formatCurrency(150)} dari bank.`, kind: 'cash', value: 150 },
+    { icon: '◌', title: 'PAJAK KOTA', message: `Bayar ${formatCurrency(100)} untuk layanan kota.`, kind: 'cash', value: -100 },
+    { icon: '↗', title: 'EXPRESS MOVE', message: 'Maju 3 petak.', kind: 'move', value: 3 },
+    { icon: '↙', title: 'BACKTRACK', message: 'Mundur 2 petak.', kind: 'move', value: -2 },
+    { icon: '✦', title: 'START BONUS', message: `Kembali ke START dan ambil ${formatCurrency(200)}.`, kind: 'start', value: 200 },
+    { icon: '✈', title: 'AIRPORT PASS', message: 'Terbang langsung ke AIRPORT.', kind: 'airport', value: 0 }
+  ];
+  return cards[randomInt(0, cards.length - 1)];
+}
+
+function resolveChanceCard() {
+  if (!state.modal?.card) return;
+  const card = state.modal.card;
+  const player = state.players[state.activePlayer];
+  if (card.kind === 'cash') {
+    if (card.value >= 0) {
+      player.cash += card.value;
+      bankWithdraw(card.value);
+    } else {
+      const paid = Math.min(player.cash, Math.abs(card.value));
+      player.cash -= paid;
+      bankDeposit(paid);
+    }
+    addActivity(card.value >= 0 ? '◆' : '◌', `<strong>${escapeHtml(player.name)}</strong> ${card.value >= 0 ? 'mendapat' : 'membayar'} ${formatCurrency(Math.abs(card.value))}.`);
+  } else if (card.kind === 'move') {
+    player.position = (player.position + card.value + state.tiles.length) % state.tiles.length;
+    addActivity('↗', `<strong>${escapeHtml(player.name)}</strong> berpindah ${Math.abs(card.value)} petak.`);
+  } else if (card.kind === 'start') {
+    player.position = 0;
+    player.cash += card.value;
+    bankWithdraw(card.value);
+    addActivity('✦', `<strong>${escapeHtml(player.name)}</strong> kembali ke START dan mendapat ${formatCurrency(card.value)}.`);
+  } else if (card.kind === 'airport') {
+    const airport = state.tiles.findIndex((tile) => tile.name === 'AIRPORT');
+    if (airport >= 0) player.position = airport;
+    addActivity('✈', `<strong>${escapeHtml(player.name)}</strong> terbang ke AIRPORT.`);
+  }
+  showTurnEnd(state.tiles[player.position], `Kartu selesai: ${card.title}.`);
+  render();
+}
+
+function buyHouse(tileIndex, fromLanding = false) {
+  const tile = state.tiles[tileIndex];
+  const player = state.players[state.activePlayer];
+  if (!tile || tile.owner !== state.activePlayer || tile.type !== 'property') return;
+  if (state.players[state.activePlayer]?.position !== tileIndex) {
+    showToast('Pion harus berada di petak ini untuk membeli rumah.', 'bad');
+    return;
+  }
+  if (!ownsFullGroup(tile, state.activePlayer)) {
+    showToast('Kuasai satu warna penuh dulu.', 'bad');
+    return;
+  }
+  if (tile.hotel || tile.houses >= 4) {
+    showToast('Properti ini siap dibangun hotel.', '');
+    return;
+  }
+  const cost = houseCost(tile);
+  if (player.cash < cost) {
+    showToast(`Butuh ${formatCurrency(cost)} untuk rumah.`, 'bad');
+    return;
+  }
+  player.cash -= cost;
+  bankDeposit(cost);
+  tile.houses = (tile.houses || 0) + 1;
+  addActivity('⌂', `<strong>${escapeHtml(player.name)}</strong> membangun rumah di ${escapeHtml(tile.name)}.`);
+  showToast(`Rumah ${tile.houses}/4 dibangun. Rent naik.`, 'good');
+  if (fromLanding) { showTurnEnd(tile, `Rumah ${tile.houses}/4 aktif di ${tile.name}.`); render(); } else render();
+}
+
+function buyHotel(tileIndex, fromLanding = false) {
+  const tile = state.tiles[tileIndex];
+  const player = state.players[state.activePlayer];
+  if (!tile || tile.owner !== state.activePlayer || tile.type !== 'property') return;
+  if (state.players[state.activePlayer]?.position !== tileIndex) {
+    showToast('Pion harus berada di petak ini untuk membeli hotel.', 'bad');
+    return;
+  }
+  if (!ownsFullGroup(tile, state.activePlayer) || tile.houses < 4 || tile.hotel) {
+    showToast('Butuh 4 rumah dan satu warna penuh.', 'bad');
+    return;
+  }
+  const cost = houseCost(tile) * 2;
+  if (player.cash < cost) {
+    showToast(`Butuh ${formatCurrency(cost)} untuk hotel.`, 'bad');
+    return;
+  }
+  player.cash -= cost;
+  bankDeposit(cost);
+  tile.houses = 0;
+  tile.hotel = true;
+  addActivity('🏨', `<strong>${escapeHtml(player.name)}</strong> membangun hotel di ${escapeHtml(tile.name)}.`);
+  showToast('Hotel aktif. Rent melonjak.', 'good');
+  if (fromLanding) { showTurnEnd(tile, `Hotel aktif di ${tile.name}.`); render(); } else render();
+}
+
+function openAuction() {
+  if (!state.modal?.tile) return;
+  const tile = state.modal.tile;
+  const tileIndex = state.tiles.findIndex((candidate) => candidate.name === tile.name);
+  state.modal = { type: 'auction', tile, tileIndex, bid: Math.max(50, Math.ceil(tile.price * .5)), source: 'landing' };
+  render();
+}
+
+function raiseAuction() {
+  if (!state.modal?.tile) return;
+  const player = state.players[state.activePlayer];
+  const nextBid = state.modal.bid + 50;
+  if (player.cash < nextBid) {
+    showToast('Saldo tidak cukup untuk tawaran ini.', 'bad');
+    return;
+  }
+  state.modal.bid = nextBid;
+  render();
+}
+
+function acceptAuction() {
+  if (!state.modal?.tile) return;
+  const tile = state.modal.tile;
+  const source = state.modal.source;
+  const player = state.players[state.activePlayer];
+  const bid = state.modal.bid;
+  if (player.cash < bid) {
+    showToast('Saldo tidak cukup.', 'bad');
+    return;
+  }
+  player.cash -= bid;
+  bankDeposit(bid);
+  const index = state.tiles.findIndex((candidate) => candidate.name === tile.name && candidate.owner === null);
+  if (index >= 0) state.tiles[index].owner = state.activePlayer;
+  addActivity('⚖', `<strong>${escapeHtml(player.name)}</strong> memenangkan lelang ${escapeHtml(tile.name)}.`);
   state.modal = null;
+  if (source === 'menu') state.screen = 'game';
   finishTurn();
+}
+
+function sellProperty(tileIndex) {
+  const tile = state.tiles[tileIndex];
+  const ownerIndex = tile?.owner;
+  const player = state.players[ownerIndex];
+  if (!tile || ownerIndex === null || ownerIndex === undefined || !player) return;
+  const allowedOwner = state.screen === 'properties' ? 0 : state.activePlayer;
+  if (ownerIndex !== allowedOwner || player.position !== tileIndex) {
+    showToast('Pion harus berada di petak properti untuk menjualnya.', 'bad');
+    return;
+  }
+  const payout = Math.floor(tile.price * .6) + (tile.houses || 0) * houseCost(tile) * .5 + (tile.hotel ? houseCost(tile) : 0);
+  player.cash += payout;
+  bankWithdraw(payout);
+  tile.owner = null;
+  tile.houses = 0;
+  tile.hotel = false;
+  addActivity('↗', `<strong>${escapeHtml(player.name)}</strong> menjual ${escapeHtml(tile.name)}.`);
+  state.modal = null;
+  showToast(`${tile.name} berhasil dijual.`, 'good');
+  render();
 }
 
 function addActivity(icon, text) {
@@ -882,12 +1448,13 @@ function addActivity(icon, text) {
 
 function onlinePayload() {
   return {
-    players: state.players.map((player) => ({ id: player.id, name: player.name, avatar: player.avatar, position: player.position, cash: player.cash })),
+    players: state.players.map((player) => ({ id: player.id, name: player.name, avatar: player.avatar, position: player.position, cash: player.cash, debt: player.debt || 0, eliminated: Boolean(player.eliminated) })),
     tiles: state.tiles,
     activePlayer: state.activePlayer,
     question: state.question ? { text: state.question.text, answer: state.question.answer } : null,
     canRoll: state.canRoll,
     lastRoll: state.lastRoll,
+    lastDice: state.lastDice,
     turnCount: state.turnCount,
     activity: state.activity.slice(0, 8)
   };
@@ -907,6 +1474,7 @@ function applyRemoteGame(game) {
   state.answer = '';
   state.canRoll = Boolean(game.canRoll);
   state.lastRoll = game.lastRoll || state.lastRoll;
+  state.lastDice = game.lastDice || state.lastDice;
   state.turnCount = game.turnCount || state.turnCount;
   state.activity = Array.isArray(game.activity) ? game.activity : state.activity;
   state.modal = null;
@@ -927,6 +1495,32 @@ function showToast(message, tone = '') {
   toast.innerHTML = `<span class="toast-icon">${tone === 'good' ? '✓' : tone === 'bad' ? '!' : '✦'}</span><span>${message}</span>`;
   stack.appendChild(toast);
   window.setTimeout(() => { toast.classList.add('fade-out'); window.setTimeout(() => toast.remove(), 280); }, 3000);
+}
+
+function moneyFX(amount, direction = 'from-bank') {
+  if (!amount || !document.body) return;
+  const node = document.createElement('div');
+  node.className = `money-float ${direction}`;
+  const label = direction === 'to-bank' ? 'BANK' : direction === 'rent' ? 'RENT' : 'WALLET';
+  node.innerHTML = `<span class="money-coin">◆</span><strong>${direction === 'to-bank' ? '−' : '+'}${formatCurrency(Math.abs(amount))}</strong><small>${label}</small>`;
+  document.body.appendChild(node);
+  window.setTimeout(() => node.remove(), 1250);
+}
+
+function bankDeposit(amount) {
+  const value = Math.max(0, Number(amount) || 0);
+  state.bankBalance = (state.bankBalance || 0) + value;
+  moneyFX(value, 'to-bank');
+}
+
+function bankWithdraw(amount) {
+  const value = Math.max(0, Number(amount) || 0);
+  state.bankBalance = Math.max(0, (state.bankBalance || 0) - value);
+  moneyFX(value, 'from-bank');
+}
+
+function renderBankPanel() {
+  return `<section id="bank-panel" class="bank-panel panel"><div class="bank-icon">🏦</div><div class="bank-copy"><strong>BANK</strong><small>Cadangan bank</small></div><div class="bank-balance">${formatCurrency(state.bankBalance || 0)}</div></section>`;
 }
 
 async function claimReward() {
@@ -1081,17 +1675,36 @@ async function installApp() {
   render();
 }
 
+function focusActiveToken() {
+  if (state.screen !== 'game' || !window.matchMedia?.('(max-width: 900px)').matches) return;
+  const camera = document.getElementById('board-camera');
+  const token = camera?.querySelector(`.token[data-player-index="${state.activePlayer}"]`);
+  if (!camera || !token) return;
+  const cameraRect = camera.getBoundingClientRect();
+  const tokenRect = token.getBoundingClientRect();
+  const targetLeft = camera.scrollLeft + tokenRect.left - cameraRect.left - (cameraRect.width - tokenRect.width) / 2;
+  const targetTop = camera.scrollTop + tokenRect.top - cameraRect.top - (cameraRect.height - tokenRect.height) / 2;
+  camera.scrollTo({ left: Math.max(0, Math.min(targetLeft, camera.scrollWidth - camera.clientWidth)), top: Math.max(0, Math.min(targetTop, camera.scrollHeight - camera.clientHeight)), behavior: 'smooth' });
+}
+
 function render() {
+  document.body.classList.toggle('is-game-screen', Boolean(state.session && state.screen === 'game'));
+  document.body.classList.toggle('game-menu-open', Boolean(state.gameMenuOpen && state.screen === 'game'));
   app.innerHTML = state.session ? renderShell() : renderLogin();
   document.getElementById('boot-fallback')?.remove();
   updateMusic();
+  window.requestAnimationFrame?.(() => focusActiveToken());
 }
 
 function navigate(screen) {
   state.screen = screen;
   if (screen !== 'game') {
+    state.gameMenuOpen = false;
     state.question = null;
     state.aiThinking = false;
+    state.modal = null;
+  } else if (state.players.length && !state.question && !state.canRoll && !state.rolling && !state.moving) {
+    askQuestion();
   }
   render();
 }
@@ -1112,8 +1725,15 @@ function handleClick(event) {
     if (state.mode === 'online') navigate('online'); else navigate('dashboard');
   } else if (action === 'go-screen') {
     navigate(target.dataset.screen);
+  } else if (action === 'toggle-game-menu') {
+    state.gameMenuOpen = !state.gameMenuOpen;
+    render();
   } else if (action === 'begin-game') {
     startGame(state.mode === 'online' ? 'ai' : state.mode);
+  } else if (action === 'quick-start') {
+    const quickMode = target.dataset.mode || 'ai';
+    if (quickMode === 'online') navigate('online');
+    else startGame(quickMode);
   } else if (action === 'toggle-music') {
     state.music = !state.music;
     persist();
@@ -1124,6 +1744,51 @@ function handleClick(event) {
     submitAnswer();
   } else if (action === 'roll-dice') {
     rollDice(false);
+  } else if (action === 'buy-house') {
+    buyHouse(Number(target.dataset.tileIndex), target.dataset.fromLanding === 'true');
+  } else if (action === 'buy-hotel') {
+    buyHotel(Number(target.dataset.tileIndex), target.dataset.fromLanding === 'true');
+  } else if (action === 'sell-property') {
+    const tile = state.tiles[Number(target.dataset.tileIndex)];
+    if (tile) { state.modal = { type: 'sell', tile, tileIndex: Number(target.dataset.tileIndex) }; render(); }
+  } else if (action === 'confirm-sell') {
+    sellProperty(Number(state.modal?.tileIndex));
+  } else if (action === 'emergency-sell') {
+    emergencySellProperty(Number(target.dataset.tileIndex));
+  } else if (action === 'borrow-bank') {
+    borrowFromBank(Number(target.dataset.loanAmount));
+  } else if (action === 'declare-bankruptcy') {
+    declareBankruptcy();
+  } else if (action === 'auction-menu-open') {
+    const auctionIndex = Number(target.dataset.tileIndex);
+    const auctionTile = state.tiles[auctionIndex];
+    if (!state.players.length || !auctionTile) {
+      showToast('Mulai arena dulu untuk ikut lelang.', 'bad');
+    } else if (auctionTile.owner !== null && auctionTile.owner !== undefined) {
+      showToast('Properti ini sudah dimiliki.', 'bad');
+    } else {
+      state.modal = { type: 'auction', tile: auctionTile, tileIndex: auctionIndex, bid: Math.max(50, Math.ceil(auctionTile.price * .5)), source: 'menu' };
+      render();
+    }
+  } else if (action === 'open-auction') {
+    openAuction();
+  } else if (action === 'auction-raise') {
+    raiseAuction();
+  } else if (action === 'auction-accept') {
+    acceptAuction();
+  } else if (action === 'auction-cancel') {
+    if (state.modal?.source === 'menu') {
+      state.modal = null;
+      navigate('auction');
+    } else {
+      state.modal = { type: 'purchase', tile: state.modal?.tile };
+      render();
+    }
+  } else if (action === 'resolve-chance') {
+    resolveChanceCard();
+  } else if (action === 'continue-turn') {
+    state.modal = null;
+    finishTurn();
   } else if (action === 'modal-buy') {
     buyProperty();
   } else if (action === 'modal-skip') {
@@ -1149,6 +1814,13 @@ function handleClick(event) {
     navigator.clipboard?.writeText(state.room?.code || '').then(() => showToast('Kode room disalin.', 'good')).catch(() => showToast(`Kode room: ${state.room?.code || ''}`, ''));
   } else if (action === 'start-online-match') {
     startOnlineMatch();
+  } else if (action === 'battle-count') {
+    state.battleCount = Number(target.dataset.count) || 4;
+    render();
+  } else if (action === 'start-battle') {
+    startBattle();
+  } else if (action === 'leave-battle') {
+    leaveBattle();
   } else if (action === 'logout') {
     state.session = false;
     state.screen = 'dashboard';

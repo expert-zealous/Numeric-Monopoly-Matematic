@@ -1,0 +1,7 @@
+/* Clear property ownership: owner color is used on the card strip and badge. */
+.board-cell::before { opacity:var(--cell-opacity,1); }
+.owner-badge { position:absolute;z-index:3;top:7px;left:3px;display:flex;align-items:center;gap:2px;max-width:calc(100% - 6px);padding:2px 3px;border:1px solid color-mix(in srgb,var(--owner-color) 70%,white 5%);border-radius:5px;color:#fff;background:color-mix(in srgb,var(--owner-color) 65%,#07102f 35%);box-shadow:0 2px 5px rgba(0,0,0,.3);font-size:.42rem;line-height:1;}
+.owner-badge span { font-size:.5rem;line-height:1; }.owner-badge b { overflow:hidden;font-size:.42rem;letter-spacing:-.02em;text-overflow:ellipsis;white-space:nowrap; }
+.unowned-badge { position:absolute;z-index:2;top:7px;left:3px;color:#9aa8d2;font-size:.38rem;font-weight:800;letter-spacing:.04em;opacity:.42; }
+.ownership-legend { padding:9px 12px; }.ownership-title { margin-bottom:6px;color:#7785b3;font-size:.5rem;font-weight:800;letter-spacing:.12em; }.ownership-list { display:flex;gap:5px;flex-wrap:wrap; }.ownership-item { display:inline-flex;align-items:center;gap:3px;color:#9ca9d2;font-size:.49rem; }.ownership-item i { width:7px;height:7px;border-radius:50%;box-shadow:0 0 6px currentColor; }
+@media (max-width:560px) { .owner-badge { top:5px;padding:1px 2px;font-size:.32rem; }.owner-badge span{font-size:.38rem}.owner-badge b{font-size:.31rem}.unowned-badge{top:5px;font-size:.3rem}.ownership-legend{padding:8px 10px}.ownership-item{font-size:.42rem}.ownership-item i{width:6px;height:6px} }

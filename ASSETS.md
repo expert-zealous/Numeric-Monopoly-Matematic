@@ -16,7 +16,7 @@ assets/tiles/tile-09-kartu-misteri-01.png
 assets/tiles/tile-10-skyline.png
 assets/tiles/tile-11-prison.png
 assets/tiles/tile-12-solara.png
-assets/tiles/tile-13-energi.png
+assets/tiles/tile-13-airport.png
 assets/tiles/tile-14-velvet-city.png
 assets/tiles/tile-15-soal-bonus-02.png
 assets/tiles/tile-16-aurora.png
@@ -24,7 +24,7 @@ assets/tiles/tile-17-free-zone.png
 assets/tiles/tile-18-crystal.png
 assets/tiles/tile-19-kartu-misteri-02.png
 assets/tiles/tile-20-moonlight.png
-assets/tiles/tile-21-go-to-prison.png
+assets/tiles/tile-21-free-parking.png
 assets/tiles/tile-22-nebula.png
 assets/tiles/tile-23-soal-bonus-03.png
 assets/tiles/tile-24-quantum.png
@@ -34,7 +34,7 @@ assets/tiles/tile-27-hyperloop.png
 assets/tiles/tile-28-golden-harbor.png
 assets/tiles/tile-29-kartu-misteri-03.png
 assets/tiles/tile-30-infinity.png
-assets/tiles/tile-31-finish.png
+assets/tiles/tile-31-go-to-prison.png
 assets/tiles/tile-32-prism.png
 assets/tiles/tile-33-soal-bonus-04.png
 assets/tiles/tile-34-mirage.png
@@ -54,5 +54,5 @@ Spesifikasi artwork petak:
 - Property: kota/menara/landmark sesuai nama.
 - Kartu misteri: kartu bercahaya.
 - Pajak: simbol koin/pajak.
-- Utility: energi/portal.
+- Utility: airport/portal.
 - Corner: ilustrasi besar seperti START, PRISON, FINISH.

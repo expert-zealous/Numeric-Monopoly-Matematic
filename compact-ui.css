@@ -1,0 +1,25 @@
+/* Compact HUD refinements */
+.compact-game-header { min-height:0; justify-content:flex-end; margin-bottom:7px; }
+.compact-game-header .game-header-actions { width:100%; justify-content:flex-end; }
+.home-actions { flex-wrap:wrap; }
+.home-actions .btn { min-height:48px; }
+.podium { min-height:165px; padding:16px 18px 0; }
+.podium-card { min-height:96px; padding:10px 8px 8px; }
+.podium-card.first { min-height:130px; }
+.podium-card .podium-rank { font-size:1.15rem; }
+.podium-card .podium-name { margin:6px 0 2px; font-size:.65rem; }
+.podium-card .podium-points { font-size:.56rem; }
+@media (max-width:900px) {
+  .compact-game-header { margin-bottom:5px; }
+  .home-actions { gap:6px; }
+  .home-actions .btn { min-height:43px; padding:0 12px; font-size:.67rem; }
+  .podium { min-height:150px; padding:12px 8px 0; }
+  .podium-card { min-height:82px; }
+  .podium-card.first { min-height:112px; }
+}
+@media (max-width:560px) {
+  .home-actions .btn { flex:1 1 30%; min-width:0; padding:0 7px; font-size:.55rem; letter-spacing:0; }
+  .podium { min-height:135px; padding:10px 3px 0; }
+  .podium-card { min-height:74px; }
+  .podium-card.first { min-height:98px; }
+}

@@ -1,0 +1,12 @@
+/* Question card stays compact and centered over the full board. */
+.question-layer { background:rgba(4,8,31,.12)!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }
+.question-card { width:min(90%,360px);padding:16px 14px;box-shadow:0 25px 70px rgba(0,0,0,.48),0 0 36px rgba(91,228,255,.1); }
+.question-for { display:flex;align-items:center;gap:7px;margin:0;color:var(--cyan);font-size:.62rem;font-weight:800;letter-spacing:.12em; }
+.question-for strong { color:#fff;letter-spacing:.03em; }
+.question-card .question-text { font-size:clamp(1.45rem,4vw,1.9rem);margin-bottom:13px; }
+.question-card .answer-display { min-height:45px;margin-bottom:9px;font-size:1.18rem; }
+.question-card .numeric-keyboard { gap:6px; }
+.question-card .key-btn { min-height:37px; }
+.question-card .key-btn.ok { min-height:43px; }
+@media(max-width:900px){.question-for{font-size:.57rem}.question-card{width:min(92%,350px);padding:15px 12px}}
+@media(max-width:560px){.question-card{width:min(92%,330px);padding:14px 11px}.question-card .key-btn{min-height:34px}.question-card .question-hint{margin-top:7px;font-size:.5rem}}

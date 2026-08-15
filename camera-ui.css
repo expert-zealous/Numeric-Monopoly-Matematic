@@ -1,0 +1,29 @@
+/* Mobile and desktop camera for the active token */
+.board-camera { position:relative;z-index:1;width:100%;aspect-ratio:1;overflow:hidden;border-radius:18px;scrollbar-width:none;overscroll-behavior:contain; }
+.board-camera::-webkit-scrollbar { display:none; }
+.board-camera .board { width:100%;height:100%;margin:0; }
+@media (max-width:900px) {
+  .board-camera { overflow:auto; }
+}
+@media (max-width:600px) {
+  .board-camera { height:calc(100vw - 28px);aspect-ratio:auto; }
+  .board-camera .board { width:155vw;min-width:560px;height:155vw;min-height:560px;max-width:none; }
+}
+/* Fullscreen arena: keep the board inside the viewport on desktop. */
+@media (min-width:901px) {
+  body.is-game-screen { overflow:hidden; }
+  body.is-game-screen .app-content { height:100svh; overflow:hidden; padding-top:8px; padding-bottom:10px; }
+  body.is-game-screen .topbar { display:none !important; }
+  body.is-game-screen .game-screen { display:flex; height:100svh; flex-direction:column; overflow:hidden; }
+  body.is-game-screen .game-layout { display:grid; flex:1; min-height:0; }
+  body.is-game-screen .board-wrap { display:flex; min-height:0; overflow:hidden; }
+  body.is-game-screen .board-camera { display:grid; flex:1; min-height:0; place-items:center start; aspect-ratio:auto; overflow:hidden; }
+  body.is-game-screen .board-camera .board { width:min(100%, calc(100svh - 60px)); max-width:770px; height:auto; aspect-ratio:1; }
+  body.is-game-screen .game-side { min-height:0; max-height:100%; overflow-y:auto; scrollbar-width:thin; }
+}
+@media (max-width:900px) {
+  body.is-game-screen .topbar { display:none !important; }
+  body.is-game-screen .app-content { padding-top:6px; }
+  body.is-game-screen .board-camera { overflow:hidden; }
+  body.is-game-screen .board-camera .board { width:100%; min-width:0; height:auto; min-height:0; max-width:none; }
+}

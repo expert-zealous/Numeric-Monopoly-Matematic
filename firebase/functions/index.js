@@ -9,13 +9,13 @@ const REGION = 'asia-southeast2';
 // Server-side catalog. Client tidak dipercaya untuk menentukan harga atau urutan item.
 const CATALOG = {
   dice: [
-    ['dice-standard', 0], ['dice-01', 200], ['dice-02', 450], ['dice-03', 700], ['dice-04', 1000], ['dice-05', 1500]
+    ['dice-standard', 0], ['dice-01', 500], ['dice-02', 1200], ['dice-03', 2400], ['dice-04', 4000], ['dice-05', 7000]
   ],
   board: [
-    ['board-standard', 0], ['board-01', 250], ['board-02', 500], ['board-03', 800], ['board-04', 1200], ['board-05', 1800]
+    ['board-standard', 0], ['board-01', 800], ['board-02', 1800], ['board-03', 3200], ['board-04', 5200], ['board-05', 9000]
   ],
   character: [
-    ['character-standard', 0], ['character-01', 300], ['character-02', 600], ['character-03', 900], ['character-04', 1300], ['character-05', 2000]
+    ['character-standard', 0], ['character-01', 1000], ['character-02', 2200], ['character-03', 3800], ['character-04', 6200], ['character-05', 10000]
   ]
 };
 

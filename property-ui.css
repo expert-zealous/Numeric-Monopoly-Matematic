@@ -1,0 +1,24 @@
+/* Property management, buildings, and auction UI */
+.property-panel { padding: 14px; }
+.property-panel-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:9px; }
+.property-panel-head h3 { margin:0; color:#dfe7ff; font-size:.68rem; letter-spacing:.12em; }
+.property-panel-head span { display:grid;width:20px;height:20px;place-items:center;border-radius:7px;color:var(--cyan);background:rgba(91,228,255,.1);font-size:.62rem;font-weight:800; }
+.empty-properties { padding:9px 0 3px; color:#68769e; font-size:.62rem; }
+.owned-properties { display:flex;flex-direction:column;gap:6px; }
+.owned-property { display:flex;align-items:center;gap:7px;min-width:0;padding:7px 6px;border-radius:9px;background:rgba(255,255,255,.04); }
+.property-color { width:5px;height:27px;flex:0 0 auto;border-radius:99px; }
+.owned-property-copy { flex:1;min-width:0; }
+.owned-property-copy strong { display:block;overflow:hidden;color:#e4eaff;font-size:.59rem;text-overflow:ellipsis;white-space:nowrap; }
+.owned-property-copy small { display:block;margin-top:2px;color:#7e8bb7;font-size:.51rem; }
+.property-action { display:grid;width:24px;height:24px;flex:0 0 auto;place-items:center;padding:0;border:1px solid rgba(91,228,255,.2);border-radius:7px;color:var(--cyan);background:rgba(91,228,255,.08);font-size:.65rem;cursor:pointer; }
+.property-action:hover { border-color:var(--cyan);background:rgba(91,228,255,.17); }
+.property-action.sell { border-color:rgba(255,117,191,.2);color:var(--pink);background:rgba(255,117,191,.08); }
+.building-badge { position:absolute;z-index:2;top:5px;right:4px;padding:2px 4px;border:1px solid rgba(188,242,106,.35);border-radius:5px;color:var(--game-green,#bcf26a);background:rgba(0,10,30,.72);font-size:.45rem;line-height:1;letter-spacing:-.06em; }
+.building-badge.hotel { color:#ffd976;border-color:rgba(255,217,118,.45);font-size:.56rem;letter-spacing:0; }
+.modal-property-icon { display:grid;width:46px;height:46px;place-items:center;margin-bottom:10px;border:1px solid rgba(91,228,255,.33);border-radius:14px;color:var(--cyan);background:rgba(91,228,255,.1);font-size:1.3rem; }
+.auction-bid { display:flex;align-items:center;justify-content:space-between;margin:17px 0 5px;padding:14px;border:1px dashed rgba(255,217,118,.35);border-radius:13px;color:#8490bb;background:rgba(255,217,118,.06);font-size:.58rem;letter-spacing:.12em; }
+.auction-bid strong { color:var(--gold);font-family:'Space Grotesk';font-size:1.25rem;letter-spacing:0; }
+.chance-modal { text-align:center; }
+.chance-card-large { display:grid;width:72px;height:92px;place-items:center;margin:0 auto 12px;border:1px solid rgba(255,217,118,.55);border-radius:12px;color:#16204d;background:linear-gradient(145deg,#fff1aa,#ffb84d);box-shadow:0 15px 30px rgba(255,173,62,.23);font-family:'Space Grotesk';font-size:2.3rem;font-weight:700;transform:rotate(-7deg); }
+@media (max-width: 900px) { .property-panel { padding:12px; } }
+@media (max-width: 560px) { .property-panel { order:3; } .owned-property-copy strong{font-size:.56rem}.owned-property-copy small{font-size:.48rem} }

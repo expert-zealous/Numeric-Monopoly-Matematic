@@ -9,12 +9,15 @@ Prototype web game PWA responsif dengan tema premium: soal matematika acak menen
 - Input singkat di tengah papan, keyboard angka 0–9, negatif, Hapus, Backspace, dan tombol OK ekstra besar.
 - Keyboard/question overlay otomatis hilang setelah submit; muncul lagi di giliran berikutnya.
 - Jika jawaban salah, lemparan direbut lawan. AI langsung mengambil kesempatan; mode satu HP memindahkan hak lempar ke pemain 2.
-- Papan dengan 40 petak, properti, pajak, kartu misteri, rent sederhana, pembelian properti, bonus START, serta end-of-match modal.
+- Papan klasik 40 petak: START kanan bawah, PRISON kiri bawah, FREE PARKING kiri atas, GO TO PRISON kanan atas, kartu CHANCE di tengah, properti, pajak, airport, dan bonus START.
+- Gerakan pion bertahap per petak, hasil angka dadu terlihat di HUD dan di tengah papan.
+- Manajemen properti: beli rumah sampai 4, upgrade hotel, rent bertambah, jual properti, dan lelang sederhana.
 - Vault tema: 5 item berbayar + item standard gratis + 1 custom slot pada masing-masing kategori dadu, papan, dan karakter.
 - Pembelian wajib berurutan. Saldo diamond tidak cukup menghasilkan notifikasi.
 - Karakter unik memiliki fallback emoji 3D-style dan siap diganti PNG transparan sesuai `ASSETS.md`.
 - Suara tombol, benar, salah, dadu, musik login, dan musik bermain.
 - Leaderboard/season UI, statistik, daily reward, profil, pengaturan suara/musik.
+- Battle Arena 3/4/6 pemain local + bot, rotasi turn, eliminasi cash 0, dan tombol keluar tanpa menunggu.
 - PWA manifest, service worker, dan tombol install sehingga dapat ditambahkan ke Home Screen HP.
 - Firebase Auth anonim, Firestore room/leaderboard, dan callable Cloud Functions untuk pembelian diamond, daily reward, dan rating.
 
