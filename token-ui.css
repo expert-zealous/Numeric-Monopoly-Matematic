@@ -1,0 +1,7 @@
+/* Character markers stay above the card and never sink behind a tile. */
+.board-cell .token { z-index:40 !important; left:50% !important; top:50% !important; width:clamp(28px,3.4vw,38px); height:clamp(28px,3.4vw,38px); overflow:visible!important; transform:translate(-50%,-50%)!important; }
+.board-cell .token::after { position:absolute;z-index:-1;inset:-5px;width:auto;height:auto;border:2px solid var(--token-color,var(--cyan));border-radius:50%;background:rgba(4,8,28,.25);box-shadow:0 0 0 2px rgba(4,8,28,.72),0 0 14px var(--token-color,var(--cyan));content:''; }
+.board-cell .token::before { z-index:-2;bottom:-7px; }
+.board-cell .token.ai::after { border-color:var(--token-color,#ff75bf);box-shadow:0 0 0 2px rgba(4,8,28,.72),0 0 14px var(--token-color,#ff75bf); }
+.board-cell .token-fallback { width:78%;height:78%; }
+@media(max-width:560px){.board-cell .token{width:27px;height:27px}.board-cell .token::after{inset:-4px}}

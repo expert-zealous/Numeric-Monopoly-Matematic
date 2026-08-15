@@ -1,4 +1,4 @@
-const CACHE_NAME = 'numeric-monopoly-shell-v23';
+const CACHE_NAME = 'numeric-monopoly-shell-v30';
 const APP_SHELL = [
   './',
   './index.html',
@@ -25,6 +25,10 @@ const APP_SHELL = [
   './drawer-ui.css',
   './dice-ui.css',
   './cash-ui.css',
+  './game-state-ui.css',
+  './timer-ui.css',
+  './no-active-glow.css',
+  './token-ui.css',
   './app.js',
   './firebase.js',
   './firebase-config.js',

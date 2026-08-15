@@ -151,6 +151,8 @@ function freshState() {
     battleCount: 4,
     diceCount: 2,
     gameMenuOpen: false,
+    forceFullRender: false,
+    boardDirty: false,
     difficulty: 'medium',
     screen: 'dashboard',
     diamond: 1280,
@@ -174,14 +176,18 @@ function freshState() {
     activePlayer: 0,
     question: null,
     answer: '',
+    questionDeadline: null,
+    questionTimeLeft: 15,
+    questionTimerId: null,
     canRoll: false,
     rolling: false,
     moving: false,
     moveStep: 0,
     aiThinking: false,
     turnCount: 0,
-    lastRoll: 5,
-    lastDice: [2, 3],
+    lastRoll: null,
+    lastDice: [null, null],
+    hasRolled: false,
     activity: [],
     answerNotice: null,
     pendingPayment: null,
@@ -384,7 +390,8 @@ function renderNav(mobile) {
     ['leaderboard', '♛', 'Peringkat'],
     ['profile', '◎', 'Profil']
   ];
-  return items.map(([id, icon, label]) => `<button class="nav-btn ${state.screen === id ? 'active' : ''}" data-action="go-screen" data-screen="${id}"><span>${icon}</span><span>${label}</span></button>`).join('');
+  const visibleItems = state.screen === 'dashboard' ? items.filter(([id]) => !['game', 'auction'].includes(id)) : items;
+  return visibleItems.map(([id, icon, label]) => `<button class="nav-btn ${state.screen === id ? 'active' : ''}" data-action="go-screen" data-screen="${id}"><span>${icon}</span><span>${label}</span></button>`).join('');
 }
 
 function screenTitle(screen) {
@@ -446,13 +453,13 @@ function boardGridPosition(index) {
 function tokenMarkup(player, playerIndex) {
   const offset = playerIndex === 0 ? { left: '8%', top: '8%' } : { left: '50%', top: '48%' };
   const character = playerIndex === 0 ? selectedItem('character') : (SHOP_DATA.character.find((item) => item.id === 'character-01') || SHOP_DATA.character[0]);
-  return `<span class="token ${playerIndex === 1 ? 'ai' : ''}" data-player-index="${playerIndex}" style="left:${offset.left};top:${offset.top}" title="${escapeHtml(player.name)}"><img src="${character.asset}" alt="" onerror="this.style.display='none'" /><span class="token-fallback">${player.avatar}</span></span>`;
+  return `<span class="token ${playerIndex === 1 ? 'ai' : ''}" data-player-index="${playerIndex}" style="--token-color:${playerColor(playerIndex)};left:${offset.left};top:${offset.top}" title="${escapeHtml(player.name)}"><img src="${character.asset}" alt="" onerror="this.style.display='none'" /><span class="token-fallback">${player.avatar}</span></span>`;
 }
 
 function renderAnswerNotice() {
   if (!state.answerNotice) return '';
   const notice = state.answerNotice;
-  return `<div class="answer-notice ${notice.correct ? 'correct' : 'wrong'}"><div class="answer-notice-icon">${notice.correct ? '✓' : '!'}</div><div><strong>${notice.correct ? 'BENAR' : 'SALAH'}</strong><span>${escapeHtml(notice.message)}</span></div></div>`;
+  return `<div class="answer-notice ${notice.correct ? 'correct' : 'wrong'}"><div class="answer-notice-icon">${notice.correct ? '✓' : '✕'}</div><div><strong>${notice.correct ? 'BENAR' : 'SALAH'}</strong><span>${escapeHtml(notice.message)}</span></div></div>`;
 }
 
 function setAnswerNotice(correct, message) {
@@ -461,20 +468,52 @@ function setAnswerNotice(correct, message) {
   answerNoticeTimer = window.setTimeout(() => {
     state.answerNotice = null;
     if (state.screen === 'game') render();
-  }, 6000);
+  }, 1300);
 }
 
 function renderPlayerCashStrip() {
   return `<div class="player-cash-strip">${state.players.map((player, index) => `<div class="cash-player ${state.activePlayer === index ? 'active' : ''}" style="--player-color:${playerColor(index)}"><span class="cash-player-avatar">${player.avatar}</span><span><b>${escapeHtml(player.name.slice(0, 8))}</b><small>${player.eliminated ? 'OUT' : formatCurrency(player.cash)}</small></span></div>`).join('')}</div>`;
 }
 
+function dicePips(value) {
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < 1 || number > 6) return `<span class="dice-question">${value === '?' ? '?' : '—'}</span>`;
+  const active = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] }[number];
+  return `<span class="dice-pips">${Array.from({ length: 9 }, (_, index) => `<i class="pip ${active.includes(index) ? 'on' : ''}"></i>`).join('')}</span>`;
+}
+
+function diceCubeMarkup(value, asset) {
+  const number = Number(value);
+  const opposite = Number.isInteger(number) && number >= 1 && number <= 6 ? 7 - number : '?';
+  const values = [value, opposite, 3, 4, 2, 5];
+  const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+  return `<span class="dice-cube">${faces.map((face, index) => `<span class="dice-face ${face}"><img class="dice-skin" src="${asset || ''}" alt="" onerror="this.style.display='none'" /><span class="dice-face-content">${dicePips(values[index])}</span></span>`).join('')}</span>`;
+}
+
+function dice3DMarkup(id, value, rolling, asset) {
+  return `<span class="dice-3d ${rolling ? 'dice-rolling' : ''}" id="${id}" data-dice-asset="${asset || ''}">${diceCubeMarkup(value, asset)}</span>`;
+}
+
+function updateDiceFace(id, value, rolling) {
+  const die = document.getElementById(id);
+  if (!die) return;
+  die.classList.toggle('dice-rolling', rolling);
+  const asset = die.dataset.diceAsset || selectedItem('dice')?.asset || '';
+  die.innerHTML = diceCubeMarkup(value, asset);
+}
+
+function renderGameHeader(active, turnStatus, activeColor) {
+  return `<div class="game-header compact-game-header"><div class="turn-focus-banner" style="--player-color:${activeColor}"><span class="turn-focus-avatar">${active.avatar}</span><span class="turn-focus-copy"><small>GILIRAN</small><strong>${escapeHtml(active.name)}</strong></span><b>${turnStatus}</b></div>${renderPlayerCashStrip()}<div class="game-header-actions"><div class="game-chips"><span class="soft-chip active-turn">● ${escapeHtml(active.name)}</span><span class="soft-chip">${state.mode === 'battle' ? `${state.players.length} PEMAIN` : DIFFICULTIES[state.difficulty].label}</span><span class="soft-chip">GILIRAN ${Math.max(1, state.turnCount + 1)}</span></div>${state.mode === 'battle' ? '<button class="btn btn-danger battle-leave-btn" data-action="leave-battle">KELUAR</button>' : ''}</div></div>`;
+}
+
 function renderGame() {
   const board = state.tiles.length ? state.tiles : TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null, houses: 0, hotel: false }));
   const active = state.players[state.activePlayer] || { name: state.player.name, cash: 1500, position: 0 };
   const currentDice = selectedItem('dice');
-  const diceValue = state.rolling ? '?' : (state.lastRoll || '—');
-  const diceA = state.rolling ? '?' : (state.lastDice?.[0] || '—');
-  const diceB = state.rolling ? '?' : (state.lastDice?.[1] || '—');
+  const showDiceResult = state.hasRolled || state.rolling || state.moving;
+  const diceValue = state.rolling ? '?' : (showDiceResult ? (state.lastRoll ?? '—') : '—');
+  const diceA = state.rolling ? '?' : (showDiceResult ? (state.lastDice?.[0] ?? '—') : '—');
+  const diceB = state.rolling ? '?' : (showDiceResult ? (state.lastDice?.[1] ?? '—') : '—');
   const isMoving = state.moving;
   const turnStatus = isMoving ? 'BERJALAN' : state.canRoll ? 'SIAP LEMPAR' : state.aiThinking ? 'BERPIKIR' : 'JAWAB SOAL';
   const activeColor = playerColor(state.activePlayer);
@@ -483,14 +522,14 @@ function renderGame() {
   return `
     <section class="game-screen">
       <button class="game-menu-toggle" data-action="toggle-game-menu" aria-label="Menu permainan">☰</button>
-      <div class="game-header compact-game-header"><div class="turn-focus-banner" style="--player-color:${activeColor}"><span class="turn-focus-avatar">${active.avatar}</span><span class="turn-focus-copy"><small>GILIRAN</small><strong>${escapeHtml(active.name)}</strong></span><b>${turnStatus}</b></div>${renderPlayerCashStrip()}<div class="game-header-actions"><div class="game-chips"><span class="soft-chip active-turn">● ${escapeHtml(active.name)}</span><span class="soft-chip">${state.mode === 'battle' ? `${state.players.length} PEMAIN` : DIFFICULTIES[state.difficulty].label}</span><span class="soft-chip">GILIRAN ${Math.max(1, state.turnCount + 1)}</span></div>${state.mode === 'battle' ? '<button class="btn btn-danger battle-leave-btn" data-action="leave-battle">LEAVE</button>' : ''}</div></div>
+      ${renderGameHeader(active, turnStatus, activeColor)}
       ${renderAnswerNotice()}
       <div class="game-layout">
         <div class="board-wrap ${themeClass()}" style="isolation:isolate">
           <img class="board-theme-image" src="${selectedItem('board')?.asset || ''}" alt="" onerror="this.style.display='none'" />
           <div class="board-camera" id="board-camera">
             <div class="board" aria-label="Papan permainan">
-              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark">∑</div><h2>NUMERIC<br /><span class="gradient-text">MONOPOLY</span></h2><p>Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><i id="center-die-a">${diceA}</i><em>+</em><i id="center-die-b">${diceB}</i></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
+              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark">∑</div><h2>NUMERIC<br /><span class="gradient-text">MONOPOLY</span></h2><p>Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
             ${board.map((tile, index) => renderBoardCell(tile, index)).join('')}
             </div>
           </div>
@@ -583,7 +622,7 @@ function renderQuestionOverlay() {
   const q = state.question;
   const difficulty = DIFFICULTIES[state.difficulty];
   const targetPlayer = state.players[state.activePlayer] || { name: 'Pemain' };
-  return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="question-for"><span>SOAL UNTUK</span><strong>${escapeHtml(targetPlayer.name)}</strong></p><span class="difficulty-pill" style="color:${difficulty.color}">${difficulty.label}</span></div><h3>Jawab untuk membuka dadu</h3><p class="question-text">${q.text} = ?</p><div id="answer-display" class="answer-display ${state.answer ? '' : 'empty'}">${state.answer ? escapeHtml(state.answer) : 'ketik jawabanmu'}</div><div class="numeric-keyboard">${['1','2','3','4','5','6','7','8','9','-','0','⌫'].map((key) => `<button class="key-btn ${key === '⌫' ? 'control' : ''}" data-action="answer-key" data-key="${key === '⌫' ? 'backspace' : key}">${key}</button>`).join('')}<button class="key-btn control" data-action="answer-key" data-key="clear">Hapus</button><button class="key-btn ok" data-action="submit-answer">OK</button></div><p class="question-hint">Tekan OK untuk lanjut.</p></div></div>`;
+  return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="question-for"><span>SOAL UNTUK</span><strong>${escapeHtml(targetPlayer.name)}</strong></p><span class="difficulty-pill" style="color:${difficulty.color}">${difficulty.label}</span><span id="question-timer" class="question-timer">${state.questionTimeLeft}s</span></div><h3>Jawab untuk membuka dadu</h3><p class="question-text">${q.text} = ?</p><div id="answer-display" class="answer-display ${state.answer ? '' : 'empty'}">${state.answer ? escapeHtml(state.answer) : 'ketik jawabanmu'}</div><div class="numeric-keyboard">${['1','2','3','4','5','6','7','8','9','-','0','⌫'].map((key) => `<button class="key-btn ${key === '⌫' ? 'control' : ''}" data-action="answer-key" data-key="${key === '⌫' ? 'backspace' : key}">${key}</button>`).join('')}<button class="key-btn control" data-action="answer-key" data-key="clear">Hapus</button><button class="key-btn ok" data-action="submit-answer">OK</button></div><p class="question-hint">Tekan OK untuk lanjut.</p></div></div>`;
 }
 
 function renderBattle() {
@@ -730,6 +769,7 @@ function resetGame() {
   }
   state.players = players;
   state.tiles = TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null, houses: 0, hotel: false }));
+  state.boardDirty = true;
   state.activePlayer = 0;
   state.question = null;
   state.answer = '';
@@ -739,8 +779,12 @@ function resetGame() {
   state.moveStep = 0;
   state.aiThinking = false;
   state.turnCount = 0;
-  state.lastRoll = 5;
-  state.lastDice = [2, 3];
+  state.lastRoll = null;
+  state.lastDice = [null, null];
+  state.hasRolled = false;
+  clearQuestionTimer();
+  state.questionDeadline = null;
+  state.questionTimeLeft = 15;
   state.bankBalance = 100000;
   state.activity = [];
   state.answerNotice = null;
@@ -758,6 +802,7 @@ function startGame(mode = state.mode) {
   }
   resetGame();
   state.screen = 'game';
+  state.forceFullRender = true;
   askQuestion();
   persist();
   render();
@@ -770,6 +815,7 @@ function startBattle() {
   state.localPlayerIndex = 0;
   resetGame();
   state.screen = 'game';
+  state.forceFullRender = true;
   askQuestion();
   persist();
   render();
@@ -790,6 +836,12 @@ function leaveBattle() {
   persist();
   render();
   showToast('Kamu keluar dari Battle Arena.', '');
+}
+
+function resetDiceDisplay() {
+  state.hasRolled = false;
+  state.lastRoll = null;
+  state.lastDice = [null, null];
 }
 
 function nextAlivePlayer(fromIndex = state.activePlayer) {
@@ -839,6 +891,64 @@ function generateQuestion(level = state.difficulty) {
   return { text, answer };
 }
 
+function clearQuestionTimer() {
+  if (state.questionTimerId) window.clearInterval(state.questionTimerId);
+  state.questionTimerId = null;
+}
+
+function updateQuestionTimerDom() {
+  const timer = document.getElementById('question-timer');
+  if (!timer) return;
+  timer.textContent = `${state.questionTimeLeft}s`;
+  timer.classList.toggle('urgent', state.questionTimeLeft <= 5);
+}
+
+function startQuestionTimer() {
+  clearQuestionTimer();
+  state.questionDeadline = Date.now() + 15000;
+  state.questionTimeLeft = 15;
+  updateQuestionTimerDom();
+  state.questionTimerId = window.setInterval(() => {
+    if (!state.question || state.aiThinking || state.screen !== 'game') {
+      clearQuestionTimer();
+      return;
+    }
+    state.questionTimeLeft = Math.max(0, Math.ceil((state.questionDeadline - Date.now()) / 1000));
+    updateQuestionTimerDom();
+    if (state.questionTimeLeft <= 0) {
+      clearQuestionTimer();
+      timeoutAnswer();
+    }
+  }, 250);
+}
+
+function timeoutAnswer() {
+  if (!state.question || state.aiThinking) return;
+  const correctAnswer = state.question.answer;
+  const playerName = state.players[state.activePlayer]?.name || state.player.name;
+  clearQuestionTimer();
+  state.question = null;
+  state.answer = '';
+  state.canRoll = false;
+  state.questionDeadline = null;
+  state.questionTimeLeft = 0;
+  playSound('wrong');
+  addActivity('⌛', `<strong>${escapeHtml(playerName)}</strong> kehabisan waktu. Lemparan direbut lawan.`);
+  setAnswerNotice(false, `Waktu habis. Jawaban ${correctAnswer}.`);
+  if (state.mode === 'ai') {
+    resetDiceDisplay();
+    state.activePlayer = 1;
+    state.canRoll = true;
+    render();
+    window.setTimeout(() => rollDice(true), 650);
+    return;
+  }
+  state.activePlayer = state.mode === 'battle' ? nextAlivePlayer(state.activePlayer) : state.activePlayer === 0 ? 1 : 0;
+  state.canRoll = true;
+  if (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex) window.setTimeout(() => rollDice(true), 650);
+  render();
+}
+
 function askQuestion() {
   if (state.mode === 'ai' && state.activePlayer === 1) return startAITurn();
   if (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex) return startAITurn();
@@ -853,9 +963,11 @@ function askQuestion() {
   state.question = generateQuestion();
   state.answer = '';
   state.canRoll = false;
+  startQuestionTimer();
 }
 
 function startAITurn() {
+  clearQuestionTimer();
   const aiIndex = state.activePlayer;
   const aiPlayer = state.players[aiIndex];
   state.question = generateQuestion();
@@ -875,6 +987,7 @@ function startAITurn() {
       render();
       window.setTimeout(() => rollDice(true), 650);
     } else {
+      resetDiceDisplay();
       const next = state.mode === 'battle' ? nextAlivePlayer(aiIndex) : 0;
       state.activePlayer = next;
       state.canRoll = true;
@@ -921,14 +1034,13 @@ function submitAnswer() {
     playSound('correct');
     addActivity('✓', `<strong>${escapeHtml(playerName)}</strong> benar. Dadu terbuka.`);
     setAnswerNotice(true, `Dadu terbuka untuk ${playerName}.`);
-    showToast('Benar! Lemparan dadu terbuka.', 'good');
   } else {
     state.canRoll = false;
     playSound('wrong');
     addActivity('↺', `<strong>${escapeHtml(playerName)}</strong> salah. Lemparan direbut lawan.`);
     setAnswerNotice(false, `Jawaban ${correctAnswer}. Dadu direbut lawan.`);
-    showToast(`Belum tepat. Jawaban benar: ${correctAnswer}. Lemparan direbut lawan.`, 'bad');
     if (state.mode === 'ai') {
+      resetDiceDisplay();
       state.activePlayer = 1;
       state.canRoll = true;
       render();
@@ -948,18 +1060,18 @@ function updateMoveHud() {
   const dice = document.getElementById('dice-number');
   const label = document.getElementById('dice-label');
   const center = document.getElementById('center-roll-value');
-  const dieA = document.getElementById('center-die-a');
-  const dieB = document.getElementById('center-die-b');
   const progress = document.getElementById('center-roll-progress');
-  if (dice) dice.textContent = state.lastRoll || '—';
-  if (label) label.textContent = `PINDAH ${state.moveStep}/${state.lastRoll}`;
-  if (center) center.textContent = state.lastRoll || '—';
-  if (dieA) dieA.textContent = state.lastDice?.[0] || '—';
-  if (dieB) dieB.textContent = state.lastDice?.[1] || '—';
-  if (progress) progress.textContent = `${state.moveStep}/${state.lastRoll}`;
+  const rolling = state.rolling;
+  if (dice) dice.textContent = state.hasRolled ? (state.lastRoll || '—') : '—';
+  if (label) label.textContent = state.moving ? `PINDAH ${state.moveStep}/${state.lastRoll}` : state.hasRolled ? `DADU ${state.lastRoll}` : 'DADU —';
+  if (center) center.textContent = state.hasRolled ? (state.lastRoll || '—') : '—';
+  updateDiceFace('center-die-a', rolling ? '?' : state.hasRolled ? (state.lastDice?.[0] ?? '—') : '—', rolling);
+  updateDiceFace('center-die-b', rolling ? '?' : state.hasRolled ? (state.lastDice?.[1] ?? '—') : '—', rolling);
+  if (progress) progress.textContent = state.moving ? `${state.moveStep}/${state.lastRoll}` : '';
 }
 
 function moveTokenInDom(playerIndex, position) {
+  cleanupDuplicateTokens();
   const token = document.querySelector(`.token[data-player-index="${playerIndex}"]`);
   const cell = document.querySelector(`.board-cell[data-tile-index="${position}"]`);
   if (!token || !cell) return;
@@ -1005,6 +1117,7 @@ function rollDice(isAi = false) {
     const roll = dieA + dieB;
     state.lastDice = [dieA, dieB];
     state.lastRoll = roll;
+    state.hasRolled = true;
     state.rolling = false;
     state.moving = false;
     state.moveStep = 0;
@@ -1059,6 +1172,7 @@ function requestEmergencyFunds(amount, type, ownerIndex = null) {
         item.tile.owner = null;
         item.tile.houses = 0;
         item.tile.hotel = false;
+        refreshBoardCellDom(item.index);
       }
     }
     if (player.cash >= amount) completePendingPayment();
@@ -1101,6 +1215,7 @@ function emergencySellProperty(tileIndex) {
   tile.owner = null;
   tile.houses = 0;
   tile.hotel = false;
+  refreshBoardCellDom(tileIndex);
   addActivity('↗', `<strong>${escapeHtml(player.name)}</strong> menjual ${escapeHtml(tile.name)} ke bank.`);
   if (state.pendingPayment && player.cash >= state.pendingPayment.amount) completePendingPayment();
   else { state.modal = { type: 'emergency', amount: state.pendingPayment?.amount || 0, paymentType: state.pendingPayment?.type || 'rent', ownerIndex: state.pendingPayment?.ownerIndex ?? null, reason: state.pendingPayment?.type === 'tax' ? 'Bayar pajak' : 'Bayar rent' }; render(); }
@@ -1209,6 +1324,7 @@ function finishTurnSoon() {
 
 function finishTurn() {
   state.turnCount += 1;
+  resetDiceDisplay();
   if (state.mode === 'battle') {
     markEliminatedPlayers();
     const alive = state.players.filter((player) => !player.eliminated);
@@ -1274,7 +1390,7 @@ function buyProperty() {
   player.cash -= tile.price;
   bankDeposit(tile.price);
   const index = state.tiles.findIndex((candidate) => candidate.name === tile.name && candidate.owner === null);
-  if (index >= 0) state.tiles[index].owner = state.activePlayer;
+  if (index >= 0) { state.tiles[index].owner = state.activePlayer; refreshBoardCellDom(index); }
   addActivity('♛', `<strong>${escapeHtml(player.name)}</strong> membeli ${escapeHtml(tile.name)}.`);
   showToast(`${tile.name} resmi menjadi milikmu.`, 'good');
   showTurnEnd(tile, `${tile.name} menjadi milikmu.`);
@@ -1348,6 +1464,7 @@ function buyHouse(tileIndex, fromLanding = false) {
   player.cash -= cost;
   bankDeposit(cost);
   tile.houses = (tile.houses || 0) + 1;
+  refreshBoardCellDom(tileIndex);
   addActivity('⌂', `<strong>${escapeHtml(player.name)}</strong> membangun rumah di ${escapeHtml(tile.name)}.`);
   showToast(`Rumah ${tile.houses}/4 dibangun. Rent naik.`, 'good');
   if (fromLanding) { showTurnEnd(tile, `Rumah ${tile.houses}/4 aktif di ${tile.name}.`); render(); } else render();
@@ -1374,6 +1491,7 @@ function buyHotel(tileIndex, fromLanding = false) {
   bankDeposit(cost);
   tile.houses = 0;
   tile.hotel = true;
+  refreshBoardCellDom(tileIndex);
   addActivity('🏨', `<strong>${escapeHtml(player.name)}</strong> membangun hotel di ${escapeHtml(tile.name)}.`);
   showToast('Hotel aktif. Rent melonjak.', 'good');
   if (fromLanding) { showTurnEnd(tile, `Hotel aktif di ${tile.name}.`); render(); } else render();
@@ -1412,7 +1530,7 @@ function acceptAuction() {
   player.cash -= bid;
   bankDeposit(bid);
   const index = state.tiles.findIndex((candidate) => candidate.name === tile.name && candidate.owner === null);
-  if (index >= 0) state.tiles[index].owner = state.activePlayer;
+  if (index >= 0) { state.tiles[index].owner = state.activePlayer; refreshBoardCellDom(index); }
   addActivity('⚖', `<strong>${escapeHtml(player.name)}</strong> memenangkan lelang ${escapeHtml(tile.name)}.`);
   state.modal = null;
   if (source === 'menu') state.screen = 'game';
@@ -1435,6 +1553,7 @@ function sellProperty(tileIndex) {
   tile.owner = null;
   tile.houses = 0;
   tile.hotel = false;
+  refreshBoardCellDom(tileIndex);
   addActivity('↗', `<strong>${escapeHtml(player.name)}</strong> menjual ${escapeHtml(tile.name)}.`);
   state.modal = null;
   showToast(`${tile.name} berhasil dijual.`, 'good');
@@ -1455,6 +1574,7 @@ function onlinePayload() {
     canRoll: state.canRoll,
     lastRoll: state.lastRoll,
     lastDice: state.lastDice,
+    hasRolled: state.hasRolled,
     turnCount: state.turnCount,
     activity: state.activity.slice(0, 8)
   };
@@ -1475,6 +1595,7 @@ function applyRemoteGame(game) {
   state.canRoll = Boolean(game.canRoll);
   state.lastRoll = game.lastRoll || state.lastRoll;
   state.lastDice = game.lastDice || state.lastDice;
+  state.hasRolled = Boolean(game.hasRolled ?? game.lastRoll !== null);
   state.turnCount = game.turnCount || state.turnCount;
   state.activity = Array.isArray(game.activity) ? game.activity : state.activity;
   state.modal = null;
@@ -1687,10 +1808,68 @@ function focusActiveToken() {
   camera.scrollTo({ left: Math.max(0, Math.min(targetLeft, camera.scrollWidth - camera.clientWidth)), top: Math.max(0, Math.min(targetTop, camera.scrollHeight - camera.clientHeight)), behavior: 'smooth' });
 }
 
+function cleanupDuplicateTokens() {
+  const seen = new Set();
+  document.querySelectorAll('.board-camera .token[data-player-index]').forEach((token) => {
+    const index = token.dataset.playerIndex;
+    if (seen.has(index)) token.remove();
+    else seen.add(index);
+  });
+}
+
+function refreshBoardCellDom(index) {
+  cleanupDuplicateTokens();
+  const oldCell = document.querySelector(`.board-cell[data-tile-index="${index}"]`);
+  const tile = state.tiles[index];
+  if (!oldCell || !tile) return;
+  const tokens = Array.from(oldCell.querySelectorAll('.token'));
+  oldCell.outerHTML = renderBoardCell(tile, index);
+  const newCell = document.querySelector(`.board-cell[data-tile-index="${index}"]`);
+  tokens.forEach((token) => newCell?.appendChild(token));
+}
+
+function updateGameInPlace() {
+  const screen = document.querySelector('.game-screen');
+  cleanupDuplicateTokens();
+  if (!screen) return false;
+  const active = state.players[state.activePlayer] || { name: state.player.name, avatar: state.player.avatar };
+  const status = state.moving ? 'BERJALAN' : state.canRoll ? 'SIAP LEMPAR' : state.aiThinking ? 'BERPIKIR' : 'JAWAB SOAL';
+  const header = screen.querySelector('.game-header');
+  if (header) header.outerHTML = renderGameHeader(active, status, playerColor(state.activePlayer));
+  const needsQuestion = Boolean(state.question || state.aiThinking);
+  const boardWrap = screen.querySelector('.board-wrap');
+  const questionLayer = boardWrap?.querySelector('.question-layer');
+  if (needsQuestion && boardWrap && questionLayer) questionLayer.outerHTML = renderQuestionOverlay();
+  else if (needsQuestion && boardWrap && !questionLayer) boardWrap.insertAdjacentHTML('beforeend', renderQuestionOverlay());
+  else if (!needsQuestion && questionLayer) questionLayer.remove();
+  const notice = screen.querySelector('.answer-notice');
+  if (state.answerNotice && notice) notice.outerHTML = renderAnswerNotice();
+  else if (state.answerNotice && !notice) screen.insertAdjacentHTML('afterbegin', renderAnswerNotice());
+  else if (!state.answerNotice && notice) notice.remove();
+  updateMoveHud();
+  const rollLocked = !state.canRoll || state.rolling || state.moving || state.aiThinking || (state.mode === 'ai' && state.activePlayer === 1) || (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex) || (state.mode === 'online' && state.activePlayer !== state.localPlayerIndex);
+  const rollLabel = state.rolling ? 'MENGGELINDING…' : state.moving ? 'BERJALAN…' : 'LEMPAR DADU';
+  const rollButton = screen.querySelector('.center-roll-button');
+  if (rollButton) { rollButton.disabled = rollLocked; rollButton.textContent = rollLabel; }
+  const modal = document.querySelector('.modal-layer');
+  if (state.modal && modal) modal.outerHTML = renderModal();
+  else if (state.modal && !modal) app.insertAdjacentHTML('beforeend', renderModal());
+  else if (!state.modal && modal) modal.remove();
+  return true;
+}
+
 function render() {
-  document.body.classList.toggle('is-game-screen', Boolean(state.session && state.screen === 'game'));
-  document.body.classList.toggle('game-menu-open', Boolean(state.gameMenuOpen && state.screen === 'game'));
+  const inGame = Boolean(state.session && state.screen === 'game');
+  document.body.classList.toggle('is-game-screen', inGame);
+  document.body.classList.toggle('game-menu-open', Boolean(state.gameMenuOpen && inGame));
+  if (inGame && !state.forceFullRender && updateGameInPlace()) {
+    updateMusic();
+    window.requestAnimationFrame?.(() => focusActiveToken());
+    return;
+  }
   app.innerHTML = state.session ? renderShell() : renderLogin();
+  state.forceFullRender = false;
+  state.boardDirty = false;
   document.getElementById('boot-fallback')?.remove();
   updateMusic();
   window.requestAnimationFrame?.(() => focusActiveToken());
@@ -1700,6 +1879,7 @@ function navigate(screen) {
   state.screen = screen;
   if (screen !== 'game') {
     state.gameMenuOpen = false;
+    clearQuestionTimer();
     state.question = null;
     state.aiThinking = false;
     state.modal = null;
