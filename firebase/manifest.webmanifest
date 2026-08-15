@@ -1,0 +1,19 @@
+{
+  "name": "Numeric Monopoly Matematic",
+  "short_name": "Numeric Monopoly",
+  "description": "Monopoli matematika premium: jawab soal, buka dadu, dan kuasai papan.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#080d2a",
+  "theme_color": "#080d2a",
+  "orientation": "portrait-primary",
+  "lang": "id-ID",
+  "icons": [
+    {
+      "src": "assets/logo-favicon.png",
+      "sizes": "1342x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

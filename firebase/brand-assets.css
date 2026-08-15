@@ -1,0 +1,12 @@
+/* Uploaded brand assets */
+.logo-mark { overflow: hidden; }
+.logo-mark img { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 47%; border-radius: inherit; }
+.logo-mark .logo-fallback { position: relative; z-index: 0; }
+.logo-mark::after { z-index: 2; pointer-events: none; }
+.login-full-logo { position: relative; z-index: 3; display: block; width: min(100%, 570px); height: auto; max-height: 300px; margin: 24px 0 10px; object-fit: contain; object-position: left center; filter: drop-shadow(0 22px 22px rgba(0,0,0,.42)) drop-shadow(0 0 24px rgba(255,190,51,.13)); }
+@media (max-width: 900px) {
+  .login-full-logo { width: min(90%, 430px); max-height: 190px; margin: 19px 0 7px; object-position: left center; }
+}
+@media (max-width: 560px) {
+  .login-full-logo { width: min(94%, 390px); max-height: 160px; margin: 14px 0 3px; }
+}
