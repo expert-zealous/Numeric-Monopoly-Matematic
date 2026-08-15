@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isParticipant() {
+      return signedIn() && (
+        resource.data.hostUid == request.auth.uid ||
+        resource.data.guestUid == request.auth.uid
+      );
+    }
+
+    // Saldo, inventory, rating, dan pembelian tidak boleh ditulis dari browser.
+    // Semua mutasi dilakukan oleh Admin SDK di Cloud Functions.
+    match /profiles/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Ranking boleh dibaca publik; tulis hanya melalui Cloud Functions/Admin SDK.
+    match /leaderboard/{uid} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Koleksi lama 'scores' tetap dapat dibaca untuk leaderboard lama.
+    // Client tidak boleh mengirim skor sendiri karena skor bisa dipalsukan.
+    match /scores/{scoreId} {
+      allow read: if true;
+      allow create, update, delete: if false;
+    }
+
+    // Room hanya menyimpan state pertandingan, bukan saldo diamond.
+    match /rooms/{roomId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.hostUid == request.auth.uid
+        && request.resource.data.guestUid == null;
+      allow update: if isParticipant()
+        || (signedIn()
+          && resource.data.guestUid == null
+          && request.resource.data.guestUid == request.auth.uid
+          && request.resource.data.hostUid == resource.data.hostUid);
+      allow delete: if signedIn() && resource.data.hostUid == request.auth.uid;
+    }
+  }
+}
