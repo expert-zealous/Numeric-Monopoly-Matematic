@@ -275,42 +275,32 @@ function logoMarkup() {
 }
 
 function renderLogin() {
-  const selectedMode = state.mode;
   return `
-    <main class="login-page">
-      <section class="login-hero">
-        <div class="brand-lockup">
-          ${logoMarkup()}
-          <div>
-            <div class="brand-name">Numeric Monopoly Matematic</div>
-            <div class="brand-sub">Think • Roll • Rule</div>
-          </div>
+    <main class="login-page game-login">
+      <section class="login-brand-zone">
+        <div class="login-topline"><span><i class="live-dot"></i> LIVE ARENA</span><span>SEASON 08</span></div>
+        <div class="brand-lockup compact-brand">${logoMarkup()}<div><div class="brand-name">Numeric Monopoly</div><div class="brand-sub">Matematic</div></div></div>
+        <div class="login-overline">THINK · ROLL · WIN</div>
+        <h1 class="login-title">READY<br /><span>TO ROLL?</span></h1>
+        <div class="login-board-preview" aria-hidden="true">
+          <div class="preview-orbit orbit-one"></div><div class="preview-orbit orbit-two"></div>
+          <div class="preview-tile tile-a">+8</div><div class="preview-tile tile-b">×6</div><div class="preview-tile tile-c">−3</div>
+          <div class="preview-dice">6</div><div class="preview-token">${state.player.avatar}</div>
         </div>
-        <p class="eyebrow">Matematika bertemu strategi</p>
-        <h1 class="title-xl">Bangun kerajaanmu.<br /><span class="gradient-text">Menang dengan logikamu.</span></h1>
-        <p class="hero-copy">Jawab hitungan dengan tepat untuk membuka lemparan dadu, rebut kesempatan lawan, dan taklukkan papan mewah yang dibuat untuk layar kecil maupun besar.</p>
-        <div class="feature-pills">
-          <span class="feature-pill"><b>◈</b> Soal acak adaptif</span>
-          <span class="feature-pill"><b>ϟ</b> Dadu & karakter premium</span>
-          <span class="feature-pill"><b>♛</b> Ranking global</span>
-        </div>
+        <div class="login-stat-strip"><span><b>40</b> TILES</span><span><b>∞</b> MOVES</span><span><b>1</b> CHAMPION</span></div>
       </section>
       <section class="login-card panel">
-        <p class="eyebrow">Selamat datang, strategist</p>
-        <h2>Siap memulai sesi?</h2>
-        <p class="intro">Masukkan nama panggilan, pilih arena, lalu buktikan bahwa jawaban yang benar adalah lemparan terbaik.</p>
-        <label class="field-label" for="login-name">Nama panggilan</label>
-        <input id="login-name" class="text-input" maxlength="20" autocomplete="nickname" placeholder="Contoh: Nova Prime" value="${escapeHtml(state.player.name === 'Mathematician' ? '' : state.player.name)}" />
-        <div style="height:17px"></div>
-        <div class="field-label">Pilih mode permainan</div>
+        <div class="login-card-top"><span>PLAYER SETUP</span><span class="online-state"><i class="live-dot"></i> READY</span></div>
+        <label class="field-label" for="login-name">PLAYER NAME</label>
+        <div class="login-input-wrap"><span>♙</span><input id="login-name" class="text-input" maxlength="20" autocomplete="nickname" placeholder="Your name" value="${escapeHtml(state.player.name === 'Mathematician' ? '' : state.player.name)}" /></div>
+        <div class="login-mode-label"><span>GAME MODE</span><span>SELECT</span></div>
         <div class="mode-grid">
-          ${modeCard('ai', '🤖', '1 vs AI', 'Lawan AI adaptif')}
-          ${modeCard('local', '👥', '1 vs 1', 'Satu HP bergantian')}
-          ${modeCard('online', '🌐', 'Online', 'HP berbeda')}
+          ${modeCard('ai', '🤖', 'VS AI', 'SOLO')}
+          ${modeCard('local', '👥', 'DUO', '1 DEVICE')}
+          ${modeCard('online', '🌐', 'ONLINE', '2 DEVICES')}
         </div>
-        <div style="height:18px"></div>
-        <button class="btn btn-primary btn-lg btn-wide" data-action="start-login"><span>Masuk ke arena</span><span>→</span></button>
-        <div class="login-foot"><span>Guest mode aktif • progres tersimpan di perangkat</span><span class="row" style="gap:5px"><span style="color:var(--success)">●</span> Siap dimainkan</span></div>
+        <button class="btn btn-primary btn-lg btn-wide play-now-btn" data-action="start-login"><span>PLAY NOW</span><span>↗</span></button>
+        <div class="login-mini-row"><span>◆ ${formatNumber(state.diamond)}</span><span>Lv.${state.player.level}</span><span>♪ ${state.music ? 'ON' : 'OFF'}</span></div>
       </section>
     </main>
     ${renderToastStack()}
@@ -372,7 +362,7 @@ function renderNav(mobile) {
 }
 
 function screenTitle(screen) {
-  return ({ dashboard: 'Command center', game: 'Arena permainan', shop: 'Vault of styles', leaderboard: 'Hall of champions', profile: 'Profil & pengaturan', online: 'Online lobby' }[screen] || 'Command center');
+  return ({ dashboard: 'HOME', game: 'ARENA', shop: 'VAULT', leaderboard: 'RANKING', profile: 'PROFILE', online: 'ONLINE' }[screen] || 'HOME');
 }
 
 function renderPage() {
@@ -387,31 +377,13 @@ function renderPage() {
 function renderDashboard() {
   const winRate = Math.round((state.stats.wins / Math.max(1, state.stats.games)) * 100);
   return `
-    <section class="dashboard-grid">
-      <article class="hero-card panel">
-        <p class="eyebrow">Selamat datang kembali, ${escapeHtml(state.player.name)}</p>
-        <h2>Setiap jawaban benar<br /><span class="gradient-text">membuka satu langkah.</span></h2>
-        <p>Pilih tingkat soal, kuasai properti paling berharga, dan naikkan poinmu di leaderboard. Papan baru, tema baru, strategi baru.</p>
-        <div class="hero-quick">
-          <button class="btn btn-primary btn-lg" data-action="begin-game"><span>Mulai bermain</span><span>↗</span></button>
-          <button class="btn btn-ghost btn-lg" data-action="go-screen" data-screen="online"><span>🌐</span><span>Online lobby</span></button>
-          <label class="soft-chip" style="min-height:54px;border-radius:14px;cursor:pointer">Level soal <select class="select-input" data-setting="difficulty" aria-label="Level soal"><option value="easy" ${state.difficulty === 'easy' ? 'selected' : ''}>Mudah</option><option value="medium" ${state.difficulty === 'medium' ? 'selected' : ''}>Sedang</option><option value="hard" ${state.difficulty === 'hard' ? 'selected' : ''}>Sulit</option></select></label>
-        </div>
+    <section class="game-home">
+      <article class="home-hero panel">
+        <div class="home-hero-copy"><div class="hero-badge"><i class="live-dot"></i> SEASON 08 <span>•</span> ${DIFFICULTIES[state.difficulty].label.toUpperCase()}</div><p class="eyebrow">WELCOME, ${escapeHtml(state.player.name).toUpperCase()}</p><h2>READY<br /><span class="gradient-text">TO ROLL?</span></h2><div class="home-actions"><button class="btn btn-primary btn-lg" data-action="begin-game"><span>PLAY</span><span>↗</span></button><button class="btn btn-ghost btn-icon btn-lg" data-action="go-screen" data-screen="online" aria-label="Online">🌐</button></div></div>
+        <div class="home-hero-art" aria-hidden="true"><div class="hero-ring ring-a"></div><div class="hero-ring ring-b"></div><div class="hero-dice">${selectedItem('dice')?.glyph || '6'}</div><div class="hero-pawn">${state.player.avatar}</div><div class="hero-spark spark-a">✦</div><div class="hero-spark spark-b">◆</div></div>
       </article>
-      <article class="streak-card panel">
-        <div class="streak-top"><div><p class="eyebrow">Daily focus</p><h3 style="margin:0;font-size:1.08rem">Streak jawaban</h3></div><div class="streak-badge">🔥</div></div>
-        <div><div class="streak-number">${state.stats.streak}</div><div class="muted small">hari berturut-turut</div></div>
-        <div><div class="progress-track"><div class="progress-bar" style="width:${Math.min(100, state.stats.streak * 14)}%"></div></div><div class="row between" style="margin-top:8px"><span class="muted mini">Target 7 hari</span><span class="mini" style="color:var(--lime)">${Math.min(7, state.stats.streak)}/7</span></div></div>
-      </article>
-    </section>
-    <section class="stat-row">
-      <article class="stat-card panel"><div class="muted mini">Win rate</div><div class="stat-value">${winRate}%</div><div class="stat-label">${state.stats.wins} kemenangan</div></article>
-      <article class="stat-card panel"><div class="muted mini">Jawaban benar</div><div class="stat-value">${state.stats.correct}%</div><div class="stat-label">akurasi rata-rata</div></article>
-      <article class="stat-card panel"><div class="muted mini">Diamond vault</div><div class="stat-value" style="color:var(--gold)">◆ ${formatNumber(state.diamond)}</div><div class="stat-label">siap untuk tema baru</div></article>
-    </section>
-    <section class="dashboard-lower">
-      <article class="section-panel panel"><div class="section-heading"><h3>Mission board</h3><button class="link-btn" data-action="claim-daily">Klaim hadiah</button></div><div class="quest-list">${renderQuestList()}</div></article>
-      <article class="section-panel panel"><div class="section-heading"><h3>Leaderboard preview</h3><button class="link-btn" data-action="go-screen" data-screen="leaderboard">Lihat semua</button></div><div class="leader-mini">${renderMiniLeaderboard()}</div></article>
+      <div class="quick-stats"><article class="quick-stat panel"><span class="quick-stat-icon">♛</span><div><strong>${winRate}%</strong><small>WIN RATE</small></div></article><article class="quick-stat panel"><span class="quick-stat-icon">⚡</span><div><strong>${state.stats.correct}%</strong><small>ACCURACY</small></div></article><article class="quick-stat panel"><span class="quick-stat-icon diamond">◆</span><div><strong>${formatNumber(state.diamond)}</strong><small>DIAMONDS</small></div></article></div>
+      <div class="home-panels"><article class="section-panel panel"><div class="section-heading"><h3>MISSIONS</h3><button class="link-btn" data-action="claim-daily">CLAIM ◆</button></div><div class="quest-list">${renderQuestList()}</div></article><article class="section-panel panel"><div class="section-heading"><h3>RANKING</h3><button class="link-btn" data-action="go-screen" data-screen="leaderboard">VIEW ALL</button></div><div class="leader-mini">${renderMiniLeaderboard()}</div></article></div>
     </section>
   `;
 }

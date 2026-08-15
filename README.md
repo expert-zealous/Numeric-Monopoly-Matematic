@@ -55,7 +55,8 @@ Ikuti semua nama file di `ASSETS.md`. Fallback CSS/emoji akan tetap tampil jika 
 ## Struktur penting
 
 - `index.html` — shell PWA dan audio hooks.
-- `styles.css` — desain responsif, animasi, board, shop, modal, numeric keyboard.
+- `styles.css` — komponen dasar dan layout responsif.
+- `game-ui.css` — skin game compact: HUD, splash arena, icon rail, neon board, kartu minimal.
 - `app.js` — state game, soal, turn, AI, shop, leaderboard, online lobby, PWA install.
 - `firebase.js` — adapter Firebase yang otomatis fallback ke demo local jika config kosong.
 - `firebase-config.js` — tempat Web App config.
