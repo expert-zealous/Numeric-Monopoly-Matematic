@@ -10,9 +10,9 @@
   "lang": "id-ID",
   "icons": [
     {
-      "src": "assets/logo-favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "assets/logo-favicon.png",
+      "sizes": "1342x1024",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

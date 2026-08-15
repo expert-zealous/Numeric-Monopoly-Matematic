@@ -1,15 +1,18 @@
-const CACHE_NAME = 'numeric-monopoly-shell-v3';
+const CACHE_NAME = 'numeric-monopoly-shell-v5';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './game-ui.css',
+  './brand-assets.css',
+  './tiles-ui.css',
   './app.js',
   './firebase.js',
   './firebase-config.js',
   './manifest.webmanifest',
   './sw.js',
-  './assets/logo-favicon.svg'
+  './assets/logo-favicon.png',
+  './assets/logo-numeric-monopoly-matematic.png'
 ];
 
 self.addEventListener('install', (event) => {

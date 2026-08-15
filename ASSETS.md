@@ -1,56 +1,58 @@
-# Asset naming guide — Numeric Monopoly Matematic
 
-UI sudah memiliki fallback CSS/emoji, jadi game tetap tampil tanpa PNG/MP3. Jika asset asli sudah siap, letakkan file dengan nama **persis** seperti daftar berikut. File PNG akan otomatis muncul di Vault dan audio akan dipakai oleh tag `<audio>` di `index.html`.
+## Artwork setiap petak papan
 
-## Logo dan favicon
+Game sekarang mendukung artwork PNG pada **40 petak**. Letakkan file berikut di `assets/tiles/`. Jika belum ada, ikon bawaan tetap tampil.
 
-- `assets/logo-numeric-monopoly-matematic.png` — logo login, saran 1024×1024 atau 1200×400 bila dibuat horizontal.
-- `assets/logo-favicon.png` — favicon, saran 512×512 transparan.
-- `assets/logo-favicon.svg` — fallback ringan yang sudah disertakan.
+```text
+assets/tiles/tile-01-start.png
+assets/tiles/tile-02-lumina.png
+assets/tiles/tile-03-soal-bonus-01.png
+assets/tiles/tile-04-nova-park.png
+assets/tiles/tile-05-pajak.png
+assets/tiles/tile-06-orbit.png
+assets/tiles/tile-07-deep-space.png
+assets/tiles/tile-08-pixel-bay.png
+assets/tiles/tile-09-kartu-misteri-01.png
+assets/tiles/tile-10-skyline.png
+assets/tiles/tile-11-prison.png
+assets/tiles/tile-12-solara.png
+assets/tiles/tile-13-energi.png
+assets/tiles/tile-14-velvet-city.png
+assets/tiles/tile-15-soal-bonus-02.png
+assets/tiles/tile-16-aurora.png
+assets/tiles/tile-17-free-zone.png
+assets/tiles/tile-18-crystal.png
+assets/tiles/tile-19-kartu-misteri-02.png
+assets/tiles/tile-20-moonlight.png
+assets/tiles/tile-21-go-to-prison.png
+assets/tiles/tile-22-nebula.png
+assets/tiles/tile-23-soal-bonus-03.png
+assets/tiles/tile-24-quantum.png
+assets/tiles/tile-25-pajak-premium.png
+assets/tiles/tile-26-royal-arc.png
+assets/tiles/tile-27-hyperloop.png
+assets/tiles/tile-28-golden-harbor.png
+assets/tiles/tile-29-kartu-misteri-03.png
+assets/tiles/tile-30-infinity.png
+assets/tiles/tile-31-finish.png
+assets/tiles/tile-32-prism.png
+assets/tiles/tile-33-soal-bonus-04.png
+assets/tiles/tile-34-mirage.png
+assets/tiles/tile-35-pajak-aura.png
+assets/tiles/tile-36-starlight.png
+assets/tiles/tile-37-soal-bonus-05.png
+assets/tiles/tile-38-eclipse.png
+assets/tiles/tile-39-lucky-lab.png
+assets/tiles/tile-40-nexus.png
+```
 
-## Audio
+Spesifikasi artwork petak:
 
-- `assets/audio/music-login.mp3` — musik layar login, seamless loop, sekitar 60–120 detik.
-- `assets/audio/music-game.mp3` — musik saat bermain, seamless loop, sekitar 60–120 detik.
-- `assets/audio/sfx-click.mp3` — klik tombol, sangat pendek.
-- `assets/audio/sfx-correct.mp3` — jawaban benar.
-- `assets/audio/sfx-wrong.mp3` — jawaban salah.
-- `assets/audio/sfx-roll.mp3` — suara dadu menggelinding.
-
-## Tema dadu
-
-- `assets/themes/dice-theme-00-standard.png`
-- `assets/themes/dice-theme-01-neon-prism.png`
-- `assets/themes/dice-theme-02-cosmic-orbit.png`
-- `assets/themes/dice-theme-03-royal-gold.png`
-- `assets/themes/dice-theme-04-sakura-bloom.png`
-- `assets/themes/dice-theme-05-cyber-pulse.png`
-
-## Tema papan
-
-- `assets/themes/board-theme-00-classic-midnight.png`
-- `assets/themes/board-theme-01-aurora-valley.png`
-- `assets/themes/board-theme-02-velvet-royale.png`
-- `assets/themes/board-theme-03-oceanic-glass.png`
-- `assets/themes/board-theme-04-midnight-gold.png`
-- `assets/themes/board-theme-05-cyber-city.png`
-
-## Karakter 3D
-
-PNG berikut ditampilkan sebagai preview katalog dan fondasi slot karakter unik. Untuk kualitas paling tajam, siapkan PNG transparan render 3D dari sudut 3/4:
-
-- `assets/characters/character-00-nova-starter.png`
-- `assets/characters/character-01-astro-fox.png`
-- `assets/characters/character-02-robo-knight.png`
-- `assets/characters/character-03-crystal-golem.png`
-- `assets/characters/character-04-dragon-spark.png`
-- `assets/characters/character-05-void-prince.png`
-
-Slot tambahan yang disiapkan di Vault: `dice-custom`, `board-custom`, dan `character-custom`. Tidak perlu mengubah kode ketika asset custom siap dikembangkan.
-
-## Rekomendasi teknis
-
-- PNG transparan, sRGB, tanpa teks kecil agar tetap terbaca di HP.
-- Dadu/papan: 1024×1024.
-- Karakter: 1024×1024, objek utama berada di tengah dengan ruang 10–15% di tepi.
-- Audio: MP3 44.1 kHz, level tidak terlalu keras; browser dapat memblokir autoplay sebelum interaksi pertama, sehingga musik mulai setelah tombol login ditekan.
+- PNG transparan atau square 512×512.
+- 1 objek utama per gambar.
+- Jangan menaruh teks kecil di dalam artwork.
+- Property: kota/menara/landmark sesuai nama.
+- Kartu misteri: kartu bercahaya.
+- Pajak: simbol koin/pajak.
+- Utility: energi/portal.
+- Corner: ilustrasi besar seperti START, PRISON, FINISH.

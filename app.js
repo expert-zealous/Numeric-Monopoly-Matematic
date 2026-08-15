@@ -89,8 +89,21 @@ const TILE_BLUEPRINT = [
   { name: 'STARLIGHT', icon: '◈', type: 'property', color: '#65d7ff', price: 480, rent: 125 },
   { name: 'SOAL BONUS', icon: '✎', type: 'chance', color: '#8b77ff', detail: 'Hadiah atau kejutan' },
   { name: 'ECLIPSE', icon: '◈', type: 'property', color: '#65d7ff', price: 500, rent: 135 },
-  { name: 'LUCKY LAB', icon: 'ϟ', type: 'utility', color: '#ffd976', price: 220, rent: 50 }
+  { name: 'LUCKY LAB', icon: 'ϟ', type: 'utility', color: '#ffd976', price: 220, rent: 50 },
+  { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
+
+const TILE_ASSET_KEYS = [
+  'start', 'lumina', 'soal-bonus-01', 'nova-park', 'pajak', 'orbit', 'deep-space', 'pixel-bay',
+  'kartu-misteri-01', 'skyline', 'prison', 'solara', 'energi', 'velvet-city', 'soal-bonus-02',
+  'aurora', 'free-zone', 'crystal', 'kartu-misteri-02', 'moonlight', 'go-to-prison', 'nebula',
+  'soal-bonus-03', 'quantum', 'pajak-premium', 'royal-arc', 'hyperloop', 'golden-harbor',
+  'kartu-misteri-03', 'infinity', 'finish', 'prism', 'soal-bonus-04', 'mirage', 'pajak-aura',
+  'starlight', 'soal-bonus-05', 'eclipse', 'lucky-lab', 'nexus'
+];
+TILE_BLUEPRINT.forEach((tile, index) => {
+  tile.asset = `assets/tiles/tile-${String(index + 1).padStart(2, '0')}-${TILE_ASSET_KEYS[index]}.png`;
+});
 
 const SHOP_DATA = {
   dice: [
@@ -271,7 +284,7 @@ function updateMusic() {
 }
 
 function logoMarkup() {
-  return `<div class="logo-mark" aria-label="Numeric Monopoly Matematic logo"><span>∑</span></div>`;
+  return `<div class="logo-mark" aria-label="Numeric Monopoly Matematic logo"><img src="assets/logo-favicon.png" alt="" onerror="this.style.display='none'" /><span class="logo-fallback">∑</span></div>`;
 }
 
 function renderLogin() {
@@ -280,8 +293,8 @@ function renderLogin() {
       <section class="login-brand-zone">
         <div class="login-topline"><span><i class="live-dot"></i> LIVE ARENA</span><span>SEASON 08</span></div>
         <div class="brand-lockup compact-brand">${logoMarkup()}<div><div class="brand-name">Numeric Monopoly</div><div class="brand-sub">Matematic</div></div></div>
+        <img class="login-full-logo" src="assets/logo-numeric-monopoly-matematic.png" alt="Numeric Monopoly Matematic" onerror="this.style.display='none'" />
         <div class="login-overline">THINK · ROLL · WIN</div>
-        <h1 class="login-title">READY<br /><span>TO ROLL?</span></h1>
         <div class="login-board-preview" aria-hidden="true">
           <div class="preview-orbit orbit-one"></div><div class="preview-orbit orbit-two"></div>
           <div class="preview-tile tile-a">+8</div><div class="preview-tile tile-b">×6</div><div class="preview-tile tile-c">−3</div>
@@ -379,6 +392,7 @@ function renderDashboard() {
   return `
     <section class="game-home">
       <article class="home-hero panel">
+        <img class="home-brand-logo" src="assets/logo-numeric-monopoly-matematic.png" alt="" onerror="this.remove()" />
         <div class="home-hero-copy"><div class="hero-badge"><i class="live-dot"></i> SEASON 08 <span>•</span> ${DIFFICULTIES[state.difficulty].label.toUpperCase()}</div><p class="eyebrow">WELCOME, ${escapeHtml(state.player.name).toUpperCase()}</p><h2>READY<br /><span class="gradient-text">TO ROLL?</span></h2><div class="home-actions"><button class="btn btn-primary btn-lg" data-action="begin-game"><span>PLAY</span><span>↗</span></button><button class="btn btn-ghost btn-icon btn-lg" data-action="go-screen" data-screen="online" aria-label="Online">🌐</button></div></div>
         <div class="home-hero-art" aria-hidden="true"><div class="hero-ring ring-a"></div><div class="hero-ring ring-b"></div><div class="hero-dice">${selectedItem('dice')?.glyph || '6'}</div><div class="hero-pawn">${state.player.avatar}</div><div class="hero-spark spark-a">✦</div><div class="hero-spark spark-b">◆</div></div>
       </article>
@@ -406,7 +420,7 @@ function boardGridPosition(index) {
   if (index <= 10) return { row: 1, col: index + 1 };
   if (index <= 20) return { row: index - 10 + 1, col: 11 };
   if (index <= 30) return { row: 11, col: 30 - index + 1 };
-  return { row: index - 30 + 1, col: 1 };
+  return { row: 41 - index, col: 1 };
 }
 
 function tokenMarkup(player, playerIndex) {
@@ -448,7 +462,7 @@ function renderBoardCell(tile, index) {
   const playersHere = (state.players || []).map((player, pIndex) => player.position === index ? tokenMarkup(player, pIndex) : '').join('');
   const name = tile.type === 'property' ? tile.name : tile.name;
   const price = tile.price ? `<div class="cell-price">${formatCurrency(tile.price)}</div>` : `<div class="cell-price">${tile.detail || '—'}</div>`;
-  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${tile.color}" title="${escapeHtml(tile.name)}"><div><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${owner !== null && owner !== undefined ? `<div class="cell-owners"><span class="owner-dot ${owner === 1 ? 'ai' : ''}"></span></div>` : ''}${playersHere}</div>`;
+  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${tile.color}" title="${escapeHtml(tile.name)}"><img class="cell-art" src="${tile.asset || ''}" alt="" onerror="this.remove()" /><div class="cell-content"><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${owner !== null && owner !== undefined ? `<div class="cell-owners"><span class="owner-dot ${owner === 1 ? 'ai' : ''}"></span></div>` : ''}${playersHere}</div>`;
 }
 
 function renderPlayerLine(player, index) {
@@ -526,7 +540,7 @@ function renderOnline() {
 }
 
 function renderProfile() {
-  return `<section><div class="content-card panel"><div class="profile-grid"><div class="profile-identity"><div class="avatar">${state.player.avatar}</div><div><h2>${escapeHtml(state.player.name)}</h2><p>Level ${state.player.level} • Member Aurora League</p></div></div><div class="profile-form"><div><div class="label-with-hint"><label class="field-label" for="profile-name">Nama panggilan</label><span class="muted mini">Tersimpan lokal</span></div><input id="profile-name" class="text-input" maxlength="20" value="${escapeHtml(state.player.name)}" /></div><div class="setting-row"><div class="setting-copy"><strong>Suara tombol & efek</strong><span>Feedback saat klik, benar, salah, dan dadu.</span></div><label class="switch"><input type="checkbox" data-setting="sound" ${state.sound ? 'checked' : ''} /><span class="switch-track"></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Background music</strong><span>Musik berbeda untuk login dan arena.</span></div><label class="switch"><input type="checkbox" data-setting="music" ${state.music ? 'checked' : ''} /><span class="switch-track"></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Mode soal default</strong><span>Level yang dipakai saat arena baru dimulai.</span></div><select class="select-input" data-setting="difficulty"><option value="easy" ${state.difficulty === 'easy' ? 'selected' : ''}>Mudah</option><option value="medium" ${state.difficulty === 'medium' ? 'selected' : ''}>Sedang</option><option value="hard" ${state.difficulty === 'hard' ? 'selected' : ''}>Sulit</option></select></div><div class="row wrap" style="margin-top:6px"><button class="btn btn-primary" data-action="save-profile">Simpan profil</button><button class="btn btn-ghost" data-action="install-app">Pasang ke HP</button><button class="btn btn-danger" data-action="reset-progress">Reset demo</button></div></div></div></div><div style="height:18px"></div><div class="content-card panel"><div class="section-heading"><h3>Firebase</h3><span class="soft-chip ${cloudStatus.configured ? 'active-turn' : ''}">${cloudStatus.configured ? '● Firebase connected' : '○ Demo local mode'}</span></div><p class="muted small" style="line-height:1.6;margin-bottom:0">${cloudStatus.configured ? 'Diamond diproses lewat Cloud Functions.' : 'Demo lokal aktif. Deploy Functions untuk online.'}</p></div></section>`;
+  return `<section><div class="content-card panel"><div class="profile-grid"><div class="profile-identity"><div class="avatar">${state.player.avatar}</div><div><h2>${escapeHtml(state.player.name)}</h2><p>Level ${state.player.level} • Member Aurora League</p></div></div><div class="profile-form"><div><div class="label-with-hint"><label class="field-label" for="profile-name">Nama panggilan</label><span class="muted mini">Tersimpan lokal</span></div><input id="profile-name" class="text-input" maxlength="20" value="${escapeHtml(state.player.name)}" /></div><div class="setting-row"><div class="setting-copy"><strong>Suara tombol & efek</strong><span>Feedback saat klik, benar, salah, dan dadu.</span></div><label class="switch"><input type="checkbox" data-setting="sound" ${state.sound ? 'checked' : ''} /><span class="switch-track"></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Background music</strong><span>Musik berbeda untuk login dan arena.</span></div><label class="switch"><input type="checkbox" data-setting="music" ${state.music ? 'checked' : ''} /><span class="switch-track"></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Mode soal default</strong><span>Level yang dipakai saat arena baru dimulai.</span></div><select class="select-input" data-setting="difficulty"><option value="easy" ${state.difficulty === 'easy' ? 'selected' : ''}>Mudah</option><option value="medium" ${state.difficulty === 'medium' ? 'selected' : ''}>Sedang</option><option value="hard" ${state.difficulty === 'hard' ? 'selected' : ''}>Sulit</option></select></div><div class="row wrap" style="margin-top:6px"><button class="btn btn-primary" data-action="save-profile">Simpan profil</button><button class="btn btn-ghost" data-action="install-app">Pasang ke HP</button><button class="btn btn-danger" data-action="reset-progress">Reset demo</button><button class="btn btn-ghost" data-action="logout">Logout</button></div></div></div></div><div style="height:18px"></div><div class="content-card panel"><div class="section-heading"><h3>Firebase</h3><span class="soft-chip ${cloudStatus.configured ? 'active-turn' : ''}">${cloudStatus.configured ? '● Firebase connected' : '○ Demo local mode'}</span></div><p class="muted small" style="line-height:1.6;margin-bottom:0">${cloudStatus.configured ? 'Diamond diproses lewat Cloud Functions.' : 'Demo lokal aktif. Deploy Functions untuk online.'}</p></div></section>`;
 }
 
 function renderToastStack() {
@@ -1128,6 +1142,12 @@ function handleClick(event) {
     navigator.clipboard?.writeText(state.room?.code || '').then(() => showToast('Kode room disalin.', 'good')).catch(() => showToast(`Kode room: ${state.room?.code || ''}`, ''));
   } else if (action === 'start-online-match') {
     startOnlineMatch();
+  } else if (action === 'logout') {
+    state.session = false;
+    state.screen = 'dashboard';
+    state.room = null;
+    persist();
+    render();
   } else if (action === 'save-profile') {
     const input = $('#profile-name');
     if (input?.value.trim()) state.player.name = input.value.trim().slice(0, 20);
