@@ -305,8 +305,9 @@ function updateMusic() {
 }
 
 function characterAsset(playerIndex = 0) {
-  // Satu tema karakter aktif dipakai konsisten di seluruh HUD, papan, owner badge, dan token.
-  return selectedItem('character')?.asset || SHOP_DATA.character[0]?.asset || '';
+  if (Number(playerIndex) === 0) return selectedItem('character')?.asset || SHOP_DATA.character[0]?.asset || '';
+  const ai = SHOP_DATA.character.find((item) => item.id === 'character-01') || SHOP_DATA.character[0];
+  return ai?.asset || '';
 }
 
 function characterMarkup(playerIndex = 0, player = null, className = 'character-avatar-image') {
@@ -503,10 +504,11 @@ function dicePips(value) {
 }
 
 function diceCubeMarkup(value, asset) {
-  const safeAsset = asset || '';
   const number = Number(value);
-  const label = Number.isInteger(number) && number >= 1 && number <= 6 ? number : (value === '?' ? '?' : '—');
-  return `<span class="dice-image-face"><img class="dice-skin dice-whole" src="${safeAsset}" alt="Dadu ${label}" onerror="this.style.display='none'" /><span class="dice-face-content">${label}</span></span>`;
+  const opposite = Number.isInteger(number) && number >= 1 && number <= 6 ? 7 - number : '?';
+  const values = [value, opposite, 3, 4, 2, 5];
+  const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+  return `<span class="dice-cube">${faces.map((face, index) => `<span class="dice-face ${face}"><img class="dice-skin" src="${asset || ''}" alt="" onerror="this.style.display='none'" /><span class="dice-face-content">${dicePips(values[index])}</span></span>`).join('')}</span>`;
 }
 
 function dice3DMarkup(id, value, rolling, asset) {
@@ -548,7 +550,7 @@ function renderGame() {
           <img class="board-theme-image" src="${selectedItem('board')?.asset || ''}" alt="" onerror="this.style.display='none'" />
           <div class="board-camera" id="board-camera">
             <div class="board" aria-label="Papan permainan">
-              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark"><img src="assets/logo-numeric-monopoly-matematic.png" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span class="board-center-logo-fallback">∑</span></div><h2>NUMERIC<br /><span class="gradient-text">MONOPOLY</span></h2><p>Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
+              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark">∑</div><h2>NUMERIC<br /><span class="gradient-text">MONOPOLY</span></h2><p>Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
             ${board.map((tile, index) => renderBoardCell(tile, index)).join('')}
             </div>
           </div>
