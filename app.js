@@ -195,12 +195,17 @@ function freshState() {
     room: null,
     localPlayerIndex: 0,
     onlineStatus: 'idle',
-    pendingInstall: false
+    pendingInstall: false,
+    orientationLocked: false,
+    orientationRemainingMs: null,
   };
 }
 
 const persisted = loadPersisted();
 const state = Object.assign(freshState(), persisted || {});
+// Selalu mulai dari halaman login saat aplikasi dibuka/di-refresh.
+state.session = false;
+state.screen = 'dashboard';
 state.player = Object.assign(freshState().player, persisted?.player || {});
 state.stats = Object.assign(freshState().stats, persisted?.stats || {});
 state.inventory = Object.assign(freshState().inventory, persisted?.inventory || {});
@@ -222,7 +227,7 @@ function loadPersisted() {
 
 function persist() {
   const save = {
-    session: state.session,
+    session: false,
     player: state.player,
     mode: state.mode,
     difficulty: state.difficulty,
@@ -299,6 +304,18 @@ function updateMusic() {
   }
 }
 
+function characterAsset(playerIndex = 0) {
+  if (Number(playerIndex) === 0) return selectedItem('character')?.asset || SHOP_DATA.character[0]?.asset || '';
+  const ai = SHOP_DATA.character.find((item) => item.id === 'character-01') || SHOP_DATA.character[0];
+  return ai?.asset || '';
+}
+
+function characterMarkup(playerIndex = 0, player = null, className = 'character-avatar-image') {
+  const asset = characterAsset(playerIndex);
+  const fallback = escapeHtml(player?.avatar || (playerIndex === 0 ? state.player.avatar : '🤖'));
+  return `<img class="${className}" src="${asset}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span class="character-avatar-fallback">${fallback}</span>`;
+}
+
 function logoMarkup() {
   return `<div class="logo-mark" aria-label="Numeric Monopoly Matematic logo"><img src="assets/logo-favicon.png" alt="" onerror="this.style.display='none'" /><span class="logo-fallback">∑</span></div>`;
 }
@@ -314,7 +331,7 @@ function renderLogin() {
         <div class="login-board-preview" aria-hidden="true">
           <div class="preview-orbit orbit-one"></div><div class="preview-orbit orbit-two"></div>
           <div class="preview-tile tile-a">+8</div><div class="preview-tile tile-b">×6</div><div class="preview-tile tile-c">−3</div>
-          <div class="preview-dice">6</div><div class="preview-token">${state.player.avatar}</div>
+          <div class="preview-dice">6</div><div class="preview-token">${characterMarkup(0, state.player, "login-character-image")}</div>
         </div>
         <div class="login-stat-strip"><span><b>40</b> TILES</span><span><b>∞</b> MOVES</span><span><b>1</b> CHAMPION</span></div>
       </section>
@@ -352,7 +369,7 @@ function renderShell() {
           ${nav}
         </nav>
         <div class="side-profile">
-          <div class="avatar">${state.player.avatar}</div>
+          <div class="avatar">${characterMarkup(0, state.player)}</div>
           <div style="min-width:0;flex:1"><div class="profile-name">${escapeHtml(state.player.name)}</div><div class="profile-level">Level ${state.player.level} • ${formatNumber(state.stats.points)} XP</div></div>
           <button class="link-btn" style="font-size:.95rem" data-action="go-screen" data-screen="profile" aria-label="Buka profil">⋯</button>
         </div>
@@ -366,7 +383,7 @@ function renderShell() {
           <div class="top-actions">
             <button class="btn btn-ghost btn-icon" data-action="toggle-music" aria-label="${state.music ? 'Matikan musik' : 'Nyalakan musik'}">${state.music ? '♫' : '♩'}</button>
             <div class="diamond-pill"><span class="diamond-glyph">◆</span><span>${formatNumber(state.diamond)}</span></div>
-            <button class="btn btn-ghost btn-icon" data-action="go-screen" data-screen="profile" aria-label="Profil">${state.player.avatar}</button>
+            <button class="btn btn-ghost btn-icon profile-character-button" data-action="go-screen" data-screen="profile" aria-label="Profil">${characterMarkup(0, state.player)}</button>
           </div>
         </header>
         ${renderPage()}
@@ -390,7 +407,11 @@ function renderNav(mobile) {
     ['leaderboard', '♛', 'Peringkat'],
     ['profile', '◎', 'Profil']
   ];
-  const visibleItems = state.screen === 'dashboard' ? items.filter(([id]) => !['game', 'auction'].includes(id)) : items;
+  const visibleItems = state.screen === 'dashboard'
+    ? items.filter(([id]) => !['game', 'auction'].includes(id))
+    : state.screen === 'shop'
+      ? items.filter(([id]) => id !== 'game')
+      : items;
   return visibleItems.map(([id, icon, label]) => `<button class="nav-btn ${state.screen === id ? 'active' : ''}" data-action="go-screen" data-screen="${id}"><span>${icon}</span><span>${label}</span></button>`).join('');
 }
 
@@ -417,7 +438,7 @@ function renderDashboard() {
       <article class="home-hero panel">
         <img class="home-brand-logo" src="assets/logo-numeric-monopoly-matematic.png" alt="" onerror="this.remove()" />
         <div class="home-hero-copy"><div class="hero-badge"><i class="live-dot"></i> SEASON 08 <span>•</span> ${DIFFICULTIES[state.difficulty].label.toUpperCase()}</div><p class="eyebrow">WELCOME, ${escapeHtml(state.player.name).toUpperCase()}</p><h2>READY<br /><span class="gradient-text">TO ROLL?</span></h2><div class="home-actions"><button class="btn btn-primary btn-lg" data-action="quick-start" data-mode="ai"><span>1 VS AI</span><span>↗</span></button><button class="btn btn-ghost btn-lg" data-action="quick-start" data-mode="local"><span>1 VS 1</span></button><button class="btn btn-ghost btn-lg" data-action="quick-start" data-mode="online"><span>1 VS 1 ONLINE</span></button></div></div>
-        <div class="home-hero-art" aria-hidden="true"><div class="hero-ring ring-a"></div><div class="hero-ring ring-b"></div><div class="hero-dice">${selectedItem('dice')?.glyph || '6'}</div><div class="hero-pawn">${state.player.avatar}</div><div class="hero-spark spark-a">✦</div><div class="hero-spark spark-b">◆</div></div>
+        <div class="home-hero-art" aria-hidden="true"><div class="hero-ring ring-a"></div><div class="hero-ring ring-b"></div><div class="hero-dice">${selectedItem('dice')?.glyph || '6'}</div><div class="hero-pawn">${characterMarkup(0, state.player, "hero-character-image")}</div><div class="hero-spark spark-a">✦</div><div class="hero-spark spark-b">◆</div></div>
       </article>
       <div class="quick-stats"><article class="quick-stat panel"><span class="quick-stat-icon">♛</span><div><strong>${winRate}%</strong><small>WIN RATE</small></div></article><article class="quick-stat panel"><span class="quick-stat-icon">⚡</span><div><strong>${state.stats.correct}%</strong><small>ACCURACY</small></div></article><article class="quick-stat panel"><span class="quick-stat-icon diamond">◆</span><div><strong>${formatNumber(state.diamond)}</strong><small>DIAMONDS</small></div></article></div>
       <div class="home-panels"><article class="section-panel panel"><div class="section-heading"><h3>MISSIONS</h3><button class="link-btn" data-action="claim-daily">CLAIM ◆</button></div><div class="quest-list">${renderQuestList()}</div></article><article class="section-panel panel"><div class="section-heading"><h3>RANKING</h3><button class="link-btn" data-action="go-screen" data-screen="leaderboard">VIEW ALL</button></div><div class="leader-mini">${renderMiniLeaderboard()}</div></article></div>
@@ -435,7 +456,7 @@ function renderQuestList() {
 }
 
 function renderMiniLeaderboard() {
-  const current = { name: state.player.name, avatar: state.player.avatar, score: state.stats.points, change: '—' };
+  const current = { name: state.player.name, avatar: state.player.avatar, characterAsset: characterAsset(0), score: state.stats.points, change: '—' };
   return [...LEADERBOARD.slice(0, 3), current].sort((a, b) => b.score - a.score).slice(0, 4).map((person, index) => `<div class="leader-row"><div class="rank-number">${index + 1}</div><div class="avatar" style="width:29px;height:29px;border-radius:9px;font-size:.82rem">${person.avatar}</div><div class="leader-info"><div class="leader-name">${escapeHtml(person.name)}${person.name === state.player.name ? ' <span style="color:var(--cyan)">(kamu)</span>' : ''}</div><div class="leader-score">${formatNumber(person.score)} rating</div></div><div class="leader-points">${person.change}</div></div>`).join('');
 }
 
@@ -472,7 +493,7 @@ function setAnswerNotice(correct, message) {
 }
 
 function renderPlayerCashStrip() {
-  return `<div class="player-cash-strip">${state.players.map((player, index) => `<div class="cash-player ${state.activePlayer === index ? 'active' : ''}" style="--player-color:${playerColor(index)}"><span class="cash-player-avatar">${player.avatar}</span><span><b>${escapeHtml(player.name.slice(0, 8))}</b><small>${player.eliminated ? 'OUT' : formatCurrency(player.cash)}</small></span></div>`).join('')}</div>`;
+  return `<div class="player-cash-strip">${state.players.map((player, index) => `<div class="cash-player ${state.activePlayer === index ? 'active' : ''}" style="--player-color:${playerColor(index)}"><span class="cash-player-avatar">${characterMarkup(index, player, 'cash-character-image')}</span><span><b>${escapeHtml(player.name.slice(0, 8))}</b><small>${player.eliminated ? 'OUT' : formatCurrency(player.cash)}</small></span></div>`).join('')}</div>`;
 }
 
 function dicePips(value) {
@@ -503,7 +524,7 @@ function updateDiceFace(id, value, rolling) {
 }
 
 function renderGameHeader(active, turnStatus, activeColor) {
-  return `<div class="game-header compact-game-header"><div class="turn-focus-banner" style="--player-color:${activeColor}"><span class="turn-focus-avatar">${active.avatar}</span><span class="turn-focus-copy"><small>GILIRAN</small><strong>${escapeHtml(active.name)}</strong></span><b>${turnStatus}</b></div>${renderPlayerCashStrip()}<div class="game-header-actions"><div class="game-chips"><span class="soft-chip active-turn">● ${escapeHtml(active.name)}</span><span class="soft-chip">${state.mode === 'battle' ? `${state.players.length} PEMAIN` : DIFFICULTIES[state.difficulty].label}</span><span class="soft-chip">GILIRAN ${Math.max(1, state.turnCount + 1)}</span></div>${state.mode === 'battle' ? '<button class="btn btn-danger battle-leave-btn" data-action="leave-battle">KELUAR</button>' : ''}</div></div>`;
+  return `<div class="game-header compact-game-header"><div class="turn-focus-banner" style="--player-color:${activeColor}"><span class="turn-focus-avatar">${characterMarkup(state.activePlayer, active, "turn-character-image")}</span><span class="turn-focus-copy"><small>GILIRAN</small><strong>${escapeHtml(active.name)}</strong></span><b>${turnStatus}</b></div>${renderPlayerCashStrip()}<div class="game-header-actions"><div class="game-chips"><span class="soft-chip active-turn">● ${escapeHtml(active.name)}</span><span class="soft-chip">${state.mode === 'battle' ? `${state.players.length} PEMAIN` : DIFFICULTIES[state.difficulty].label}</span><span class="soft-chip">GILIRAN ${Math.max(1, state.turnCount + 1)}</span></div>${state.mode === 'battle' ? '<button class="btn btn-danger battle-leave-btn" data-action="leave-battle">KELUAR</button>' : ''}</div></div>`;
 }
 
 function renderGame() {
@@ -525,7 +546,7 @@ function renderGame() {
       ${renderGameHeader(active, turnStatus, activeColor)}
       ${renderAnswerNotice()}
       <div class="game-layout">
-        <div class="board-wrap ${themeClass()}" style="isolation:isolate">
+        <div class="board-wrap ${themeClass()} has-board-theme" style="isolation:isolate">
           <img class="board-theme-image" src="${selectedItem('board')?.asset || ''}" alt="" onerror="this.style.display='none'" />
           <div class="board-camera" id="board-camera">
             <div class="board" aria-label="Papan permainan">
@@ -565,6 +586,13 @@ function ownsFullGroup(tile, owner) {
   return group.length > 1 && group.every((candidate) => candidate.owner === owner);
 }
 
+function renderJailPanel() {
+  const player = state.players[state.localPlayerIndex] || state.players[0];
+  if (!player?.inJail) return '';
+  const attempts = Number(player.jailAttempts || 0);
+  return `<section class="jail-panel panel"><div class="jail-panel-head"><span class="jail-icon">⛓</span><div><h3>PRISON</h3><p>Percobaan ${attempts}/3</p></div></div><p class="jail-panel-text">Dadu kembar = keluar gratis. Setelah 3 percobaan, denda ${formatCurrency(JAIL_FINE)} wajib dibayar.</p><button class="btn btn-primary" data-action="pay-jail-fine" ${player.cash < JAIL_FINE ? 'disabled' : ''}>Bayar denda ${formatCurrency(JAIL_FINE)} sekarang</button></section>`;
+}
+
 function renderOwnedProperties() {
   const owner = state.activePlayer;
   const owned = (state.tiles || []).map((tile, index) => ({ tile, index })).filter(({ tile }) => tile.type === 'property' && tile.owner === owner);
@@ -592,13 +620,13 @@ function renderBoardCell(tile, index) {
   const ownerPlayer = owner !== null && owner !== undefined ? state.players[owner] : null;
   const ownerLabel = ownerPlayer ? `${escapeHtml(ownerPlayer.name.slice(0, 7))}` : '';
   const isBuyable = tile.type === 'property' || tile.type === 'utility';
-  const ownerBadge = isBuyable ? (ownerPlayer ? `<div class="owner-badge" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}"><span>${ownerPlayer.avatar}</span><b>${ownerLabel}</b></div>` : '<div class="unowned-badge">OPEN</div>') : '';
+  const ownerBadge = isBuyable ? (ownerPlayer ? `<div class="owner-badge" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}"><span>${characterMarkup(owner, ownerPlayer, "owner-character-image")}</span><b>${ownerLabel}</b></div>` : '<div class="unowned-badge">OPEN</div>') : '';
   return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${ownerColor};--cell-opacity:${owner !== null && owner !== undefined ? 1 : .22}" title="${escapeHtml(tile.name)}"><img class="cell-art" src="${tile.asset || ''}" alt="" onerror="this.remove()" />${building}<div class="cell-content"><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${ownerBadge}${playersHere}</div>`;
 }
 
 function renderPlayerLine(player, index) {
   const role = index === 0 ? 'YOU' : state.mode === 'battle' ? `P${index + 1}` : state.mode === 'ai' ? 'AI' : 'P2';
-  return `<div class="player-line ${state.activePlayer === index ? 'active' : ''} ${index > 0 ? 'ai' : ''} ${player.eliminated ? 'eliminated' : ''}" style="--player-color:${playerColor(index)}"><div class="avatar" style="background:${playerColor(index)}">${player.avatar}</div><div class="player-copy"><div class="player-label">${escapeHtml(player.name)} ${state.activePlayer === index && !player.eliminated ? '<span class="active-turn-badge">TURN</span>' : ''}</div><div class="player-money">${player.eliminated ? 'OUT' : `${formatCurrency(player.cash)} • petak ${player.position + 1}${player.debt ? ` • hutang ${formatCurrency(player.debt)}` : ''}`}</div></div><div class="player-position">${player.eliminated ? 'OUT' : role}</div></div>`;
+  return `<div class="player-line ${state.activePlayer === index ? 'active' : ''} ${index > 0 ? 'ai' : ''} ${player.eliminated ? 'eliminated' : ''}" style="--player-color:${playerColor(index)}"><div class="avatar player-character-avatar" style="background:${playerColor(index)}">${characterMarkup(index, player)}</div><div class="player-copy"><div class="player-label">${escapeHtml(player.name)} ${state.activePlayer === index && !player.eliminated ? '<span class="active-turn-badge">TURN</span>' : ''}</div><div class="player-money">${player.eliminated ? 'OUT' : `${formatCurrency(player.cash)} • petak ${player.position + 1}${player.debt ? ` • hutang ${formatCurrency(player.debt)}` : ''}`}</div></div><div class="player-position">${player.eliminated ? 'OUT' : role}</div></div>`;
 }
 
 function renderOwnershipLegend() {
@@ -694,7 +722,7 @@ function renderOnline() {
 }
 
 function renderProfile() {
-  return `<section><div class="content-card panel"><div class="profile-grid"><div class="profile-identity"><div class="avatar">${state.player.avatar}</div><div><h2>${escapeHtml(state.player.name)}</h2><p>Level ${state.player.level} • Member Aurora League</p></div></div><div class="profile-form"><div><div class="label-with-hint"><label class="field-label" for="profile-name">Nama panggilan</label><span class="muted mini">Tersimpan lokal</span></div><input id="profile-name" class="text-input" maxlength="20" value="${escapeHtml(state.player.name)}" /></div><div class="setting-row"><div class="setting-copy"><strong>Suara tombol & efek</strong><span>Feedback saat klik, benar, salah, dan dadu.</span></div><label class="switch"><input type="checkbox" data-setting="sound" ${state.sound ? 'checked' : ''} /><span class="switch-track"></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Background music</strong><span>Musik berbeda untuk login dan arena.</span></div><label class="switch"><input type="checkbox" data-setting="music" ${state.music ? 'checked' : ''} /><span class="switch-track"></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Mode soal default</strong><span>Level yang dipakai saat arena baru dimulai.</span></div><select class="select-input" data-setting="difficulty"><option value="easy" ${state.difficulty === 'easy' ? 'selected' : ''}>Mudah</option><option value="medium" ${state.difficulty === 'medium' ? 'selected' : ''}>Sedang</option><option value="hard" ${state.difficulty === 'hard' ? 'selected' : ''}>Sulit</option></select></div><div class="row wrap" style="margin-top:6px"><button class="btn btn-primary" data-action="save-profile">Simpan profil</button><button class="btn btn-ghost" data-action="install-app">Pasang ke HP</button><button class="btn btn-danger" data-action="reset-progress">Reset demo</button><button class="btn btn-ghost" data-action="logout">Logout</button></div></div></div></div><div style="height:18px"></div><div class="content-card panel"><div class="section-heading"><h3>Firebase</h3><span class="soft-chip ${cloudStatus.configured ? 'active-turn' : ''}">${cloudStatus.configured ? '● Firebase connected' : '○ Demo local mode'}</span></div><p class="muted small" style="line-height:1.6;margin-bottom:0">${cloudStatus.configured ? 'Diamond diproses lewat Cloud Functions.' : 'Demo lokal aktif. Deploy Functions untuk online.'}</p></div></section>`;
+  return `<section><div class="content-card panel"><div class="profile-grid"><div class="profile-identity"><div class="avatar">${characterMarkup(0, state.player)}</div><div><h2>${escapeHtml(state.player.name)}</h2><p>Level ${state.player.level} • Member Aurora League</p></div></div><div class="profile-form"><div><div class="label-with-hint"><label class="field-label" for="profile-name">Nama panggilan</label><span class="muted mini">Tersimpan lokal</span></div><input id="profile-name" class="text-input" maxlength="20" value="${escapeHtml(state.player.name)}" /></div><div class="setting-row"><div class="setting-copy"><strong>Suara tombol & efek</strong><span>Feedback saat klik, benar, salah, dan dadu.</span></div><label class="switch"><input type="checkbox" data-setting="sound" ${state.sound ? 'checked' : ''} /><span class="switch-track"></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Background music</strong><span>Musik berbeda untuk login dan arena.</span></div><label class="switch"><input type="checkbox" data-setting="music" ${state.music ? 'checked' : ''} /><span class="switch-track"></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Mode soal default</strong><span>Level yang dipakai saat arena baru dimulai.</span></div><select class="select-input" data-setting="difficulty"><option value="easy" ${state.difficulty === 'easy' ? 'selected' : ''}>Mudah</option><option value="medium" ${state.difficulty === 'medium' ? 'selected' : ''}>Sedang</option><option value="hard" ${state.difficulty === 'hard' ? 'selected' : ''}>Sulit</option></select></div><div class="row wrap" style="margin-top:6px"><button class="btn btn-primary" data-action="save-profile">Simpan profil</button><button class="btn btn-ghost" data-action="install-app">Pasang ke HP</button><button class="btn btn-danger" data-action="reset-progress">Reset demo</button><button class="btn btn-ghost" data-action="logout">Logout</button></div></div></div></div><div style="height:18px"></div><div class="content-card panel"><div class="section-heading"><h3>Firebase</h3><span class="soft-chip ${cloudStatus.configured ? 'active-turn' : ''}">${cloudStatus.configured ? '● Firebase connected' : '○ Demo local mode'}</span></div><p class="muted small" style="line-height:1.6;margin-bottom:0">${cloudStatus.configured ? 'Diamond diproses lewat Cloud Functions.' : 'Demo lokal aktif. Deploy Functions untuk online.'}</p></div></section>`;
 }
 
 function renderToastStack() {
@@ -754,18 +782,18 @@ function resetGame() {
     const host = state.room?.host || { name: 'Host', avatar: '♛' };
     const guest = state.room?.opponent || { name: 'Menunggu lawan', avatar: '🌐' };
     players = [
-      { id: 0, name: host.name, avatar: host.avatar, position: 0, cash: 1500, debt: 0 },
-      { id: 1, name: guest.name, avatar: guest.avatar, position: 0, cash: 1500, debt: 0 }
+      { id: 0, name: host.name, avatar: host.avatar, position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 },
+      { id: 1, name: guest.name, avatar: guest.avatar, position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }
     ];
   } else if (state.mode === 'battle') {
     const names = ['Luna Logic', 'Astro Fox', 'Robo Knight', 'Dragon Spark', 'Crystal Golem'];
     const avatars = ['🤖', '🦊', '🤖', '🐉', '💎'];
     const count = Math.max(3, Math.min(6, Number(state.battleCount) || 4));
-    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 1500, debt: 0, eliminated: false }];
-    for (let i = 1; i < count; i += 1) players.push({ id: i, name: names[i - 1] || `Rival ${i}`, avatar: avatars[i - 1] || '🤖', position: 0, cash: 1500, debt: 0, eliminated: false });
+    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }];
+    for (let i = 1; i < count; i += 1) players.push({ id: i, name: names[i - 1] || `Rival ${i}`, avatar: avatars[i - 1] || '🤖', position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 });
   } else {
-    const opponent = state.mode === 'ai' ? { id: 1, name: 'Luna Logic', avatar: '🤖', position: 0, cash: 1500, debt: 0, eliminated: false } : { id: 1, name: 'Pemain 2', avatar: '🦊', position: 0, cash: 1500, debt: 0, eliminated: false };
-    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 1500, debt: 0, eliminated: false }, opponent];
+    const opponent = state.mode === 'ai' ? { id: 1, name: 'Luna Logic', avatar: '🤖', position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 } : { id: 1, name: 'Pemain 2', avatar: '🦊', position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 };
+    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }, opponent];
   }
   state.players = players;
   state.tiles = TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null, houses: 0, hotel: false }));
@@ -1102,6 +1130,71 @@ function animateTokenMovement(playerIndex, path, onComplete) {
   advance();
 }
 
+const JAIL_INDEX = 10;
+const JAIL_FINE = 50;
+
+function isDoubleRoll(dieA, dieB) {
+  return state.diceCount === 2 && dieA === dieB;
+}
+
+function movePlayerImmediately(playerIndex, position) {
+  const player = state.players[playerIndex];
+  if (!player) return;
+  player.position = position;
+  moveTokenInDom(playerIndex, position);
+  focusActiveToken();
+}
+
+function sendPlayerToJail(playerIndex) {
+  const player = state.players[playerIndex];
+  if (!player) return;
+  player.inJail = true;
+  player.jailAttempts = 0;
+  movePlayerImmediately(playerIndex, JAIL_INDEX);
+  addActivity('⛓', `<strong>${escapeHtml(player.name)}</strong> langsung dipindahkan ke PRISON.`);
+}
+
+function leaveJailFree(playerIndex, reason = 'Dadu kembar') {
+  const player = state.players[playerIndex];
+  if (!player) return;
+  player.inJail = false;
+  player.jailAttempts = 0;
+  addActivity('🔓', `<strong>${escapeHtml(player.name)}</strong> keluar dari PRISON gratis karena ${reason}.`);
+}
+
+function payJailFine(playerIndex, immediate = false) {
+  const player = state.players[playerIndex];
+  if (!player || !player.inJail) return false;
+  if (player.cash < JAIL_FINE) {
+    showToast(`Uang tidak cukup untuk membayar denda ${formatCurrency(JAIL_FINE)}.`, 'bad');
+    return false;
+  }
+  player.cash -= JAIL_FINE;
+  bankDeposit(JAIL_FINE);
+  player.inJail = false;
+  player.jailAttempts = 0;
+  addActivity('⛓', `<strong>${escapeHtml(player.name)}</strong> membayar denda PRISON ${formatCurrency(JAIL_FINE)}${immediate ? ' dan keluar sekarang' : ''}.`);
+  return true;
+}
+
+function finishJailAttempt() {
+  const player = state.players[state.activePlayer];
+  if (!player?.inJail) return false;
+  player.jailAttempts = (player.jailAttempts || 0) + 1;
+  if (player.jailAttempts >= 3) {
+    if (!payJailFine(state.activePlayer)) {
+      player.eliminated = true;
+      state.modal = null;
+      finishTurn();
+      return true;
+    }
+    showTurnEnd(state.tiles[JAIL_INDEX], `Percobaan ke-3 gagal. Denda ${formatCurrency(JAIL_FINE)} wajib dibayar.`);
+    return true;
+  }
+  showTurnEnd(state.tiles[JAIL_INDEX], `Tidak kembar. Percobaan penjara ${player.jailAttempts}/3 selesai.`);
+  return true;
+}
+
 function rollDice(isAi = false) {
   if (!state.canRoll || state.rolling || state.moving) return;
   if (state.mode === 'ai' && state.activePlayer === 1 && !isAi) return;
@@ -1123,6 +1216,25 @@ function rollDice(isAi = false) {
     state.moveStep = 0;
     const playerIndex = state.activePlayer;
     const player = state.players[playerIndex];
+    const doubled = isDoubleRoll(dieA, dieB);
+
+    // Aturan PRISON: dadu kembar membebaskan pemain tanpa denda.
+    if (player.inJail) {
+      if (doubled) {
+        leaveJailFree(playerIndex, 'dadu kembar');
+      } else {
+        finishJailAttempt();
+        if (state.mode === 'ai' || (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex)) {
+          state.modal = null;
+          render();
+          window.setTimeout(() => finishTurn(), 650);
+        } else {
+          render();
+        }
+        return;
+      }
+    }
+
     const oldPosition = player.position;
     const path = Array.from({ length: roll }, (_, step) => (oldPosition + step + 1) % state.tiles.length);
     const newPosition = path[path.length - 1];
@@ -1139,6 +1251,11 @@ function rollDice(isAi = false) {
       animateTokenMovement(playerIndex, path, () => {
         addActivity('◈', `<strong>${escapeHtml(player.name)}</strong> melempar ${roll} dan tiba di <strong>${escapeHtml(state.tiles[newPosition].name)}</strong>.`);
         resolveLanding(newPosition);
+        if (doubled && !player.inJail) {
+          state.canRoll = true;
+          addActivity('🎲', `<strong>${escapeHtml(player.name)}</strong> mendapat DADU KEMBAR dan berhak melempar lagi.`);
+          showToast('Dadu kembar! Kamu mendapat lemparan tambahan.', 'good');
+        }
         if (state.mode === 'online') syncOnlineGame();
         render();
       });
@@ -1307,9 +1424,8 @@ function resolveLanding(index) {
   } else if (tile.type === 'chance') {
     state.modal = { type: 'chance', card: randomChanceCard() };
   } else if (tile.name === 'GO TO PRISON') {
-    player.position = 10;
-    addActivity('↘', `<strong>${escapeHtml(player.name)}</strong> dikirim ke PRISON.`);
-    showTurnEnd(tile, 'Pion dipindahkan ke PRISON.');
+    sendPlayerToJail(state.activePlayer);
+    showTurnEnd(state.tiles[JAIL_INDEX], 'Pion langsung dipindahkan ke PRISON. Percobaan keluar dimulai pada giliran berikutnya.');
   } else {
     const specialMessage = tile.name === 'FREE PARKING' || tile.name === 'FREE ZONE' ? `${tile.name} adalah petak aman dan tidak bisa dibeli.` : `Berhenti di ${tile.name}.`;
     showTurnEnd(tile, specialMessage);
@@ -1323,6 +1439,15 @@ function finishTurnSoon() {
 }
 
 function finishTurn() {
+  // Lemparan tambahan karena dadu kembar tidak mengganti pemain.
+  if (state.canRoll && state.lastDice && isDoubleRoll(state.lastDice[0], state.lastDice[1]) && !state.players[state.activePlayer]?.inJail) {
+    state.modal = null;
+    state.question = null;
+    state.answer = '';
+    askQuestion();
+    render();
+    return;
+  }
   state.turnCount += 1;
   resetDiceDisplay();
   if (state.mode === 'battle') {
@@ -1567,7 +1692,7 @@ function addActivity(icon, text) {
 
 function onlinePayload() {
   return {
-    players: state.players.map((player) => ({ id: player.id, name: player.name, avatar: player.avatar, position: player.position, cash: player.cash, debt: player.debt || 0, eliminated: Boolean(player.eliminated) })),
+    players: state.players.map((player) => ({ id: player.id, name: player.name, avatar: player.avatar, position: player.position, cash: player.cash, debt: player.debt || 0, eliminated: Boolean(player.eliminated), inJail: Boolean(player.inJail), jailAttempts: Number(player.jailAttempts || 0) })),
     tiles: state.tiles,
     activePlayer: state.activePlayer,
     question: state.question ? { text: state.question.text, answer: state.question.answer } : null,
@@ -1872,6 +1997,7 @@ function render() {
   state.boardDirty = false;
   document.getElementById('boot-fallback')?.remove();
   updateMusic();
+  renderOrientationLock();
   window.requestAnimationFrame?.(() => focusActiveToken());
 }
 
@@ -1890,6 +2016,7 @@ function navigate(screen) {
 }
 
 function handleClick(event) {
+  if (state.orientationLocked) return;
   const target = event.target.closest('[data-action]');
   if (!target) return;
   const action = target.dataset.action;
@@ -1924,6 +2051,12 @@ function handleClick(event) {
     submitAnswer();
   } else if (action === 'roll-dice') {
     rollDice(false);
+  } else if (action === 'pay-jail-fine') {
+    if (payJailFine(state.activePlayer, true)) {
+      state.modal = null;
+      showTurnEnd(state.tiles[JAIL_INDEX], `Denda ${formatCurrency(JAIL_FINE)} dibayar. Kamu keluar dari PRISON.`);
+      render();
+    }
   } else if (action === 'buy-house') {
     buyHouse(Number(target.dataset.tileIndex), target.dataset.fromLanding === 'true');
   } else if (action === 'buy-hotel') {
@@ -2061,11 +2194,53 @@ function handleChange(event) {
 }
 
 function handleKeydown(event) {
-  if (!state.question || state.aiThinking) return;
+  if (state.orientationLocked || !state.question || state.aiThinking) return;
   if (/^\d$/.test(event.key)) { event.preventDefault(); handleAnswerKey(event.key); }
   else if (event.key === '-') { event.preventDefault(); handleAnswerKey('-'); }
   else if (event.key === 'Backspace') { event.preventDefault(); handleAnswerKey('backspace'); }
   else if (event.key === 'Enter') { event.preventDefault(); submitAnswer(); }
+}
+
+function isMobilePortrait() {
+  return window.matchMedia?.('(max-width: 900px) and (orientation: portrait)').matches || false;
+}
+
+function renderOrientationLock() {
+  let overlay = document.getElementById('orientation-lock');
+  if (!overlay) return;
+  const locked = Boolean(state.session && state.screen === 'game' && isMobilePortrait());
+  overlay.classList.toggle('show', locked);
+  overlay.setAttribute('aria-hidden', locked ? 'false' : 'true');
+}
+
+function updateOrientationLock() {
+  const locked = Boolean(state.session && state.screen === 'game' && isMobilePortrait());
+  if (locked && !state.orientationLocked) {
+    state.orientationLocked = true;
+    if (state.question && state.questionDeadline) {
+      state.orientationRemainingMs = Math.max(0, state.questionDeadline - Date.now());
+      clearQuestionTimer();
+    }
+  } else if (!locked && state.orientationLocked) {
+    state.orientationLocked = false;
+    if (state.question && state.orientationRemainingMs !== null) {
+      state.questionDeadline = Date.now() + state.orientationRemainingMs;
+      state.questionTimerId = window.setInterval(() => {
+        if (!state.question || state.aiThinking || state.screen !== 'game' || state.orientationLocked) {
+          clearQuestionTimer();
+          return;
+        }
+        state.questionTimeLeft = Math.max(0, Math.ceil((state.questionDeadline - Date.now()) / 1000));
+        updateQuestionTimerDom();
+        if (state.questionTimeLeft <= 0) {
+          clearQuestionTimer();
+          timeoutAnswer();
+        }
+      }, 250);
+      state.orientationRemainingMs = null;
+    }
+  }
+  renderOrientationLock();
 }
 
 app.addEventListener('click', handleClick);
@@ -2078,6 +2253,8 @@ window.addEventListener('beforeinstallprompt', (event) => {
   if (state.session) render();
 });
 window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; render(); showToast('Numeric Monopoly berhasil dipasang di HP.', 'good'); });
+window.addEventListener('resize', updateOrientationLock, { passive: true });
+window.addEventListener('orientationchange', () => window.setTimeout(updateOrientationLock, 80), { passive: true });
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
 }
@@ -2085,6 +2262,7 @@ if ('serviceWorker' in navigator) {
 (async function bootstrap() {
   cloudStatus = await initCloud();
   render();
+  updateOrientationLock();
 })();
 
 // Needed by the reset confirmation action without adding a second modal system.

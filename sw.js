@@ -1,4 +1,4 @@
-const CACHE_NAME = 'numeric-monopoly-shell-v31';
+const CACHE_NAME = 'numeric-monopoly-shell-v40';
 const APP_SHELL = [
   './',
   './index.html',
@@ -35,7 +35,21 @@ const APP_SHELL = [
   './manifest.webmanifest',
   './sw.js',
   './assets/logo-favicon.png',
-  './assets/logo-numeric-monopoly-matematic.png'
+  './assets/logo-numeric-monopoly-matematic.png',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './assets/themes/board-theme-00-classic-midnight.png',
+  './assets/themes/board-theme-01-aurora-valley.png',
+  './assets/themes/board-theme-02-velvet-royale.png',
+  './assets/themes/board-theme-03-oceanic-glass.png',
+  './assets/themes/board-theme-04-midnight-gold.png',
+  './assets/themes/board-theme-05-cyber-city.png',
+  './assets/themes/dice-theme-00-standard.png',
+  './assets/themes/dice-theme-01-neon-prism.png',
+  './assets/themes/dice-theme-02-cosmic-orbit.png',
+  './assets/themes/dice-theme-03-royal-gold.png',
+  './assets/themes/dice-theme-04-sakura-bloom.png',
+  './assets/themes/dice-theme-05-cyber-pulse.png'
 ];
 
 self.addEventListener('install', (event) => {

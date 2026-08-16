@@ -268,7 +268,7 @@ h1, h2, h3, p { margin-top: 0; }
 .board-wrap.theme-ocean { background: linear-gradient(145deg, rgba(13,65,93,.92), rgba(10,23,58,.95)); }
 .board-wrap.theme-midnight { background: linear-gradient(145deg, rgba(41,35,69,.92), rgba(10,12,33,.97)); }
 .board-wrap.theme-cyber { background: linear-gradient(145deg, rgba(10,58,79,.92), rgba(33,9,58,.95)); }
-.board-theme-image { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; opacity: .13; mix-blend-mode: screen; pointer-events: none; }
+.board-theme-image { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; opacity: .34; mix-blend-mode: screen; pointer-events: none; }
 .board { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(11, 1fr); grid-template-rows: repeat(11, 1fr); width: min(100%, 770px); aspect-ratio: 1; margin: 0 auto; gap: 4px; }
 .board-center { grid-area: 2 / 2 / 10 / 10; position: relative; display: flex; overflow: hidden; align-items: center; justify-content: center; padding: 24px; border: 1px solid rgba(91,228,255,.12); border-radius: 18px; background: radial-gradient(circle at 50% 42%, rgba(91,228,255,.12), transparent 42%), linear-gradient(145deg, rgba(8,14,47,.72), rgba(20,16,57,.78)); }
 .board-center::before { position: absolute; width: 67%; aspect-ratio: 1; border: 1px solid rgba(139,119,255,.17); border-radius: 50%; box-shadow: 0 0 0 24px rgba(139,119,255,.025), 0 0 0 52px rgba(139,119,255,.018); content: ''; }
@@ -579,3 +579,106 @@ h1, h2, h3, p { margin-top: 0; }
 }
 
 .noscript-card { width: min(90%, 500px); margin: 60px auto; padding: 25px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); text-align: center; }
+
+
+/* === Numeric Monopoly fixes: theme artwork, character artwork, prison & orientation === */
+.board-wrap.has-board-theme { overflow:hidden; }
+.board-wrap.has-board-theme .board-theme-image {
+  opacity: .92;
+  mix-blend-mode: normal;
+  z-index: 0;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(1.08) contrast(1.03);
+}
+.board-wrap.has-board-theme .board {
+  z-index: 2;
+}
+.board-wrap.has-board-theme .board-center {
+  background: rgba(8,14,47,.16);
+  border-color: rgba(255,255,255,.16);
+  backdrop-filter: blur(1px);
+}
+.board-wrap.has-board-theme .board-cell {
+  background: rgba(12,20,54,.10);
+  border-color: rgba(255,255,255,.20);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+}
+.board-wrap.has-board-theme .board-cell.corner {
+  background: rgba(20,26,73,.12);
+}
+.board-wrap.has-board-theme .cell-art {
+  opacity: .12;
+}
+.board-wrap.has-board-theme .cell-content,
+.board-wrap.has-board-theme .cell-price {
+  text-shadow: 0 1px 3px rgba(0,0,0,.75);
+}
+.character-avatar-image,
+.login-character-image,
+.hero-character-image,
+.cash-character-image,
+.turn-character-image,
+.owner-character-image {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  pointer-events:none;
+}
+.character-avatar-fallback {
+  display:none;
+}
+.profile-character-button .character-avatar-fallback { display:none; }
+.profile-character-button .character-avatar-image { width:28px; height:28px; }
+.player-character-avatar .character-avatar-image { width:100%; height:100%; }
+.cash-player-avatar { overflow:hidden; display:grid; place-items:center; }
+.cash-character-image { width:28px; height:28px; }
+.turn-focus-avatar { overflow:hidden; display:grid; place-items:center; }
+.turn-character-image { width:36px; height:36px; }
+.owner-badge > span { overflow:hidden; display:grid; place-items:center; }
+.owner-character-image { width:24px; height:24px; }
+.login-character-image { width:100%; height:100%; }
+.hero-character-image { width:100%; height:100%; }
+
+.jail-panel { padding:15px; border-color:rgba(255,117,191,.28); background:linear-gradient(145deg,rgba(90,27,61,.24),rgba(20,18,54,.72)); }
+.jail-panel-head { display:flex; align-items:center; gap:10px; }
+.jail-icon { display:grid; width:38px; height:38px; place-items:center; border-radius:12px; background:rgba(255,117,191,.12); font-size:1.15rem; }
+.jail-panel h3 { margin:0; font-size:.86rem; }
+.jail-panel-head p { margin:3px 0 0; color:var(--muted); font-size:.62rem; }
+.jail-panel-text { margin:10px 0 12px; color:var(--muted); font-size:.64rem; line-height:1.45; }
+
+#orientation-lock {
+  position:fixed;
+  inset:0;
+  z-index:2147483647;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:radial-gradient(circle at 50% 35%,rgba(32,49,105,.98),rgba(4,7,24,.99) 72%);
+  color:#fff;
+  text-align:center;
+}
+#orientation-lock.show { display:flex; }
+.orientation-lock-card {
+  width:min(92vw,420px);
+  padding:30px 24px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:24px;
+  background:rgba(11,17,53,.88);
+  box-shadow:0 24px 70px rgba(0,0,0,.5);
+}
+.orientation-icon {
+  font-size:3.4rem;
+  line-height:1;
+  margin-bottom:16px;
+  animation:orientationRotate 1.8s ease-in-out infinite alternate;
+}
+.orientation-lock-card h2 { margin:0 0 8px; font-size:1.25rem; }
+.orientation-lock-card p { margin:0; color:#b7c2e8; font-size:.82rem; line-height:1.55; }
+@keyframes orientationRotate {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(90deg); }
+}
