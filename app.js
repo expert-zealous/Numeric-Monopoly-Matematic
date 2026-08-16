@@ -289,10 +289,10 @@ function updateMusic() {
       if (result?.catch) result.catch(() => {});
     } catch {}
   };
-  if (state.session) {
+  if (state.screen === 'game') {
     loginAudio.pause();
     gameAudio.pause();
-    if (state.screen === 'game') play(gameAudio);
+    play(gameAudio);
   } else {
     gameAudio.pause();
     play(loginAudio);
