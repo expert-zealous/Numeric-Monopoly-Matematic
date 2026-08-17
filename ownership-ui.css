@@ -5,3 +5,6 @@
 .unowned-badge { position:absolute;z-index:2;top:7px;left:3px;color:#9aa8d2;font-size:.38rem;font-weight:800;letter-spacing:.04em;opacity:.42; }
 .ownership-legend { padding:9px 12px; }.ownership-title { margin-bottom:6px;color:#7785b3;font-size:.5rem;font-weight:800;letter-spacing:.12em; }.ownership-list { display:flex;gap:5px;flex-wrap:wrap; }.ownership-item { display:inline-flex;align-items:center;gap:3px;color:#9ca9d2;font-size:.49rem; }.ownership-item i { width:7px;height:7px;border-radius:50%;box-shadow:0 0 6px currentColor; }
 @media (max-width:560px) { .owner-badge { top:5px;padding:1px 2px;font-size:.32rem; }.owner-badge span{font-size:.38rem}.owner-badge b{font-size:.31rem}.unowned-badge{top:5px;font-size:.3rem}.ownership-legend{padding:8px 10px}.ownership-item{font-size:.42rem}.ownership-item i{width:6px;height:6px} }
+
+/* v43 ownership marker: owner color only, no character badge on tile. */
+.owner-badge,.unowned-badge{display:none !important;}

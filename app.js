@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '42';
+const ASSET_VERSION = '45';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -566,7 +566,7 @@ function renderGame() {
           <img class="board-theme-image" src="${versionedAsset(selectedItem('board')?.asset || '')}" alt="" onerror="this.style.display='none'" />
           <div class="board-camera" id="board-camera">
             <div class="board" aria-label="Papan permainan">
-              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span class="board-center-logo-fallback">∑</span></div><h2>NUMERIC<br /><span class="gradient-text">MONOPOLY</span></h2><p>Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
+              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='none'" /><span class="board-center-logo-fallback"></span></div><p class="center-tagline">Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
             ${board.map((tile, index) => renderBoardCell(tile, index)).join('')}
             </div>
           </div>
@@ -629,14 +629,14 @@ function renderBoardCell(tile, index) {
   const pos = boardGridPosition(index);
   const owner = tile.owner;
   const playersHere = (state.players || []).map((player, pIndex) => player.position === index ? tokenMarkup(player, pIndex) : '').join('');
-  const name = tile.type === 'property' ? tile.name : tile.name;
-  const price = tile.price ? `<div class="cell-price">${formatCurrency(tile.price)} · ${formatCurrency(getRent(tile))}</div>` : `<div class="cell-price">${tile.detail || '—'}</div>`;
-  const building = tile.hotel ? '<span class="building-badge hotel">🏨</span>' : tile.houses ? `<span class="building-badge">${'▴'.repeat(tile.houses)}</span>` : '';
+  const name = tile.name;
+  // Harga sengaja tidak ditampilkan di petak. Informasi lengkap dibuka saat petak diklik.
   const ownerColor = owner !== null && owner !== undefined ? playerColor(owner) : tile.color;
   const ownerPlayer = owner !== null && owner !== undefined ? state.players[owner] : null;
-  const ownerLabel = ownerPlayer ? `${escapeHtml(ownerPlayer.name.slice(0, 7))}` : '';
   const isBuyable = tile.type === 'property' || tile.type === 'utility';
-  const ownerBadge = isBuyable ? (ownerPlayer ? `<div class="owner-badge" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}"><span>${characterMarkup(owner, ownerPlayer, "owner-character-image")}</span><b>${ownerLabel}</b></div>` : '<div class="unowned-badge">OPEN</div>') : '';
+  // Penanda kepemilikan cukup berupa pita warna di sisi atas petak; karakter tidak lagi menutupi artwork tile.
+  const ownerBadge = isBuyable && ownerPlayer ? `<div class="owner-marker" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}" aria-label="Milik ${escapeHtml(ownerPlayer.name)}"></div>` : '';
+  const building = tile.hotel ? '<span class="building-badge hotel">🏨</span>' : tile.houses ? `<span class="building-badge">${'▴'.repeat(tile.houses)}</span>` : '';
   const tileKey = TILE_ASSET_KEYS[index] || '';
   const tileNo = String(index + 1).padStart(2, '0');
   const exactAsset = tile.asset || `assets/tiles/tile-${tileNo}-${tileKey}.png`;
@@ -646,7 +646,8 @@ function renderBoardCell(tile, index) {
   const tileFallback1 = versionedAsset(fallbackAsset);
   const tileFallback2 = versionedAsset(fallbackAsset2);
   const tileOnError = `if(!this.dataset.fallbackStage){this.dataset.fallbackStage='1';this.src=this.dataset.fallback1;}else if(this.dataset.fallbackStage==='1' && this.dataset.fallback2){this.dataset.fallbackStage='2';this.src=this.dataset.fallback2;}else{this.classList.add('tile-art-missing');}`;
-  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${ownerColor};--cell-opacity:${owner !== null && owner !== undefined ? 1 : .22}" title="${escapeHtml(tile.name)}"><img class="cell-art" src="${tileSrc}" data-fallback-1="${tileFallback1}" data-fallback-2="${tileFallback2}" alt="${escapeHtml(tile.name)}" loading="eager" decoding="async" onerror="${tileOnError}" />${building}<div class="cell-content"><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${ownerBadge}${playersHere}</div>`;
+  const edgeClass = pos.row === 11 ? 'edge-bottom' : pos.row === 1 ? 'edge-top' : pos.col === 1 ? 'edge-left' : pos.col === 11 ? 'edge-right' : '';
+  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''} ${edgeClass}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${tile.color}" title="${escapeHtml(tile.name)} — klik untuk melihat detail" role="button" tabindex="0"><img class="cell-art" src="${tileSrc}" data-fallback-1="${tileFallback1}" data-fallback-2="${tileFallback2}" alt="${escapeHtml(tile.name)}" loading="eager" decoding="async" onerror="${tileOnError}" />${building}<div class="cell-content"><div class="cell-name">${escapeHtml(name)}</div></div>${ownerBadge}${playersHere}</div>`;
 }
 
 function renderPlayerLine(player, index) {
@@ -757,6 +758,20 @@ function renderToastStack() {
 function renderModal() {
   if (!state.modal) return '';
   const modal = state.modal;
+  if (modal.type === 'tile-info') {
+    const tile = modal.tile;
+    const asset = tile?.asset ? versionedAsset(tile.asset) : '';
+    const isProperty = tile?.type === 'property';
+    const isUtility = tile?.type === 'utility';
+    const priceRows = tile?.price ? `
+      <div class="tile-info-prices">
+        <div><span>Harga beli</span><strong>${formatCurrency(tile.price)}</strong></div>
+        ${tile.rent ? `<div><span>Sewa dasar</span><strong>${formatCurrency(tile.rent)}</strong></div>` : ''}
+        ${isProperty ? `<div><span>Biaya rumah</span><strong>${formatCurrency(houseCost(tile))}</strong></div><div><span>Sewa hotel</span><strong>${formatCurrency(Math.round(tile.rent * 6))}</strong></div>` : ''}
+        ${isUtility ? `<div><span>Sewa saat ini</span><strong>${formatCurrency(getRent(tile))}</strong></div>` : ''}
+      </div>` : `<div class="tile-info-special">${escapeHtml(tile?.detail || 'Petak khusus')}</div>`;
+    return `<div class="modal-layer"><div class="modal-card tile-info-modal">${asset ? `<div class="tile-info-art"><img src="${asset}" alt="${escapeHtml(tile.name)}" /></div>` : ''}<p class="eyebrow">${isProperty ? 'PROPERTI' : isUtility ? 'FASILITAS' : 'PETAK KHUSUS'}</p><h3>${escapeHtml(tile.name)}</h3>${priceRows}<div class="tile-info-owner">${tile.owner !== null && tile.owner !== undefined ? `Dimiliki oleh <strong>${escapeHtml(state.players[tile.owner]?.name || 'Pemain')}</strong>` : 'Belum dimiliki'}</div><div class="modal-actions"><button class="btn btn-primary btn-wide" data-action="modal-close">Tutup</button></div></div></div>`;
+  }
   if (modal.type === 'purchase') {
     return `<div class="modal-layer"><div class="modal-card property-modal"><div class="modal-property-icon">◈</div><p class="eyebrow">PROPERTY</p><h3>${escapeHtml(modal.tile.name)}</h3><p><strong style="color:var(--gold)">${formatCurrency(modal.tile.price)}</strong> · rent ${formatCurrency(getRent(modal.tile))}</p><div class="row between" style="margin-top:15px"><span class="muted small">Saldo ${formatCurrency(state.players[state.activePlayer]?.cash || 0)}</span><span style="color:var(--success);font-size:.72rem">+ LAND</span></div><div class="modal-actions"><button class="btn btn-ghost" data-action="modal-skip">Lewati</button><button class="btn btn-primary" data-action="modal-buy">Beli</button></div></div></div>`;
   }
@@ -2042,6 +2057,16 @@ function navigate(screen) {
 
 function handleClick(event) {
   if (state.orientationLocked) return;
+  const boardCell = event.target.closest('.board-cell[data-tile-index]');
+  if (boardCell && !event.target.closest('.token') && !event.target.closest('[data-action]')) {
+    const index = Number(boardCell.dataset.tileIndex);
+    const tile = state.tiles[index] || TILE_BLUEPRINT[index];
+    if (tile) {
+      state.modal = { type: 'tile-info', tile, tileIndex: index };
+      render();
+    }
+    return;
+  }
   const target = event.target.closest('[data-action]');
   if (!target) return;
   const action = target.dataset.action;
@@ -2219,6 +2244,14 @@ function handleChange(event) {
 }
 
 function handleKeydown(event) {
+  if ((event.key === 'Enter' || event.key === ' ') && event.target.closest('.board-cell[data-tile-index]')) {
+    event.preventDefault();
+    const cell = event.target.closest('.board-cell[data-tile-index]');
+    const index = Number(cell.dataset.tileIndex);
+    const tile = state.tiles[index] || TILE_BLUEPRINT[index];
+    if (tile) { state.modal = { type: 'tile-info', tile, tileIndex: index }; render(); }
+    return;
+  }
   if (state.orientationLocked || !state.question || state.aiThinking) return;
   if (/^\d$/.test(event.key)) { event.preventDefault(); handleAnswerKey(event.key); }
   else if (event.key === '-') { event.preventDefault(); handleAnswerKey('-'); }
@@ -2283,7 +2316,7 @@ window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; re
 window.addEventListener('resize', updateOrientationLock, { passive: true });
 window.addEventListener('orientationchange', () => window.setTimeout(updateOrientationLock, 80), { passive: true });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=44').catch(() => {}));
 }
 
 (async function bootstrap() {
