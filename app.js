@@ -93,6 +93,13 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
+const ASSET_VERSION = '42';
+
+function versionedAsset(path) {
+  if (!path) return '';
+  return `${path}${path.includes('?') ? '&' : '?'}v=${ASSET_VERSION}`;
+}
+
 const TILE_ASSET_KEYS = [
   'start', 'lumina', 'soal-bonus-01', 'nova-park', 'pajak', 'orbit', 'deep-space', 'pixel-bay',
   'kartu-misteri-01', 'skyline', 'prison', 'solara', 'airport', 'velvet-city', 'soal-bonus-02',
@@ -324,11 +331,11 @@ function characterAsset(playerIndex = 0) {
 function characterMarkup(playerIndex = 0, player = null, className = 'character-avatar-image') {
   const asset = characterAsset(playerIndex);
   const fallback = escapeHtml(player?.avatar || (playerIndex === 0 ? state.player.avatar : '🤖'));
-  return `<img class="${className}" src="${asset}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span class="character-avatar-fallback">${fallback}</span>`;
+  return `<img class="${className}" src="${versionedAsset(asset)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span class="character-avatar-fallback">${fallback}</span>`;
 }
 
 function logoMarkup() {
-  return `<div class="logo-mark" aria-label="Numeric Monopoly Matematic logo"><img src="assets/logo-favicon.png" alt="" onerror="this.style.display='none'" /><span class="logo-fallback">∑</span></div>`;
+  return `<div class="logo-mark" aria-label="Numeric Monopoly Matematic logo"><img src="${versionedAsset('assets/logo-favicon.png')}" alt="" onerror="this.style.display='none'" /><span class="logo-fallback">∑</span></div>`;
 }
 
 function renderLogin() {
@@ -337,7 +344,7 @@ function renderLogin() {
       <section class="login-brand-zone">
         <div class="login-topline"><span><i class="live-dot"></i> LIVE ARENA</span><span>SEASON 08</span></div>
         <div class="brand-lockup compact-brand">${logoMarkup()}<div><div class="brand-name">Numeric Monopoly</div><div class="brand-sub">Matematic</div></div></div>
-        <img class="login-full-logo" src="assets/logo-numeric-monopoly-matematic.png" alt="Numeric Monopoly Matematic" onerror="this.style.display='none'" />
+        <img class="login-full-logo" src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none'" />
         <div class="login-overline">THINK · ROLL · WIN</div>
         <div class="login-board-preview" aria-hidden="true">
           <div class="preview-orbit orbit-one"></div><div class="preview-orbit orbit-two"></div>
@@ -446,7 +453,7 @@ function renderDashboard() {
   return `
     <section class="game-home">
       <article class="home-hero panel">
-        <img class="home-brand-logo" src="assets/logo-numeric-monopoly-matematic.png" alt="" onerror="this.remove()" />
+        <img class="home-brand-logo" src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="" onerror="this.remove()" />
         <div class="home-hero-copy"><div class="hero-badge"><i class="live-dot"></i> SEASON 08 <span>•</span> ${DIFFICULTIES[state.difficulty].label.toUpperCase()}</div><p class="eyebrow">WELCOME, ${escapeHtml(state.player.name).toUpperCase()}</p><h2>READY<br /><span class="gradient-text">TO ROLL?</span></h2><div class="home-actions"><button class="btn btn-primary btn-lg" data-action="quick-start" data-mode="ai"><span>1 VS AI</span><span>↗</span></button><button class="btn btn-ghost btn-lg" data-action="quick-start" data-mode="local"><span>1 VS 1</span></button><button class="btn btn-ghost btn-lg" data-action="quick-start" data-mode="online"><span>1 VS 1 ONLINE</span></button></div></div>
         <div class="home-hero-art" aria-hidden="true"><div class="hero-ring ring-a"></div><div class="hero-ring ring-b"></div><div class="hero-dice">${selectedItem('dice')?.glyph || '6'}</div><div class="hero-pawn">${characterMarkup(0, state.player, "hero-character-image")}</div><div class="hero-spark spark-a">✦</div><div class="hero-spark spark-b">◆</div></div>
       </article>
@@ -484,7 +491,7 @@ function boardGridPosition(index) {
 function tokenMarkup(player, playerIndex) {
   const offset = playerIndex === 0 ? { left: '8%', top: '8%' } : { left: '50%', top: '48%' };
   const character = selectedItem('character') || SHOP_DATA.character[0];
-  return `<span class="token ${playerIndex === 1 ? 'ai' : ''}" data-player-index="${playerIndex}" style="--token-color:${playerColor(playerIndex)};left:${offset.left};top:${offset.top}" title="${escapeHtml(player.name)}"><img src="${character.asset}" alt="" onerror="this.style.display='none'" /><span class="token-fallback">${player.avatar}</span></span>`;
+  return `<span class="token ${playerIndex === 1 ? 'ai ai-token' : 'player-token'}" data-player-index="${playerIndex}" style="--token-color:${playerColor(playerIndex)}" title="${escapeHtml(player.name)}"><img src="${versionedAsset(character.asset)}" alt="" onerror="this.style.display='none'" /><span class="token-fallback">${player.avatar}</span></span>`;
 }
 
 function renderAnswerNotice() {
@@ -517,7 +524,7 @@ function diceCubeMarkup(value, asset) {
   const safeAsset = asset || '';
   const number = Number(value);
   const label = Number.isInteger(number) && number >= 1 && number <= 6 ? number : (value === '?' ? '?' : '—');
-  return `<span class="dice-image-face"><img class="dice-skin dice-whole" src="${safeAsset}" alt="Dadu ${label}" onerror="this.style.display='none'" /><span class="dice-face-content" aria-hidden="true"></span></span>`;
+  return `<span class="dice-image-face"><img class="dice-skin dice-whole" src="${versionedAsset(safeAsset)}" alt="Dadu ${label}" onerror="this.style.display='none'" /><span class="dice-face-content" aria-hidden="true"></span></span>`;
 }
 
 function dice3DMarkup(id, value, rolling, asset) {
@@ -556,10 +563,10 @@ function renderGame() {
       ${renderAnswerNotice()}
       <div class="game-layout">
         <div class="board-wrap ${themeClass()} has-board-theme" style="isolation:isolate">
-          <img class="board-theme-image" src="${selectedItem('board')?.asset || ''}" alt="" onerror="this.style.display='none'" />
+          <img class="board-theme-image" src="${versionedAsset(selectedItem('board')?.asset || '')}" alt="" onerror="this.style.display='none'" />
           <div class="board-camera" id="board-camera">
             <div class="board" aria-label="Papan permainan">
-              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark"><img src="assets/logo-numeric-monopoly-matematic.png" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span class="board-center-logo-fallback">∑</span></div><h2>NUMERIC<br /><span class="gradient-text">MONOPOLY</span></h2><p>Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
+              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span class="board-center-logo-fallback">∑</span></div><h2>NUMERIC<br /><span class="gradient-text">MONOPOLY</span></h2><p>Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
             ${board.map((tile, index) => renderBoardCell(tile, index)).join('')}
             </div>
           </div>
@@ -569,7 +576,7 @@ function renderGame() {
         <aside class="game-side">
           <section class="turn-card panel"><div class="turn-heading"><h3>GILIRAN</h3><span class="turn-status">${turnStatus}</span></div>${state.players.map((player, index) => renderPlayerLine(player, index)).join('')}</section>
           ${renderOwnershipLegend()}
-          <section class="dice-panel panel"><div class="dice-visual ${state.rolling ? 'rolling' : isMoving ? 'dice-moving' : ''}"><img src="${currentDice?.asset || ''}" alt="" onerror="this.style.display='none'" /><span class="dice-number" id="dice-number">${diceValue}</span></div><div class="dice-copy"><h3 id="dice-label">${isMoving ? `PINDAH ${state.moveStep}/${state.lastRoll}` : `DADU ${diceValue}`}</h3><p>${state.canRoll ? 'SIAP' : isMoving ? 'BERJALAN' : 'JAWAB SOAL'}</p></div><button class="btn btn-primary roll-btn" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></section>
+          <section class="dice-panel panel"><div class="dice-visual ${state.rolling ? 'rolling' : isMoving ? 'dice-moving' : ''}"><img src="${versionedAsset(currentDice?.asset || '')}" alt="" onerror="this.style.display='none'" /><span class="dice-number" id="dice-number">${diceValue}</span></div><div class="dice-copy"><h3 id="dice-label">${isMoving ? `PINDAH ${state.moveStep}/${state.lastRoll}` : `DADU ${diceValue}`}</h3><p>${state.canRoll ? 'SIAP' : isMoving ? 'BERJALAN' : 'JAWAB SOAL'}</p></div><button class="btn btn-primary roll-btn" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></section>
           ${renderBankPanel()}
           ${renderOwnedProperties()}
           <section class="activity-card panel"><h3>AKTIVITAS</h3><div class="activity-list">${renderActivity()}</div></section>
@@ -635,7 +642,11 @@ function renderBoardCell(tile, index) {
   const exactAsset = tile.asset || `assets/tiles/tile-${tileNo}-${tileKey}.png`;
   const fallbackAsset = `assets/tiles/tile-${tileNo}.png`;
   const fallbackAsset2 = tileKey ? `assets/tiles/${tileKey}.png` : '';
-  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${ownerColor};--cell-opacity:${owner !== null && owner !== undefined ? 1 : .22}" title="${escapeHtml(tile.name)}"><img class="cell-art" src="${exactAsset}" data-fallback-1="${fallbackAsset}" data-fallback-2="${fallbackAsset2}" alt="${escapeHtml(tile.name)}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackStage==='1'){this.dataset.fallbackStage='2';this.src=this.dataset.fallback2||this.dataset.fallback1;}else if(this.dataset.fallbackStage==='2'){this.dataset.fallbackStage='3';this.src=this.dataset.fallback1;}else{this.style.display='none';}" />${building}<div class="cell-content"><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${ownerBadge}${playersHere}</div>`;
+  const tileSrc = versionedAsset(exactAsset);
+  const tileFallback1 = versionedAsset(fallbackAsset);
+  const tileFallback2 = versionedAsset(fallbackAsset2);
+  const tileOnError = `if(!this.dataset.fallbackStage){this.dataset.fallbackStage='1';this.src=this.dataset.fallback1;}else if(this.dataset.fallbackStage==='1' && this.dataset.fallback2){this.dataset.fallbackStage='2';this.src=this.dataset.fallback2;}else{this.classList.add('tile-art-missing');}`;
+  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${ownerColor};--cell-opacity:${owner !== null && owner !== undefined ? 1 : .22}" title="${escapeHtml(tile.name)}"><img class="cell-art" src="${tileSrc}" data-fallback-1="${tileFallback1}" data-fallback-2="${tileFallback2}" alt="${escapeHtml(tile.name)}" loading="eager" decoding="async" onerror="${tileOnError}" />${building}<div class="cell-content"><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${ownerBadge}${playersHere}</div>`;
 }
 
 function renderPlayerLine(player, index) {

@@ -7,3 +7,6 @@
 @media (max-width: 560px) {
   .board-cell .cell-art { top: 4px; height: 52%; opacity: .88; border-radius: 3px; }
 }
+
+/* v42: tile artwork must remain visible above the cell background. */
+.board-cell .cell-art { z-index:2 !important; opacity:1 !important; mix-blend-mode:normal !important; object-fit:contain !important; }

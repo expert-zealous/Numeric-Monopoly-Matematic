@@ -9,3 +9,7 @@
 @keyframes answerNoticeIn{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}@keyframes answerNoticeGlow{50%{box-shadow:0 13px 35px rgba(0,0,0,.35),0 0 24px rgba(188,242,106,.34)}}
 body.is-game-screen .topbar .page-kicker,body.is-game-screen .topbar .page-heading{display:none}body.is-game-screen .topbar{min-height:0;margin-bottom:3px}body.is-game-screen .topbar-left>div{display:none}
 @media(max-width:900px){.turn-focus-banner{min-height:32px;padding:3px 7px}.turn-focus-avatar{width:24px;height:24px;font-size:.7rem}.turn-focus-copy strong{font-size:.56rem}.turn-focus-banner>b{font-size:.4rem}.answer-notice{top:26px;width:min(360px,calc(100% - 20px));padding:10px 12px}.answer-notice span{font-size:.55rem}}
+
+/* v42: center turn-character is centered inside its actual box. */
+.turn-focus-avatar { overflow:hidden !important; display:grid !important; place-items:center !important; line-height:0 !important; }
+.turn-focus-avatar .turn-character-image { width:100% !important; height:100% !important; object-fit:contain !important; margin:0 !important; }

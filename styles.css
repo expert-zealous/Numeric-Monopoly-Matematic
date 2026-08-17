@@ -725,3 +725,74 @@ body.is-game-screen .turn-focus-banner { z-index:30 !important; }
   .center-roll-result>b { min-width:42px !important; height:38px !important; font-size:1.1rem !important; }
   .board-center-mark { width:70px !important; height:54px !important; }
 }
+
+/* === v42 board readability corrections === */
+.board-cell .cell-art {
+  z-index: 2 !important;
+  top: 4px !important;
+  left: 2px !important;
+  right: 2px !important;
+  width: calc(100% - 4px) !important;
+  height: 60% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,.42));
+}
+.board-cell .cell-art.tile-art-missing { display:none !important; }
+.board-cell .cell-content,
+.board-cell .cell-price,
+.board-cell .cell-owners { z-index: 3 !important; }
+.board-cell .owner-badge,
+.board-cell .unowned-badge,
+.board-cell .building-badge { z-index: 6 !important; }
+.board-cell:has(.token) { overflow: visible !important; z-index: 10; }
+.token {
+  width: 76px !important;
+  height: 76px !important;
+  overflow: visible !important;
+  z-index: 20 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.token.player-token { left: -9px !important; top: -7px !important; }
+.token.ai-token { left: auto !important; right: -9px !important; top: -7px !important; }
+.token img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 8px 14px rgba(0,0,0,.38) !important;
+}
+.token-fallback { width: 72% !important; height: 72% !important; margin:auto; }
+.turn-focus-avatar {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  overflow: hidden !important;
+  display:grid !important;
+  place-items:center !important;
+  line-height:0 !important;
+}
+.turn-character-image {
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  margin:0 !important;
+}
+@media(max-width:900px){
+  .board-cell .cell-art { height: 60% !important; }
+  .token { width:72px !important; height:72px !important; }
+  .token.player-token { left:-7px !important; top:-6px !important; }
+  .token.ai-token { right:-7px !important; top:-6px !important; }
+  .turn-focus-avatar { width:32px !important; height:32px !important; min-width:32px !important; min-height:32px !important; }
+}

@@ -5,3 +5,7 @@
 .token.ai .token-fallback { background:linear-gradient(145deg,#ffd4ec,#ff80c8 38%,#7b54df);box-shadow:inset 5px 5px 8px rgba(255,255,255,.4),inset -5px -8px 10px rgba(81,25,128,.36),0 7px 0 rgba(96,40,150,.85),0 10px 15px rgba(0,0,0,.35); }
 .token img { z-index:1;border:2px solid rgba(255,255,255,.88);border-radius:48% 48% 38% 38%;box-shadow:0 8px 12px rgba(0,0,0,.35); }
 .token img:not([style*="display: none"]) + .token-fallback { opacity:0; }
+
+/* v42: character PNGs are deliberately larger than their Monopoly tile. */
+.token { overflow:visible !important; }
+.token img { object-fit:contain !important; object-position:center !important; }
