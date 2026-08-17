@@ -283,6 +283,18 @@ function playSound(kind) {
   } catch {}
 }
 
+function tryUnlockMusic() {
+  const loginAudio = document.getElementById('audio-login');
+  const gameAudio = document.getElementById('audio-game');
+  const audio = state.screen === 'game' ? gameAudio : loginAudio;
+  if (!audio || !state.music) return;
+  try {
+    audio.muted = false;
+    const result = audio.play();
+    if (result?.catch) result.catch(() => {});
+  } catch {}
+}
+
 function updateMusic() {
   const loginAudio = document.getElementById('audio-login');
   const gameAudio = document.getElementById('audio-game');
@@ -332,7 +344,6 @@ function renderLogin() {
           <div class="preview-tile tile-a">+8</div><div class="preview-tile tile-b">×6</div><div class="preview-tile tile-c">−3</div>
           <div class="preview-dice">6</div><div class="preview-token">${characterMarkup(0, state.player, "login-character-image")}</div>
         </div>
-        <div class="login-stat-strip"><span><b>40</b> TILES</span><span><b>∞</b> MOVES</span><span><b>1</b> CHAMPION</span></div>
       </section>
       <section class="login-card panel">
         <div class="login-card-top"><span>PLAYER SETUP</span><span class="online-state"><i class="live-dot"></i> READY</span></div>
@@ -472,7 +483,7 @@ function boardGridPosition(index) {
 
 function tokenMarkup(player, playerIndex) {
   const offset = playerIndex === 0 ? { left: '8%', top: '8%' } : { left: '50%', top: '48%' };
-  const character = playerIndex === 0 ? selectedItem('character') : (SHOP_DATA.character.find((item) => item.id === 'character-01') || SHOP_DATA.character[0]);
+  const character = selectedItem('character') || SHOP_DATA.character[0];
   return `<span class="token ${playerIndex === 1 ? 'ai' : ''}" data-player-index="${playerIndex}" style="--token-color:${playerColor(playerIndex)};left:${offset.left};top:${offset.top}" title="${escapeHtml(player.name)}"><img src="${character.asset}" alt="" onerror="this.style.display='none'" /><span class="token-fallback">${player.avatar}</span></span>`;
 }
 
@@ -506,7 +517,7 @@ function diceCubeMarkup(value, asset) {
   const safeAsset = asset || '';
   const number = Number(value);
   const label = Number.isInteger(number) && number >= 1 && number <= 6 ? number : (value === '?' ? '?' : '—');
-  return `<span class="dice-image-face"><img class="dice-skin dice-whole" src="${safeAsset}" alt="Dadu ${label}" onerror="this.style.display='none'" /><span class="dice-face-content">${label}</span></span>`;
+  return `<span class="dice-image-face"><img class="dice-skin dice-whole" src="${safeAsset}" alt="Dadu ${label}" onerror="this.style.display='none'" /><span class="dice-face-content" aria-hidden="true"></span></span>`;
 }
 
 function dice3DMarkup(id, value, rolling, asset) {
@@ -619,7 +630,12 @@ function renderBoardCell(tile, index) {
   const ownerLabel = ownerPlayer ? `${escapeHtml(ownerPlayer.name.slice(0, 7))}` : '';
   const isBuyable = tile.type === 'property' || tile.type === 'utility';
   const ownerBadge = isBuyable ? (ownerPlayer ? `<div class="owner-badge" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}"><span>${characterMarkup(owner, ownerPlayer, "owner-character-image")}</span><b>${ownerLabel}</b></div>` : '<div class="unowned-badge">OPEN</div>') : '';
-  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${ownerColor};--cell-opacity:${owner !== null && owner !== undefined ? 1 : .22}" title="${escapeHtml(tile.name)}"><img class="cell-art" src="${tile.asset || ''}" alt="" onerror="this.remove()" />${building}<div class="cell-content"><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${ownerBadge}${playersHere}</div>`;
+  const tileKey = TILE_ASSET_KEYS[index] || '';
+  const tileNo = String(index + 1).padStart(2, '0');
+  const exactAsset = tile.asset || `assets/tiles/tile-${tileNo}-${tileKey}.png`;
+  const fallbackAsset = `assets/tiles/tile-${tileNo}.png`;
+  const fallbackAsset2 = tileKey ? `assets/tiles/${tileKey}.png` : '';
+  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${ownerColor};--cell-opacity:${owner !== null && owner !== undefined ? 1 : .22}" title="${escapeHtml(tile.name)}"><img class="cell-art" src="${exactAsset}" data-fallback-1="${fallbackAsset}" data-fallback-2="${fallbackAsset2}" alt="${escapeHtml(tile.name)}" loading="eager" decoding="async" onerror="if(this.dataset.fallbackStage==='1'){this.dataset.fallbackStage='2';this.src=this.dataset.fallback2||this.dataset.fallback1;}else if(this.dataset.fallbackStage==='2'){this.dataset.fallbackStage='3';this.src=this.dataset.fallback1;}else{this.style.display='none';}" />${building}<div class="cell-content"><div class="cell-icon">${tile.icon}</div><div class="cell-name">${escapeHtml(name)}</div></div>${price}${ownerBadge}${playersHere}</div>`;
 }
 
 function renderPlayerLine(player, index) {
@@ -2242,6 +2258,8 @@ function updateOrientationLock() {
 }
 
 app.addEventListener('click', handleClick);
+document.addEventListener('pointerdown', tryUnlockMusic, { once: true, passive: true });
+document.addEventListener('keydown', tryUnlockMusic, { once: true });
 app.addEventListener('input', handleInput);
 app.addEventListener('change', handleChange);
 document.addEventListener('keydown', handleKeydown);

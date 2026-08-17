@@ -1,10 +1,10 @@
 /* Character artwork: large transparent PNG, no card/background frame. */
 .board-cell { overflow:visible !important; }
-.board-cell .token { z-index:40 !important; left:50% !important; top:50% !important; width:clamp(42px,5vw,64px); height:clamp(52px,6vw,76px); overflow:visible!important; border:0!important; background:transparent!important; box-shadow:none!important; transform:translate(-50%,-50%)!important; }
+.board-cell .token { z-index:40 !important; left:50% !important; top:50% !important; width:clamp(58px,7vw,86px); height:clamp(72px,9vw,104px); overflow:visible!important; border:0!important; background:transparent!important; box-shadow:none!important; transform:translate(-50%,-50%)!important; }
 .board-cell .token::after { display:none!important; }
 .board-cell .token::before { position:absolute;z-index:-1;bottom:-3px;left:14%;width:72%;height:8px;border-radius:50%;background:rgba(0,0,0,.4);filter:blur(3px);content:''; }
 .board-cell .token img { position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:contain;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:0 9px 13px rgba(0,0,0,.25)!important;filter:drop-shadow(0 5px 6px rgba(0,0,0,.24)); }
 .board-cell .token-fallback { position:relative;z-index:2;display:grid;width:64%;height:64%;place-items:center;border:0;border-radius:48% 48% 38% 38%;background:linear-gradient(145deg,#d6fbff 0%,#6ef2ff 35%,#6557e8 100%);box-shadow:inset 5px 5px 8px rgba(255,255,255,.45),inset -5px -8px 10px rgba(21,25,120,.4),0 7px 0 rgba(41,47,140,.85),0 10px 15px rgba(0,0,0,.35);font-size:clamp(.75rem,1.5vw,1.1rem);transform:rotate(-3deg); }
 .board-cell .token.ai .token-fallback { background:linear-gradient(145deg,#ffd4ec,#ff80c8 38%,#7b54df);box-shadow:inset 5px 5px 8px rgba(255,255,255,.4),inset -5px -8px 10px rgba(81,25,128,.36),0 7px 0 rgba(96,40,150,.85),0 10px 15px rgba(0,0,0,.35); }
 .board-cell .token img:not([style*="display: none"]) + .token-fallback { display:none; }
-@media(max-width:560px){.board-cell .token{width:34px;height:44px}.board-cell .token-fallback{font-size:.7rem}.board-cell .token::before{bottom:-2px}}
+@media(max-width:560px){.board-cell .token{width:58px;height:72px}.board-cell .token-fallback{font-size:.9rem}.board-cell .token::before{bottom:-2px}}
