@@ -1158,3 +1158,152 @@ body.is-game-screen .turn-focus-banner { z-index:30 !important; }
 .dice-panel .dice-visual .dice-pips{grid-template-columns:repeat(3,9px);grid-template-rows:repeat(3,9px);gap:7px;}
 .dice-panel .dice-visual .dice-pips .pip{width:9px;height:9px;}
 @media(max-width:560px){.board-center .center-tagline{font-size:.78rem!important}.dice-panel .dice-visual .dice-pips{grid-template-columns:repeat(3,7px);grid-template-rows:repeat(3,7px);gap:5px}.dice-panel .dice-visual .dice-pips .pip{width:7px;height:7px}}
+
+/* === v47: final board readability + 3D dice skill control === */
+.board-center-copy{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  margin:0!important;
+  padding:clamp(6px,1vw,14px)!important;
+  justify-content:center!important;
+  align-items:center!important;
+  text-align:center!important;
+}
+.board-center-mark{
+  width:clamp(116px,13vw,178px)!important;
+  height:clamp(82px,10vw,132px)!important;
+  margin:0 auto 3px!important;
+}
+.board-center .center-mode{
+  order:2!important;
+  margin:0 0 4px!important;
+  font-size:clamp(.56rem,.9vw,.76rem)!important;
+  font-weight:900!important;
+  color:var(--lime)!important;
+}
+.board-center .center-tagline{
+  order:3!important;
+  margin:0 0 6px!important;
+  font-size:clamp(.78rem,1.2vw,1rem)!important;
+}
+.board-center .center-roll-result{order:4!important;}
+.board-center .dice-skill-wrap{order:5!important;}
+.board-center .center-roll-button{order:6!important;}
+
+/* Names stay inside the board, on the inner side of each edge. */
+.board-cell .cell-name-outside{z-index:70!important;pointer-events:none!important;}
+.board-cell .cell-name-outside.edge-bottom{top:-19px!important;bottom:auto!important;left:50%!important;transform:translateX(-50%)!important;}
+.board-cell .cell-name-outside.edge-top{bottom:-19px!important;top:auto!important;left:50%!important;transform:translateX(-50%)!important;}
+.board-cell .cell-name-outside.edge-left{left:calc(100% + 4px)!important;right:auto!important;top:50%!important;transform:translateY(-50%)!important;}
+.board-cell .cell-name-outside.edge-right{right:calc(100% + 4px)!important;left:auto!important;top:50%!important;transform:translateY(-50%)!important;}
+.board-cell[data-tile-index="0"] .cell-name-outside,
+.board-cell[data-tile-index="10"] .cell-name-outside,
+.board-cell[data-tile-index="20"] .cell-name-outside,
+.board-cell[data-tile-index="30"] .cell-name-outside{display:none!important;}
+
+/* Do not create another visual frame around transparent PNG assets. */
+.board-cell .cell-art,
+.board-cell .token img,
+.board-center-mark img{filter:none!important;box-shadow:none!important;border:0!important;border-radius:0!important;background:transparent!important;outline:0!important;}
+.board-cell .cell-art{transform:none!important;clip-path:none!important;}
+.board-cell .token img{transform:scale(1.16)!important;clip-path:none!important;}
+.board-cell{overflow:visible!important;}
+.board-cell .owner-marker{height:6px!important;top:0!important;}
+
+/* 3D six-sided dice. Each face is a real cube face; the stopped orientation matches the result. */
+.dice-3d{position:relative!important;width:82px!important;height:82px!important;display:grid!important;place-items:center!important;perspective:700px!important;transform:none!important;overflow:visible!important;}
+.dice-cube{position:relative;display:block;width:62px;height:62px;transform-style:preserve-3d;transition:transform .28s cubic-bezier(.2,.75,.25,1);}
+.dice-cube-face{position:absolute;inset:0;display:grid;place-items:center;width:62px;height:62px;border:2px solid rgba(30,43,100,.28);border-radius:14px;background:linear-gradient(145deg,#ffffff 0%,#eaf0ff 45%,#aebcf2 100%);box-shadow:inset 4px 4px 0 rgba(255,255,255,.82),inset -5px -7px 12px rgba(48,65,145,.18),0 7px 12px rgba(0,0,0,.24);backface-visibility:hidden;}
+.dice-cube-face.face-front{transform:translateZ(31px);}
+.dice-cube-face.face-back{transform:rotateY(180deg) translateZ(31px);}
+.dice-cube-face.face-right{transform:rotateY(90deg) translateZ(31px);}
+.dice-cube-face.face-left{transform:rotateY(-90deg) translateZ(31px);}
+.dice-cube-face.face-top{transform:rotateX(90deg) translateZ(31px);}
+.dice-cube-face.face-bottom{transform:rotateX(-90deg) translateZ(31px);}
+.dice-cube.show-front{transform:rotateX(0deg) rotateY(0deg);}
+.dice-cube.show-back{transform:rotateY(180deg);}
+.dice-cube.show-right{transform:rotateY(-90deg);}
+.dice-cube.show-left{transform:rotateY(90deg);}
+.dice-cube.show-top{transform:rotateX(-90deg);}
+.dice-cube.show-bottom{transform:rotateX(90deg);}
+.dice-cube-face .dice-pips{display:grid;grid-template-columns:repeat(3,10px);grid-template-rows:repeat(3,10px);gap:7px;}
+.dice-cube-face .dice-pips .pip{width:10px;height:10px;border-radius:50%;background:transparent;}
+.dice-cube-face .dice-pips .pip.on{background:#101c4b;box-shadow:inset 1px 1px 2px rgba(255,255,255,.45),0 1px 2px rgba(0,0,0,.25);}
+.dice-cube-face .dice-question{font-size:2rem;font-weight:900;color:#101c4b;}
+.dice-rolling .dice-cube{animation:diceCubeRoll 1.05s linear infinite;}
+@keyframes diceCubeRoll{0%{transform:rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(.9)}25%{transform:rotateX(105deg) rotateY(125deg) rotateZ(18deg) scale(1.04)}50%{transform:rotateX(220deg) rotateY(250deg) rotateZ(-12deg) scale(.96)}75%{transform:rotateX(335deg) rotateY(375deg) rotateZ(16deg) scale(1.05)}100%{transform:rotateX(450deg) rotateY(540deg) rotateZ(0deg) scale(.9)}}
+.center-dice-pair .dice-3d-mini-wrap{width:92px!important;height:92px!important;perspective:700px!important;}
+.center-dice-pair .dice-3d{width:86px!important;height:86px!important;}
+.center-dice-pair .dice-cube{width:68px;height:68px;}
+.center-dice-pair .dice-cube-face{width:68px;height:68px;border-radius:15px;}
+.center-dice-pair .dice-cube-face.face-front{transform:translateZ(34px);}.center-dice-pair .dice-cube-face.face-back{transform:rotateY(180deg) translateZ(34px);}.center-dice-pair .dice-cube-face.face-right{transform:rotateY(90deg) translateZ(34px);}.center-dice-pair .dice-cube-face.face-left{transform:rotateY(-90deg) translateZ(34px);}.center-dice-pair .dice-cube-face.face-top{transform:rotateX(90deg) translateZ(34px);}.center-dice-pair .dice-cube-face.face-bottom{transform:rotateX(-90deg) translateZ(34px);}
+.center-dice-pair .dice-cube-face .dice-pips{grid-template-columns:repeat(3,11px);grid-template-rows:repeat(3,11px);gap:8px;}.center-dice-pair .dice-cube-face .dice-pips .pip{width:11px;height:11px;}
+.dice-panel .dice-visual{width:108px!important;height:108px!important;display:grid!important;place-items:center!important;border:0!important;background:transparent!important;box-shadow:none!important;transform:none!important;}
+.dice-panel .dice-visual .dice-3d{width:104px!important;height:104px!important;}
+.dice-panel .dice-visual .dice-cube{width:76px;height:76px;}
+.dice-panel .dice-visual .dice-cube-face{width:76px;height:76px;border-radius:17px;}
+.dice-panel .dice-visual .dice-cube-face.face-front{transform:translateZ(38px);}.dice-panel .dice-visual .dice-cube-face.face-back{transform:rotateY(180deg) translateZ(38px);}.dice-panel .dice-visual .dice-cube-face.face-right{transform:rotateY(90deg) translateZ(38px);}.dice-panel .dice-visual .dice-cube-face.face-left{transform:rotateY(-90deg) translateZ(38px);}.dice-panel .dice-visual .dice-cube-face.face-top{transform:rotateX(90deg) translateZ(38px);}.dice-panel .dice-visual .dice-cube-face.face-bottom{transform:rotateX(-90deg) translateZ(38px);}
+
+/* Hold-to-roll skill bar: center is the harder medium zone, edges are mostly small with a rare big result. */
+.dice-skill-wrap{width:min(360px,90%);margin:2px auto 5px;text-align:center;}
+.dice-skill-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;color:#b9c8f2;font-size:.45rem;font-weight:900;letter-spacing:.08em;}
+.dice-skill-title b{color:var(--cyan);font-size:.48rem;}
+.dice-skill-track{position:relative;height:31px;width:100%;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(5,10,35,.42));border:1px solid rgba(255,255,255,.14);overflow:hidden;box-shadow:inset 0 2px 5px rgba(0,0,0,.28);}
+.dice-skill-track::before{content:'';position:absolute;left:0;right:0;top:14px;height:10px;border-radius:50%;background:linear-gradient(90deg,rgba(91,228,255,.18),rgba(198,239,104,.38) 50%,rgba(255,117,191,.18));transform:perspective(80px) rotateX(18deg);}
+.dice-skill-track::after{content:'';position:absolute;left:28%;right:28%;top:4px;height:22px;border:1px solid rgba(198,239,104,.2);border-radius:50%;}
+.skill-zone{position:absolute;z-index:1;top:8px;font-size:.38rem;font-weight:900;letter-spacing:.04em;opacity:.75;pointer-events:none;}
+.zone-small-left{left:6%;color:var(--cyan);}.zone-medium{left:50%;transform:translateX(-50%);color:var(--lime);}.zone-small-right{right:6%;color:var(--cyan);}
+.dice-skill-marker{position:absolute;z-index:4;top:6px;width:19px;height:19px;margin-left:-9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#5be4ff 38%,#806dff 78%);border:2px solid #fff;box-shadow:0 0 14px rgba(91,228,255,.7),0 4px 8px rgba(0,0,0,.3);transition:left .04s linear;}
+.dice-skill-hint{margin-top:3px;color:#8998c4;font-size:.39rem;line-height:1.25;}
+.dice-skill-hint strong{color:#dbe7ff;}
+.center-roll-button{min-height:42px!important;padding:0 22px!important;font-size:.72rem!important;font-weight:900!important;touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;}
+.game-side .roll-btn{display:none!important;}
+
+@media(max-width:900px){
+  body.is-game-screen .turn-focus-banner{top:-5px!important;}
+  .board-center-mark{width:112px!important;height:80px!important;}
+  .center-dice-pair .dice-3d-mini-wrap{width:78px!important;height:78px!important;}.center-dice-pair .dice-3d{width:72px!important;height:72px!important;}.center-dice-pair .dice-cube{width:58px;height:58px;}.center-dice-pair .dice-cube-face{width:58px;height:58px;}.center-dice-pair .dice-cube-face.face-front{transform:translateZ(29px)}.center-dice-pair .dice-cube-face.face-back{transform:rotateY(180deg) translateZ(29px)}.center-dice-pair .dice-cube-face.face-right{transform:rotateY(90deg) translateZ(29px)}.center-dice-pair .dice-cube-face.face-left{transform:rotateY(-90deg) translateZ(29px)}.center-dice-pair .dice-cube-face.face-top{transform:rotateX(90deg) translateZ(29px)}.center-dice-pair .dice-cube-face.face-bottom{transform:rotateX(-90deg) translateZ(29px)}
+  .center-dice-pair .dice-cube-face .dice-pips{grid-template-columns:repeat(3,9px);grid-template-rows:repeat(3,9px);gap:6px}.center-dice-pair .dice-cube-face .dice-pips .pip{width:9px;height:9px}
+  .dice-skill-wrap{width:min(310px,88%);}.dice-skill-track{height:28px;}.dice-skill-hint{font-size:.34rem;}.center-roll-button{min-height:38px!important;font-size:.64rem!important;padding:0 18px!important;}
+}
+@media(max-width:560px){
+  .board-center-copy{padding:4px!important;}
+  .board-center-mark{width:98px!important;height:70px!important;margin-bottom:1px!important;}
+  .board-center .center-mode{font-size:.46rem!important;margin-bottom:2px!important;}
+  .board-center .center-tagline{font-size:.62rem!important;margin-bottom:3px!important;}
+  .dice-skill-wrap{width:250px!important;}.dice-skill-track{height:25px;}.skill-zone{font-size:.31rem;top:7px;}.dice-skill-marker{width:16px;height:16px;top:4px;margin-left:-8px;}.dice-skill-hint{font-size:.3rem;}
+  .center-dice-pair .dice-3d-mini-wrap{width:68px!important;height:68px!important;}.center-dice-pair .dice-3d{width:64px!important;height:64px!important;}.center-dice-pair .dice-cube{width:50px;height:50px;}.center-dice-pair .dice-cube-face{width:50px;height:50px;border-radius:11px;}.center-dice-pair .dice-cube-face.face-front{transform:translateZ(25px)}.center-dice-pair .dice-cube-face.face-back{transform:rotateY(180deg) translateZ(25px)}.center-dice-pair .dice-cube-face.face-right{transform:rotateY(90deg) translateZ(25px)}.center-dice-pair .dice-cube-face.face-left{transform:rotateY(-90deg) translateZ(25px)}.center-dice-pair .dice-cube-face.face-top{transform:rotateX(90deg) translateZ(25px)}.center-dice-pair .dice-cube-face.face-bottom{transform:rotateX(-90deg) translateZ(25px)}
+  .center-dice-pair .dice-cube-face .dice-pips{grid-template-columns:repeat(3,7px);grid-template-rows:repeat(3,7px);gap:5px}.center-dice-pair .dice-cube-face .dice-pips .pip{width:7px;height:7px}
+}
+
+
+/* === v48 final layout: horizontal 3D dice + semicircle skill control === */
+.center-roll-result{display:flex!important;flex-direction:column!important;align-items:center!important;gap:3px!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;}
+.center-dice-pair{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:8px!important;min-height:92px!important;}
+.center-dice-pair em{font-size:1rem!important;}
+.dice-skill-arc-wrap{width:min(360px,92%)!important;margin:0 auto!important;}
+.dice-skill-arc{position:relative!important;width:100%!important;height:150px!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important;}
+.dice-skill-svg{display:block;width:100%;height:100%;overflow:visible;}
+.dice-skill-svg path{fill:none;stroke-linecap:round;}
+.dice-skill-svg .arc-shadow{stroke:rgba(5,10,35,.72);stroke-width:24;opacity:.75;}
+.dice-skill-svg .arc-zone{stroke-width:16;}
+.dice-skill-svg .zone-green{stroke:#6be67b;}
+.dice-skill-svg .zone-orange{stroke:#ffae42;}
+.dice-skill-svg .zone-red{stroke:#ef5350;}
+.dice-skill-svg #dice-skill-marker{fill:#fff;stroke:#5be4ff;stroke-width:4;filter:drop-shadow(0 0 7px rgba(91,228,255,.9));}
+.dice-skill-svg .arc-label{fill:#dce7ff;font-size:10px;font-weight:900;text-anchor:middle;}
+.dice-skill-svg .red-label{fill:#ffb0ad;}
+.dice-skill-title{margin-bottom:-2px!important;}
+.center-roll-button{position:relative!important;z-index:20!important;margin-top:-8px!important;min-height:46px!important;font-size:.82rem!important;}
+@media(max-width:560px){
+ .center-dice-pair{gap:3px!important;min-height:70px!important;}
+ .center-dice-pair .dice-3d-mini-wrap{width:64px!important;height:64px!important;}
+ .center-dice-pair .dice-3d{width:60px!important;height:60px!important;}
+ .center-dice-pair .dice-cube{width:48px!important;height:48px!important;}
+ .center-dice-pair .dice-cube-face{width:48px!important;height:48px!important;}
+ .dice-skill-arc{height:112px!important;}
+ .center-roll-button{min-height:40px!important;font-size:.7rem!important;margin-top:-10px!important;}
+}

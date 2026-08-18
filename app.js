@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '46';
+const ASSET_VERSION = '48';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -205,6 +205,7 @@ function freshState() {
     pendingInstall: false,
     orientationLocked: false,
     orientationRemainingMs: null,
+    diceCharge: 0.5,
   };
 }
 
@@ -520,10 +521,27 @@ function dicePips(value) {
   return `<span class="dice-pips">${Array.from({ length: 9 }, (_, index) => `<i class="pip ${active.includes(index) ? 'on' : ''}"></i>`).join('')}</span>`;
 }
 
+function diceFace(value, faceClass) {
+  return `<span class="dice-cube-face ${faceClass}" aria-label="Dadu ${value}">${dicePips(value)}</span>`;
+}
+
+function diceOrientationClass(value) {
+  const map = { 1: 'show-front', 2: 'show-right', 3: 'show-top', 4: 'show-bottom', 5: 'show-left', 6: 'show-back' };
+  return map[Number(value)] || 'show-front';
+}
+
 function diceCubeMarkup(value, asset) {
   const number = Number(value);
   const label = Number.isInteger(number) && number >= 1 && number <= 6 ? number : (value === '?' ? '?' : '—');
-  return `<span class="dice-image-face standard-die-face" aria-label="Dadu ${label}">${dicePips(value)}</span>`;
+  const orientation = diceOrientationClass(number);
+  return `<span class="dice-cube ${orientation}" aria-label="Dadu ${label}">
+    ${diceFace(1, 'face-front')}
+    ${diceFace(6, 'face-back')}
+    ${diceFace(2, 'face-right')}
+    ${diceFace(5, 'face-left')}
+    ${diceFace(3, 'face-top')}
+    ${diceFace(4, 'face-bottom')}
+  </span>`;
 }
 
 function dice3DMarkup(id, value, rolling, asset) {
@@ -536,6 +554,114 @@ function updateDiceFace(id, value, rolling) {
   die.classList.toggle('dice-rolling', rolling);
   const asset = die.dataset.diceAsset || selectedItem('dice')?.asset || '';
   die.innerHTML = diceCubeMarkup(value, asset);
+}
+
+function diceSkillMarkup() {
+  const charge = Math.max(0, Math.min(1, Number(state.diceCharge ?? 0.5)));
+  const percent = Math.round(charge * 100);
+  return `<div class="dice-skill-wrap dice-skill-arc-wrap" aria-label="Kontrol kekuatan lemparan dadu">
+    <div class="dice-skill-title"><span>SKILL LEMPAR DADU</span><b id="dice-skill-percent">${percent}%</b></div>
+    <div class="dice-skill-arc" id="dice-skill-track">
+      <svg viewBox="0 0 360 190" aria-hidden="true" class="dice-skill-svg">
+        <path class="arc-shadow" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" />
+        <path class="arc-zone zone-green" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="22 78" stroke-dashoffset="0" />
+        <path class="arc-zone zone-orange" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="23 77" stroke-dashoffset="-22" />
+        <path class="arc-zone zone-red" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="10 90" stroke-dashoffset="-45" />
+        <path class="arc-zone zone-orange" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="23 77" stroke-dashoffset="-55" />
+        <path class="arc-zone zone-green" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="22 78" stroke-dashoffset="-78" />
+        <circle id="dice-skill-marker" cx="25" cy="165" r="9" />
+        <text x="38" y="178" class="arc-label">1–2</text><text x="128" y="75" class="arc-label">3–4</text><text x="172" y="38" class="arc-label red-label">5–6</text><text x="232" y="75" class="arc-label">3–4</text><text x="310" y="178" class="arc-label">1–2</text>
+      </svg>
+    </div>
+    <div class="dice-skill-hint">Tahan <strong>LEMPAR DADU</strong> lalu lepaskan saat indikator berada di zona yang kamu inginkan.</div>
+  </div>`;
+}
+
+let diceChargeRAF = null;
+let diceChargeStartedAt = 0;
+let diceChargeDirection = 1;
+let dicePressHandledUntil = 0;
+
+function setDiceSkillPosition(value) {
+  const clamped = Math.max(0, Math.min(1, value));
+  state.diceCharge = clamped;
+  const marker = document.getElementById('dice-skill-marker');
+  const percent = document.getElementById('dice-skill-percent');
+  if (marker) {
+    const angle = Math.PI - (clamped * Math.PI);
+    const cx = 180 + Math.cos(angle) * 155;
+    const cy = 165 - Math.sin(angle) * 155;
+    marker.setAttribute('cx', cx.toFixed(1));
+    marker.setAttribute('cy', cy.toFixed(1));
+  }
+  if (percent) percent.textContent = `${Math.round(clamped * 100)}%`;
+}
+
+function startDiceSkill() {
+  if (!canUseHumanRoll()) return false;
+  state.dicePressing = true;
+  diceChargeStartedAt = performance.now();
+  diceChargeDirection = Math.random() > .5 ? 1 : -1;
+  setDiceSkillPosition(Math.random() * .12 + (diceChargeDirection > 0 ? .05 : .83));
+  cancelAnimationFrame(diceChargeRAF);
+  const tick = (now) => {
+    if (!state.dicePressing) return;
+    const elapsed = now - diceChargeStartedAt;
+    const speed = .00042;
+    let position = (elapsed * speed) % 2;
+    if (diceChargeDirection < 0) position = 1 - position;
+    if (position > 1) position = 2 - position;
+    setDiceSkillPosition(position);
+    diceChargeRAF = requestAnimationFrame(tick);
+  };
+  diceChargeRAF = requestAnimationFrame(tick);
+  return true;
+}
+
+function stopDiceSkill(commit = true) {
+  if (!state.dicePressing) return;
+  state.dicePressing = false;
+  cancelAnimationFrame(diceChargeRAF);
+  diceChargeRAF = null;
+  if (commit) {
+    dicePressHandledUntil = Date.now() + 650;
+    rollDice(false, Number(state.diceCharge ?? .5));
+  }
+}
+
+function canUseHumanRoll() {
+  if (state.orientationLocked || !state.canRoll || state.rolling || state.moving || state.aiThinking) return false;
+  if (state.mode === 'ai' && state.activePlayer === 1) return false;
+  if (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex) return false;
+  if (state.mode === 'online' && state.activePlayer !== state.localPlayerIndex) return false;
+  return true;
+}
+
+function rollPairFromSkill(skill) {
+  const x = Math.max(0, Math.min(1, Number(skill ?? .5)));
+  let minTotal = 2, maxTotal = 5;
+  let rareBig = false;
+  const distanceFromCenter = Math.abs(x - .5) * 2;
+  if (distanceFromCenter < .22) {
+    minTotal = 6; maxTotal = 8; // central, harder medium zone
+  } else if (distanceFromCenter < .62) {
+    minTotal = 5; maxTotal = 9;
+  } else {
+    // Ends are mostly small, with a small chance to hit a spectacular big result.
+    if (Math.random() < .10) { minTotal = 9; maxTotal = 12; rareBig = true; }
+  }
+  const total = randomInt(minTotal, maxTotal);
+  let a = randomInt(1, 6);
+  let b = total - a;
+  if (b < 1 || b > 6) {
+    const pairs = [];
+    for (let i = 1; i <= 6; i++) {
+      const j = total - i;
+      if (j >= 1 && j <= 6) pairs.push([i, j]);
+    }
+    [a, b] = pairs[randomInt(0, pairs.length - 1)];
+  }
+  return { a, b, total, rareBig };
 }
 
 function renderGameHeader(active, turnStatus, activeColor) {
@@ -565,7 +691,7 @@ function renderGame() {
           <img class="board-theme-image" src="${versionedAsset(selectedItem('board')?.asset || '')}" alt="" onerror="this.style.display='none'" />
           <div class="board-camera" id="board-camera">
             <div class="board" aria-label="Papan permainan">
-              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='none'" /><span class="board-center-logo-fallback"></span></div><p class="center-tagline">Jawab · Lempar · Menang</p><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div><button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
+              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='none'" /><span class="board-center-logo-fallback"></span></div><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><p class="center-tagline">Jawab Soal Benar · Lempar Dadu · Menang</p><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div>${diceSkillMarkup()}<button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
             ${board.map((tile, index) => renderBoardCell(tile, index)).join('')}
             </div>
           </div>
@@ -575,7 +701,7 @@ function renderGame() {
         <aside class="game-side">
           <section class="turn-card panel"><div class="turn-heading"><h3>GILIRAN</h3><span class="turn-status">${turnStatus}</span></div>${state.players.map((player, index) => renderPlayerLine(player, index)).join('')}</section>
           ${renderOwnershipLegend()}
-          <section class="dice-panel panel"><div class="dice-visual ${state.rolling ? 'rolling' : isMoving ? 'dice-moving' : ''}">${dicePips(diceValue)}</div><div class="dice-copy"><h3 id="dice-label">${isMoving ? `PINDAH ${state.moveStep}/${state.lastRoll}` : `DADU ${diceValue}`}</h3><p>${state.canRoll ? 'SIAP' : isMoving ? 'BERJALAN' : 'JAWAB SOAL'}</p></div><button class="btn btn-primary roll-btn" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></section>
+          <section class="dice-panel panel"><div class="dice-visual ${state.rolling ? 'rolling' : isMoving ? 'dice-moving' : ''}">${dice3DMarkup('side-die', diceValue, state.rolling, currentDice?.asset)}</div><div class="dice-copy"><h3 id="dice-label">${isMoving ? `PINDAH ${state.moveStep}/${state.lastRoll}` : `DADU ${diceValue}`}</h3><p>${state.canRoll ? 'SIAP' : isMoving ? 'BERJALAN' : 'JAWAB SOAL'}</p></div><button class="btn btn-primary roll-btn" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></section>
           ${renderBankPanel()}
           ${renderOwnedProperties()}
           <section class="activity-card panel"><h3>AKTIVITAS</h3><div class="activity-list">${renderActivity()}</div></section>
@@ -642,10 +768,13 @@ function renderBoardCell(tile, index) {
   const tileSrc = versionedAsset(exactAsset);
   const tileFallback1 = versionedAsset(fallbackAsset);
   const tileFallback2 = versionedAsset(fallbackAsset2);
-  const tileOnError = `if(!this.dataset.fallbackStage){this.dataset.fallbackStage='1';this.src=this.dataset.fallback1;}else if(this.dataset.fallbackStage==='1' && this.dataset.fallback2){this.dataset.fallbackStage='2';this.src=this.dataset.fallback2;}else{this.classList.add('tile-art-missing');}`;
+  const tileFallback3 = index === 6 ? versionedAsset('assets/tiles/tile-07-deep-space .png') : '';
+  const tileOnError = `if(!this.dataset.fallbackStage){this.dataset.fallbackStage='1';this.src=this.dataset.fallback1;}else if(this.dataset.fallbackStage==='1' && this.dataset.fallback2){this.dataset.fallbackStage='2';this.src=this.dataset.fallback2;}else if(this.dataset.fallbackStage==='2' && this.dataset.fallback3){this.dataset.fallbackStage='3';this.src=this.dataset.fallback3;}else{this.classList.add('tile-art-missing');}`;
   const edgeClass = pos.row === 11 ? 'edge-bottom' : pos.row === 1 ? 'edge-top' : pos.col === 1 ? 'edge-left' : pos.col === 11 ? 'edge-right' : '';
   const labelClass = edgeClass || 'edge-bottom';
-  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''} ${edgeClass}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${tile.color}" title="${escapeHtml(tile.name)} — klik untuk melihat detail" role="button" tabindex="0"><img class="cell-art" src="${tileSrc}" data-fallback-1="${tileFallback1}" data-fallback-2="${tileFallback2}" alt="${escapeHtml(tile.name)}" loading="eager" fetchpriority="high" decoding="async" onerror="${tileOnError}" /><div class="cell-content" aria-hidden="true"></div><div class="cell-name-outside ${labelClass}">${escapeHtml(name)}</div>${building}${ownerBadge}${playersHere}</div>`;
+  const hideCornerName = [0, 10, 20, 30].includes(index);
+  const nameMarkup = hideCornerName ? '' : `<div class="cell-name-outside ${labelClass}">${escapeHtml(name)}</div>`;
+  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''} ${edgeClass}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${tile.color}" title="${escapeHtml(tile.name)} — klik untuk melihat detail" role="button" tabindex="0"><img class="cell-art" src="${tileSrc}" data-fallback-1="${tileFallback1}" data-fallback-2="${tileFallback2}" data-fallback-3="${tileFallback3}" alt="${escapeHtml(tile.name)}" fetchpriority="high" decoding="async" onload="this.classList.remove('tile-art-missing')" onerror="${tileOnError}" />${nameMarkup}${building}${ownerBadge}${playersHere}</div>`;
 }
 
 function renderPlayerLine(player, index) {
@@ -872,6 +1001,7 @@ function startGame(mode = state.mode) {
   askQuestion();
   persist();
   render();
+  window.setTimeout(preloadTileAssets, 250);
   updateMusic();
 }
 
@@ -885,6 +1015,7 @@ function startBattle() {
   askQuestion();
   persist();
   render();
+  window.setTimeout(preloadTileAssets, 250);
   updateMusic();
 }
 
@@ -1133,6 +1264,7 @@ function updateMoveHud() {
   if (center) center.textContent = state.hasRolled ? (state.lastRoll || '—') : '—';
   updateDiceFace('center-die-a', rolling ? '?' : state.hasRolled ? (state.lastDice?.[0] ?? '—') : '—', rolling);
   updateDiceFace('center-die-b', rolling ? '?' : state.hasRolled ? (state.lastDice?.[1] ?? '—') : '—', rolling);
+  updateDiceFace('side-die', rolling ? '?' : state.hasRolled ? (state.lastRoll ?? '—') : '—', rolling);
   if (progress) progress.textContent = state.moving ? `${state.moveStep}/${state.lastRoll}` : '';
 }
 
@@ -1233,7 +1365,7 @@ function finishJailAttempt() {
   return true;
 }
 
-function rollDice(isAi = false) {
+function rollDice(isAi = false, skill = null) {
   if (!state.canRoll || state.rolling || state.moving) return;
   if (state.mode === 'ai' && state.activePlayer === 1 && !isAi) return;
   if (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex && !isAi) return;
@@ -1243,8 +1375,9 @@ function rollDice(isAi = false) {
   playSound('roll');
   render();
   window.setTimeout(() => {
-    const dieA = randomInt(1, 6);
-    const dieB = state.diceCount === 2 ? randomInt(1, 6) : 0;
+    const skillResult = isAi || skill === null ? null : rollPairFromSkill(skill);
+    const dieA = skillResult ? skillResult.a : randomInt(1, 6);
+    const dieB = state.diceCount === 2 ? (skillResult ? skillResult.b : randomInt(1, 6)) : 0;
     const roll = dieA + dieB;
     state.lastDice = [dieA, dieB];
     state.lastRoll = roll;
@@ -1421,6 +1554,23 @@ function resolveLanding(index) {
         }
         return;
       }
+      if (state.mode === 'ai' && state.activePlayer === 1) {
+        const affordable = player.cash >= tile.price;
+        const reserve = 350;
+        const groupOwned = state.tiles.filter(t => t.owner === 1 && t.color === tile.color).length;
+        const smartBuy = affordable && (player.cash - tile.price >= reserve || groupOwned > 0 || tile.price <= 220);
+        if (smartBuy) {
+          player.cash -= tile.price;
+          bankDeposit(tile.price);
+          tile.owner = state.activePlayer;
+          addActivity('🤖', `<strong>${escapeHtml(player.name)}</strong> memutuskan membeli ${escapeHtml(tile.name)}.`);
+          showTurnEnd(tile, `Luna Logic membeli ${tile.name} untuk memperkuat asetnya.`);
+        } else {
+          addActivity('🤖', `<strong>${escapeHtml(player.name)}</strong> memilih tidak membeli ${escapeHtml(tile.name)}.`);
+          showTurnEnd(tile, `Luna Logic memilih menyimpan dana.`);
+        }
+        return;
+      }
       if (player.cash >= tile.price) {
         state.modal = { type: 'purchase', tile };
         return;
@@ -1572,10 +1722,58 @@ function randomChanceCard() {
   return cards[randomInt(0, cards.length - 1)];
 }
 
+function buildForwardPath(from, to) {
+  const count = state.tiles.length;
+  if (!count || from === to) return [];
+  const distance = (to - from + count) % count;
+  return Array.from({ length: distance }, (_, step) => (from + step + 1) % count);
+}
+
+function buildBackwardPath(from, to) {
+  const count = state.tiles.length;
+  if (!count || from === to) return [];
+  const distance = (from - to + count) % count;
+  return Array.from({ length: distance }, (_, step) => (from - step - 1 + count) % count);
+}
+
+function animateSpecialPath(playerIndex, path, onComplete, onPassStart = null) {
+  if (!path.length) { onComplete?.(); return; }
+  state.moving = true;
+  state.moveStep = 0;
+  const advance = (step = 0) => {
+    if (state.screen !== 'game' || !state.players[playerIndex]) return;
+    const position = path[step];
+    state.players[playerIndex].position = position;
+    state.moveStep = step + 1;
+    moveTokenInDom(playerIndex, position);
+    updateMoveHud();
+    if (position === 0 && step < path.length - 1) {
+      onPassStart?.();
+      window.setTimeout(() => advance(step + 1), 800);
+      return;
+    }
+    if (step < path.length - 1) {
+      window.setTimeout(() => advance(step + 1), 260);
+    } else {
+      state.moving = false;
+      onComplete?.();
+    }
+  };
+  advance();
+}
+
+function resolveChanceLanding(player, targetIndex, cardTitle) {
+  state.moveStep = 0;
+  resolveLanding(targetIndex);
+  if (!state.modal) showTurnEnd(state.tiles[targetIndex], `Kartu selesai: ${cardTitle}.`);
+  render();
+}
+
 function resolveChanceCard() {
   if (!state.modal?.card) return;
   const card = state.modal.card;
   const player = state.players[state.activePlayer];
+  state.modal = null;
   if (card.kind === 'cash') {
     if (card.value >= 0) {
       player.cash += card.value;
@@ -1586,21 +1784,66 @@ function resolveChanceCard() {
       bankDeposit(paid);
     }
     addActivity(card.value >= 0 ? '◆' : '◌', `<strong>${escapeHtml(player.name)}</strong> ${card.value >= 0 ? 'mendapat' : 'membayar'} ${formatCurrency(Math.abs(card.value))}.`);
-  } else if (card.kind === 'move') {
-    player.position = (player.position + card.value + state.tiles.length) % state.tiles.length;
-    addActivity('↗', `<strong>${escapeHtml(player.name)}</strong> berpindah ${Math.abs(card.value)} petak.`);
-  } else if (card.kind === 'start') {
-    player.position = 0;
-    player.cash += card.value;
-    bankWithdraw(card.value);
-    addActivity('✦', `<strong>${escapeHtml(player.name)}</strong> kembali ke START dan mendapat ${formatCurrency(card.value)}.`);
-  } else if (card.kind === 'airport') {
-    const airport = state.tiles.findIndex((tile) => tile.name === 'AIRPORT');
-    if (airport >= 0) player.position = airport;
-    addActivity('✈', `<strong>${escapeHtml(player.name)}</strong> terbang ke AIRPORT.`);
+    showTurnEnd(state.tiles[player.position], `Kartu selesai: ${card.title}.`);
+    render();
+    return;
   }
-  showTurnEnd(state.tiles[player.position], `Kartu selesai: ${card.title}.`);
+
+  const current = player.position;
+  let path = [];
+  let target = current;
+  let direction = 'forward';
+
+  if (card.kind === 'move') {
+    direction = card.value >= 0 ? 'forward' : 'backward';
+    const distance = Math.abs(card.value);
+    target = (current + card.value + state.tiles.length) % state.tiles.length;
+    path = direction === 'forward'
+      ? Array.from({ length: distance }, (_, step) => (current + step + 1) % state.tiles.length)
+      : Array.from({ length: distance }, (_, step) => (current - step - 1 + state.tiles.length) % state.tiles.length);
+  } else if (card.kind === 'start') {
+    target = 0;
+    path = buildForwardPath(current, 0);
+    if (!path.length) {
+      player.cash += card.value;
+      bankWithdraw(card.value);
+      addActivity('✦', `<strong>${escapeHtml(player.name)}</strong> kembali ke START dan mendapat ${formatCurrency(card.value)}.`);
+      resolveChanceLanding(player, 0, card.title);
+      return;
+    }
+  } else if (card.kind === 'airport') {
+    target = state.tiles.findIndex((tile) => tile.name === 'AIRPORT');
+    if (target < 0) {
+      showTurnEnd(state.tiles[current], 'AIRPORT belum tersedia.');
+      render();
+      return;
+    }
+    // Airport is always reached by moving forward around the board, never by reversing.
+    path = buildForwardPath(current, target);
+  }
+
+  const crossedStart = direction === 'forward' && card.kind !== 'start' && path.some((position) => position === 0) && current !== 0;
   render();
+  window.setTimeout(() => {
+    animateSpecialPath(state.activePlayer, path, () => {
+      if (card.kind === 'move') addActivity('↗', `<strong>${escapeHtml(player.name)}</strong> bergerak ${Math.abs(card.value)} petak secara ${card.value >= 0 ? 'maju' : 'mundur'}.`);
+      if (card.kind === 'start') {
+        player.cash += card.value;
+        bankWithdraw(card.value);
+        addActivity('✦', `<strong>${escapeHtml(player.name)}</strong> kembali ke START dan mendapat ${formatCurrency(card.value)}.`);
+      }
+      if (card.kind === 'airport') addActivity('✈', `<strong>${escapeHtml(player.name)}</strong> bergerak maju menuju AIRPORT.`);
+      resolveChanceLanding(player, target, card.title);
+    }, crossedStart ? () => {
+      // Pause at START and award the bonus before continuing to the destination.
+      player.cash += 200;
+      bankWithdraw(200);
+      addActivity('✦', `<strong>${escapeHtml(player.name)}</strong> melewati START dan mendapat bonus ${formatCurrency(200)}. Melanjutkan perjalanan...`);
+      state.moveStep = 0;
+      updateMoveHud();
+      render();
+    } : null);
+  }, 250);
 }
 
 function buyHouse(tileIndex, fromLanding = false) {
@@ -2098,7 +2341,8 @@ function handleClick(event) {
   } else if (action === 'submit-answer') {
     submitAnswer();
   } else if (action === 'roll-dice') {
-    rollDice(false);
+    if (Date.now() < dicePressHandledUntil) { dicePressHandledUntil = 0; return; }
+    rollDice(false, Number(state.diceCharge ?? .5));
   } else if (action === 'pay-jail-fine') {
     if (payJailFine(state.activePlayer, true)) {
       state.modal = null;
@@ -2299,6 +2543,23 @@ function updateOrientationLock() {
   renderOrientationLock();
 }
 
+app.addEventListener('pointerdown', (event) => {
+  const button = event.target.closest('[data-action="roll-dice"]');
+  if (!button || button.disabled || !canUseHumanRoll()) return;
+  event.preventDefault();
+  button.setPointerCapture?.(event.pointerId);
+  startDiceSkill();
+});
+app.addEventListener('pointerup', (event) => {
+  const button = event.target.closest('[data-action="roll-dice"]');
+  if (!button && !state.dicePressing) return;
+  event.preventDefault();
+  stopDiceSkill(true);
+});
+app.addEventListener('pointercancel', () => stopDiceSkill(false));
+app.addEventListener('pointerleave', () => {
+  if (state.dicePressing) stopDiceSkill(true);
+});
 app.addEventListener('click', handleClick);
 document.addEventListener('pointerdown', tryUnlockMusic, { once: true, passive: true });
 document.addEventListener('keydown', tryUnlockMusic, { once: true });
@@ -2314,22 +2575,30 @@ window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; re
 window.addEventListener('resize', updateOrientationLock, { passive: true });
 window.addEventListener('orientationchange', () => window.setTimeout(updateOrientationLock, 80), { passive: true });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=46').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=47').catch(() => {}));
 }
 
 function preloadTileAssets() {
   const urls = TILE_BLUEPRINT.map((tile) => versionedAsset(tile.asset)).filter(Boolean);
-  urls.forEach((url) => {
-    const image = new Image();
-    image.decoding = 'async';
-    image.fetchPriority = 'high';
-    image.src = url;
+  let cursor = 0;
+  const workers = Array.from({ length: 6 }, async () => {
+    while (cursor < urls.length) {
+      const url = urls[cursor++];
+      await new Promise((resolve) => {
+        const image = new Image();
+        image.decoding = 'async';
+        image.fetchPriority = 'high';
+        image.onload = resolve;
+        image.onerror = () => { console.warn('[Numeric Monopoly] Tile gagal dimuat:', url); resolve(); };
+        image.src = url;
+      });
+    }
   });
+  Promise.all(workers).catch(() => {});
 }
 
 (async function bootstrap() {
   cloudStatus = await initCloud();
-  preloadTileAssets();
   render();
   updateOrientationLock();
 })();
