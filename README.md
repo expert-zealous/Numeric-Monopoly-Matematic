@@ -71,3 +71,7 @@ Ikuti semua nama file di `ASSETS.md`. Fallback CSS/emoji akan tetap tampil jika 
 - Preserves tested skill-dice speed settings: 85 base / 95 max.
 - Preserves movement zoom target 1.35x and v56 auto-fit camera behavior.
 - Keeps full-size character artwork; top-row tokens are anchored inside the camera boundary so hair/head are not clipped.
+
+
+## v63 FINAL MOBILE FIX
+All cache-busting URLs and Service Worker registration use v63. Added finish-ui.css as the last stylesheet so legacy v47-v62 rules cannot override the final mobile layout. Landscape phone board is kept square and centered with safe margins; center logo, Mode, dice, skill arc and roll button are spaced explicitly.

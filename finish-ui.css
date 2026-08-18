@@ -1,0 +1,94 @@
+/* === v63: FINAL MOBILE/VIEWPORT COMPOSITION ===
+   Loaded LAST so older v47-v62 rules cannot override this layout.
+*/
+body.is-game-screen .game-layout {
+  display:block !important;
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  height:calc(100% - 32px) !important;
+  overflow:hidden !important;
+}
+body.is-game-screen .game-header {
+  flex:0 0 32px !important;
+  height:32px !important;
+  min-height:32px !important;
+  margin:0 !important;
+  padding:2px 0 !important;
+}
+body.is-game-screen .board-wrap {
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  padding:3px !important;
+  overflow:hidden !important;
+}
+body.is-game-screen .board-camera {
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  box-sizing:border-box !important;
+  padding:8px 10px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+}
+body.is-game-screen .board-camera .board {
+  flex:0 0 auto !important;
+  width:auto !important;
+  height:calc(100% - 16px) !important;
+  aspect-ratio:1 / 1 !important;
+  max-width:calc(100% - 20px) !important;
+  max-height:calc(100% - 16px) !important;
+}
+body.is-game-screen .turn-focus-banner {
+  top:2px !important;
+  width:188px !important;
+  min-height:38px !important;
+  max-height:42px !important;
+  padding:3px 8px !important;
+  transform:translateX(-50%) scale(.86) !important;
+  transform-origin:center top !important;
+}
+body.is-game-screen .turn-focus-avatar {
+  width:35px !important;
+  height:35px !important;
+  min-width:35px !important;
+  min-height:35px !important;
+}
+
+/* Center composition: logo first, then Mode, dice, skill arc, and button. */
+.board-center-mark {
+  width:92px !important;
+  height:62px !important;
+  top:4% !important;
+}
+.board-center .center-mode {
+  top:25% !important;
+  font-size:.68rem !important;
+}
+.board-center .center-roll-result { top:35% !important; }
+.board-center .dice-skill-arc-wrap {
+  top:58% !important;
+  width:min(280px,72%) !important;
+}
+.board-center .center-roll-button {
+  bottom:1% !important;
+  min-width:128px !important;
+  min-height:34px !important;
+  font-size:.62rem !important;
+}
+
+@media (max-width:560px) {
+  body.is-game-screen .board-camera { padding:7px 8px !important; }
+  body.is-game-screen .board-camera .board {
+    height:calc(100% - 14px) !important;
+    max-width:calc(100% - 16px) !important;
+    max-height:calc(100% - 14px) !important;
+  }
+  .board-center-mark { width:68px !important; height:48px !important; top:3% !important; }
+  .board-center .center-mode { top:24% !important; font-size:.56rem !important; }
+  .board-center .center-roll-result { top:34% !important; }
+  .board-center .dice-skill-arc-wrap { top:57% !important; width:220px !important; }
+  .board-center .center-roll-button { bottom:.5% !important; min-width:116px !important; min-height:32px !important; font-size:.56rem !important; }
+}
