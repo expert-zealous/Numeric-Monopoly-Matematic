@@ -637,8 +637,8 @@ function startDiceSkill() {
     const SKILL_BASE_SPEED = 85;
     const SKILL_MAX_SPEED = 95;
     const speedLevel = Math.min(SKILL_MAX_SPEED, SKILL_BASE_SPEED + elapsed / 1000);
-    const actualBaseSpeed = 0.00085;
-    const actualMaxSpeed = 0.00095;
+    const actualBaseSpeed = 0.00016;
+    const actualMaxSpeed = 0.00020;
     const speedRatio = (speedLevel - SKILL_BASE_SPEED) / (SKILL_MAX_SPEED - SKILL_BASE_SPEED);
     const currentSpeed = actualBaseSpeed + (actualMaxSpeed - actualBaseSpeed) * speedRatio;
     const accelerationTime = Math.min(elapsed, 10000);

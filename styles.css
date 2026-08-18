@@ -1633,8 +1633,8 @@ body.is-game-screen .turn-focus-banner > b { font-size: .38rem !important; }
 }
 @media (max-width:560px) {
   body.is-game-screen .turn-focus-banner {
-    top: 8px !important; width: 166px !important; min-height: 36px !important; max-height: 38px !important;
-    transform: translateX(-50%) scale(.96) !important;
+    top: 2px !important; width: 166px !important; min-height: 36px !important; max-height: 38px !important;
+    transform: translateX(-50%) scale(.80) !important;
   }
 }
 
@@ -1759,4 +1759,91 @@ body.is-game-screen .game-layout { height: calc(100% - 32px) !important; }
 @media (max-width: 560px) {
   .board-center .center-mode { top: 35% !important; }
   .board-center .dice-skill-arc-wrap { top: 63% !important; }
+}
+
+/* === v61: header turn card + face-only character avatars === */
+body.is-game-screen .turn-focus-banner {
+  top: 8px !important;
+  width: 196px !important;
+  min-height: 44px !important;
+  max-height: 48px !important;
+  padding: 4px 9px !important;
+  gap: 8px !important;
+  transform: translateX(-50%) scale(.92) !important;
+  transform-origin: center top !important;
+  z-index: 120 !important;
+}
+body.is-game-screen .turn-focus-avatar {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  overflow: hidden !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+}
+/* Header avatars show only the character's face/head, never the tiny full body. */
+body.is-game-screen .turn-focus-avatar .turn-character-image,
+body.is-game-screen .cash-player-avatar .cash-character-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: 50% 18% !important;
+  transform: scale(2.55) !important;
+  transform-origin: 50% 18% !important;
+}
+body.is-game-screen .turn-focus-avatar .character-avatar-fallback,
+body.is-game-screen .cash-player-avatar .character-avatar-fallback {
+  transform: scale(1.35);
+}
+body.is-game-screen .turn-focus-copy strong { font-size: .67rem !important; }
+body.is-game-screen .turn-focus-copy small { font-size: .41rem !important; }
+body.is-game-screen .turn-focus-banner > b { font-size: .41rem !important; }
+
+/* Player info strip: face-only avatar, slightly clearer than the old full-body crop. */
+body.is-game-screen .cash-player-avatar {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  border-radius: 50% !important;
+}
+
+@media (max-width: 900px) {
+  body.is-game-screen .turn-focus-banner {
+    top: 6px !important;
+    width: 190px !important;
+    min-height: 42px !important;
+    max-height: 46px !important;
+    transform: translateX(-50%) scale(.90) !important;
+  }
+  body.is-game-screen .turn-focus-avatar {
+    width: 37px !important;
+    height: 37px !important;
+    min-width: 37px !important;
+    min-height: 37px !important;
+  }
+  body.is-game-screen .cash-player-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  body.is-game-screen .turn-focus-banner {
+    top: 5px !important;
+    width: 184px !important;
+    min-height: 40px !important;
+    max-height: 44px !important;
+    transform: translateX(-50%) scale(.88) !important;
+  }
+  body.is-game-screen .turn-focus-avatar {
+    width: 35px !important;
+    height: 35px !important;
+    min-width: 35px !important;
+    min-height: 35px !important;
+  }
 }
