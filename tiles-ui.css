@@ -1,12 +1,57 @@
-/* Optional property art for every board tile. Missing files fall back to the icon/text. */
-.board-cell .cell-art { position: absolute; z-index: 0; top: 6px; right: 3px; left: 3px; width: calc(100% - 6px); height: 58%; object-fit: contain; border-radius: 5px; opacity: .88; mix-blend-mode: screen; pointer-events: none; }
-.board-cell .cell-content, .board-cell .cell-price, .board-cell .cell-owners { position: relative; z-index: 1; }
-.board-cell .cell-content { min-height: 0; }
-.board-cell .cell-art + .cell-content .cell-icon { text-shadow: 0 1px 5px #03061e, 0 0 7px #03061e; }
-.board-cell .cell-art + .cell-content .cell-name, .board-cell .cell-art ~ .cell-price { text-shadow: 0 1px 5px #03061e; }
-@media (max-width: 560px) {
-  .board-cell .cell-art { top: 4px; height: 52%; opacity: .88; border-radius: 3px; }
+/* v46: tile artwork is the main visual of each square. The PNG itself must be transparent. */
+.board-cell .cell-art {
+  position:absolute !important;
+  z-index:2 !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+  opacity:1 !important;
+  mix-blend-mode:normal !important;
+  filter:none !important;
+  box-shadow:none !important;
+  pointer-events:none !important;
 }
-
-/* v42: tile artwork must remain visible above the cell background. */
-.board-cell .cell-art { z-index:2 !important; opacity:1 !important; mix-blend-mode:normal !important; object-fit:contain !important; }
+.board-cell .cell-content { display:none !important; }
+.board-cell .cell-name-outside {
+  position:absolute !important;
+  z-index:60 !important;
+  display:block !important;
+  width:max-content !important;
+  max-width:92px !important;
+  padding:2px 4px !important;
+  margin:0 !important;
+  color:#fff !important;
+  background:rgba(5,9,28,.9) !important;
+  border:0 !important;
+  border-radius:3px !important;
+  box-shadow:none !important;
+  font-size:clamp(.36rem,.58vw,.52rem) !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.95) !important;
+  pointer-events:none !important;
+}
+/* Names are always placed toward the inside of the board. */
+.board-cell .cell-name-outside.edge-bottom { top:-18px !important; left:50% !important; transform:translateX(-50%) !important; }
+.board-cell .cell-name-outside.edge-top { bottom:-18px !important; left:50% !important; transform:translateX(-50%) !important; }
+.board-cell .cell-name-outside.edge-left { left:calc(100% + 3px) !important; top:50% !important; transform:translateY(-50%) !important; }
+.board-cell .cell-name-outside.edge-right { right:calc(100% + 3px) !important; top:50% !important; transform:translateY(-50%) !important; }
+.board-cell .tile-art-missing { visibility:hidden !important; }
+@media(max-width:560px){
+  .board-cell .cell-name-outside { max-width:68px !important; font-size:.34rem !important; padding:2px 3px !important; }
+  .board-cell .cell-name-outside.edge-bottom,.board-cell .cell-name-outside.edge-top { top:auto !important; bottom:auto !important; }
+  .board-cell .cell-name-outside.edge-bottom { top:-15px !important; }
+  .board-cell .cell-name-outside.edge-top { bottom:-15px !important; }
+}

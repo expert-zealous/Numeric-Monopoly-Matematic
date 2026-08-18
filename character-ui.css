@@ -9,3 +9,6 @@
 /* v42: character PNGs are deliberately larger than their Monopoly tile. */
 .token { overflow:visible !important; }
 .token img { object-fit:contain !important; object-position:center !important; }
+
+/* v46 override: board characters must never have a frame or shadow. */
+.board-cell .token img{border:0!important;border-radius:0!important;box-shadow:none!important;filter:none!important;outline:0!important;background:transparent!important;}

@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '45';
+const ASSET_VERSION = '46';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -521,10 +521,9 @@ function dicePips(value) {
 }
 
 function diceCubeMarkup(value, asset) {
-  const safeAsset = asset || '';
   const number = Number(value);
   const label = Number.isInteger(number) && number >= 1 && number <= 6 ? number : (value === '?' ? '?' : '—');
-  return `<span class="dice-image-face"><img class="dice-skin dice-whole" src="${versionedAsset(safeAsset)}" alt="Dadu ${label}" onerror="this.style.display='none'" /><span class="dice-face-content" aria-hidden="true"></span></span>`;
+  return `<span class="dice-image-face standard-die-face" aria-label="Dadu ${label}">${dicePips(value)}</span>`;
 }
 
 function dice3DMarkup(id, value, rolling, asset) {
@@ -576,7 +575,7 @@ function renderGame() {
         <aside class="game-side">
           <section class="turn-card panel"><div class="turn-heading"><h3>GILIRAN</h3><span class="turn-status">${turnStatus}</span></div>${state.players.map((player, index) => renderPlayerLine(player, index)).join('')}</section>
           ${renderOwnershipLegend()}
-          <section class="dice-panel panel"><div class="dice-visual ${state.rolling ? 'rolling' : isMoving ? 'dice-moving' : ''}"><img src="${versionedAsset(currentDice?.asset || '')}" alt="" onerror="this.style.display='none'" /><span class="dice-number" id="dice-number">${diceValue}</span></div><div class="dice-copy"><h3 id="dice-label">${isMoving ? `PINDAH ${state.moveStep}/${state.lastRoll}` : `DADU ${diceValue}`}</h3><p>${state.canRoll ? 'SIAP' : isMoving ? 'BERJALAN' : 'JAWAB SOAL'}</p></div><button class="btn btn-primary roll-btn" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></section>
+          <section class="dice-panel panel"><div class="dice-visual ${state.rolling ? 'rolling' : isMoving ? 'dice-moving' : ''}">${dicePips(diceValue)}</div><div class="dice-copy"><h3 id="dice-label">${isMoving ? `PINDAH ${state.moveStep}/${state.lastRoll}` : `DADU ${diceValue}`}</h3><p>${state.canRoll ? 'SIAP' : isMoving ? 'BERJALAN' : 'JAWAB SOAL'}</p></div><button class="btn btn-primary roll-btn" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></section>
           ${renderBankPanel()}
           ${renderOwnedProperties()}
           <section class="activity-card panel"><h3>AKTIVITAS</h3><div class="activity-list">${renderActivity()}</div></section>
@@ -630,11 +629,9 @@ function renderBoardCell(tile, index) {
   const owner = tile.owner;
   const playersHere = (state.players || []).map((player, pIndex) => player.position === index ? tokenMarkup(player, pIndex) : '').join('');
   const name = tile.name;
-  // Harga sengaja tidak ditampilkan di petak. Informasi lengkap dibuka saat petak diklik.
   const ownerColor = owner !== null && owner !== undefined ? playerColor(owner) : tile.color;
   const ownerPlayer = owner !== null && owner !== undefined ? state.players[owner] : null;
   const isBuyable = tile.type === 'property' || tile.type === 'utility';
-  // Penanda kepemilikan cukup berupa pita warna di sisi atas petak; karakter tidak lagi menutupi artwork tile.
   const ownerBadge = isBuyable && ownerPlayer ? `<div class="owner-marker" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}" aria-label="Milik ${escapeHtml(ownerPlayer.name)}"></div>` : '';
   const building = tile.hotel ? '<span class="building-badge hotel">🏨</span>' : tile.houses ? `<span class="building-badge">${'▴'.repeat(tile.houses)}</span>` : '';
   const tileKey = TILE_ASSET_KEYS[index] || '';
@@ -647,7 +644,8 @@ function renderBoardCell(tile, index) {
   const tileFallback2 = versionedAsset(fallbackAsset2);
   const tileOnError = `if(!this.dataset.fallbackStage){this.dataset.fallbackStage='1';this.src=this.dataset.fallback1;}else if(this.dataset.fallbackStage==='1' && this.dataset.fallback2){this.dataset.fallbackStage='2';this.src=this.dataset.fallback2;}else{this.classList.add('tile-art-missing');}`;
   const edgeClass = pos.row === 11 ? 'edge-bottom' : pos.row === 1 ? 'edge-top' : pos.col === 1 ? 'edge-left' : pos.col === 11 ? 'edge-right' : '';
-  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''} ${edgeClass}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${tile.color}" title="${escapeHtml(tile.name)} — klik untuk melihat detail" role="button" tabindex="0"><img class="cell-art" src="${tileSrc}" data-fallback-1="${tileFallback1}" data-fallback-2="${tileFallback2}" alt="${escapeHtml(tile.name)}" loading="eager" decoding="async" onerror="${tileOnError}" />${building}<div class="cell-content"><div class="cell-name">${escapeHtml(name)}</div></div>${ownerBadge}${playersHere}</div>`;
+  const labelClass = edgeClass || 'edge-bottom';
+  return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''} ${edgeClass}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${tile.color}" title="${escapeHtml(tile.name)} — klik untuk melihat detail" role="button" tabindex="0"><img class="cell-art" src="${tileSrc}" data-fallback-1="${tileFallback1}" data-fallback-2="${tileFallback2}" alt="${escapeHtml(tile.name)}" loading="eager" fetchpriority="high" decoding="async" onerror="${tileOnError}" /><div class="cell-content" aria-hidden="true"></div><div class="cell-name-outside ${labelClass}">${escapeHtml(name)}</div>${building}${ownerBadge}${playersHere}</div>`;
 }
 
 function renderPlayerLine(player, index) {
@@ -2316,11 +2314,22 @@ window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; re
 window.addEventListener('resize', updateOrientationLock, { passive: true });
 window.addEventListener('orientationchange', () => window.setTimeout(updateOrientationLock, 80), { passive: true });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=44').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=46').catch(() => {}));
+}
+
+function preloadTileAssets() {
+  const urls = TILE_BLUEPRINT.map((tile) => versionedAsset(tile.asset)).filter(Boolean);
+  urls.forEach((url) => {
+    const image = new Image();
+    image.decoding = 'async';
+    image.fetchPriority = 'high';
+    image.src = url;
+  });
 }
 
 (async function bootstrap() {
   cloudStatus = await initCloud();
+  preloadTileAssets();
   render();
   updateOrientationLock();
 })();
