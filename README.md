@@ -65,3 +65,9 @@ Ikuti semua nama file di `ASSETS.md`. Fallback CSS/emoji akan tetap tampil jika 
 - `firebase-config.js` — tempat Web App config.
 - `firebase/functions/index.js` — validasi server untuk diamond dan rating.
 - `firebase/firestore.rules` — aturan akses Firestore.
+
+
+## v57
+- Preserves tested skill-dice speed settings: 85 base / 95 max.
+- Preserves movement zoom target 1.35x and v56 auto-fit camera behavior.
+- Keeps full-size character artwork; top-row tokens are anchored inside the camera boundary so hair/head are not clipped.

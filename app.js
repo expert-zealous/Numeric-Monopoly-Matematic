@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '48';
+const ASSET_VERSION = '59';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -111,6 +111,20 @@ const TILE_ASSET_KEYS = [
 TILE_BLUEPRINT.forEach((tile, index) => {
   tile.asset = `assets/tiles/tile-${String(index + 1).padStart(2, '0')}-${TILE_ASSET_KEYS[index]}.png`;
 });
+
+// v54: kelompok properti eksplisit agar syarat rumah tidak bergantung pada warna yang kebetulan sama.
+const PROPERTY_GROUPS = {
+  'LUMINA': 'blue', 'NOVA PARK': 'blue',
+  'ORBIT': 'green', 'PIXEL BAY': 'green', 'SKYLINE': 'green',
+  'SOLARA': 'yellow', 'VELVET CITY': 'yellow',
+  'AURORA': 'red', 'CRYSTAL': 'red', 'MOONLIGHT': 'red',
+  'NEBULA': 'purple', 'QUANTUM': 'purple', 'ROYAL ARC': 'purple', 'GOLDEN HARBOR': 'purple',
+  'INFINITY': 'violet',
+  'PRISM': 'magenta', 'MIRAGE': 'magenta', 'STARLIGHT': 'magenta', 'ECLIPSE': 'magenta', 'NEXUS': 'magenta'
+};
+TILE_BLUEPRINT.forEach((tile) => { if (tile.type === 'property') tile.group = PROPERTY_GROUPS[tile.name] || tile.name.toLowerCase(); });
+const PROPERTY_GROUP_COLORS = { blue:'#38bdf8', green:'#4ade80', yellow:'#facc15', red:'#ff5a67', purple:'#a78bfa', magenta:'#f472d0', violet:'#67e8f9' };
+TILE_BLUEPRINT.forEach((tile) => { if (tile.type === 'property' && PROPERTY_GROUP_COLORS[tile.group]) tile.color = PROPERTY_GROUP_COLORS[tile.group]; });
 
 const SHOP_DATA = {
   dice: [
@@ -206,6 +220,9 @@ function freshState() {
     orientationLocked: false,
     orientationRemainingMs: null,
     diceCharge: 0.5,
+    dicePressing: false,
+    movementResume: null,
+    startBuildPause: false,
   };
 }
 
@@ -491,6 +508,9 @@ function boardGridPosition(index) {
 
 function tokenMarkup(player, playerIndex) {
   const offset = playerIndex === 0 ? { left: '8%', top: '8%' } : { left: '50%', top: '48%' };
+  const pos = boardGridPosition(player?.position ?? 0);
+  // v57: top-row characters stay fully inside the camera's safe area.
+  // The artwork keeps its full size; only its anchor point changes.
   const character = selectedItem('character') || SHOP_DATA.character[0];
   return `<span class="token ${playerIndex === 1 ? 'ai ai-token' : 'player-token'}" data-player-index="${playerIndex}" style="--token-color:${playerColor(playerIndex)}" title="${escapeHtml(player.name)}"><img src="${versionedAsset(character.asset)}" alt="" onerror="this.style.display='none'" /><span class="token-fallback">${player.avatar}</span></span>`;
 }
@@ -560,20 +580,19 @@ function diceSkillMarkup() {
   const charge = Math.max(0, Math.min(1, Number(state.diceCharge ?? 0.5)));
   const percent = Math.round(charge * 100);
   return `<div class="dice-skill-wrap dice-skill-arc-wrap" aria-label="Kontrol kekuatan lemparan dadu">
-    <div class="dice-skill-title"><span>SKILL LEMPAR DADU</span><b id="dice-skill-percent">${percent}%</b></div>
     <div class="dice-skill-arc" id="dice-skill-track">
       <svg viewBox="0 0 360 190" aria-hidden="true" class="dice-skill-svg">
         <path class="arc-shadow" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" />
-        <path class="arc-zone zone-green" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="22 78" stroke-dashoffset="0" />
-        <path class="arc-zone zone-orange" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="23 77" stroke-dashoffset="-22" />
+        <path class="arc-zone zone-green" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="25 75" stroke-dashoffset="0" />
+        <path class="arc-zone zone-orange" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="20 80" stroke-dashoffset="-25" />
         <path class="arc-zone zone-red" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="10 90" stroke-dashoffset="-45" />
-        <path class="arc-zone zone-orange" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="23 77" stroke-dashoffset="-55" />
-        <path class="arc-zone zone-green" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="22 78" stroke-dashoffset="-78" />
+        <path class="arc-zone zone-orange" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="20 80" stroke-dashoffset="-55" />
+        <path class="arc-zone zone-green" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" stroke-dasharray="25 75" stroke-dashoffset="-75" />
         <circle id="dice-skill-marker" cx="25" cy="165" r="9" />
-        <text x="38" y="178" class="arc-label">1–2</text><text x="128" y="75" class="arc-label">3–4</text><text x="172" y="38" class="arc-label red-label">5–6</text><text x="232" y="75" class="arc-label">3–4</text><text x="310" y="178" class="arc-label">1–2</text>
+        <text x="42" y="178" class="arc-label">2–4</text><text x="112" y="78" class="arc-label">5–7</text><text x="145" y="50" class="arc-label">8–9</text><text x="180" y="36" class="arc-label red-label">10–12</text><text x="215" y="50" class="arc-label">8–9</text><text x="248" y="78" class="arc-label">5–7</text><text x="318" y="178" class="arc-label">2–4</text>
+        <text x="25" y="165" class="arc-label perfect-label">★</text><text x="70.5" y="55.5" class="arc-label perfect-label">★</text><text x="180" y="10" class="arc-label perfect-label center-perfect">★</text><text x="289.5" y="55.5" class="arc-label perfect-label">★</text><text x="335" y="165" class="arc-label perfect-label">★</text>
       </svg>
     </div>
-    <div class="dice-skill-hint">Tahan <strong>LEMPAR DADU</strong> lalu lepaskan saat indikator berada di zona yang kamu inginkan.</div>
   </div>`;
 }
 
@@ -601,16 +620,33 @@ function startDiceSkill() {
   if (!canUseHumanRoll()) return false;
   state.dicePressing = true;
   diceChargeStartedAt = performance.now();
-  diceChargeDirection = Math.random() > .5 ? 1 : -1;
-  setDiceSkillPosition(Math.random() * .12 + (diceChargeDirection > 0 ? .05 : .83));
+  // Selalu mulai dari ujung kiri, lalu bergerak ke kanan.
+  diceChargeDirection = 1;
+  setDiceSkillPosition(0);
   cancelAnimationFrame(diceChargeRAF);
   const tick = (now) => {
     if (!state.dicePressing) return;
     const elapsed = now - diceChargeStartedAt;
-    const speed = .00042;
-    let position = (elapsed * speed) % 2;
-    if (diceChargeDirection < 0) position = 1 - position;
-    if (position > 1) position = 2 - position;
+    // Makin lama tombol ditahan, gerakan makin cepat.
+    // Posisi memakai fase segitiga 0 -> 1 -> 0 agar bolak-balik mulus.
+    // Sedikit lebih cepat sejak awal agar pemain langsung mendapat tantangan.
+    // Kecepatan terus meningkat selama tombol ditahan.
+    // Tuning yang sudah diuji nyaman: speed dasar 85, maksimum 95.
+    // Nilai 85..95 dipetakan ke kecepatan aktual tanpa mengubah rasa kontrol yang sudah pas.
+    // Tuning resmi hasil uji pemain: 85 (awal) -> 95 (maksimum).
+    const SKILL_BASE_SPEED = 85;
+    const SKILL_MAX_SPEED = 95;
+    const speedLevel = Math.min(SKILL_MAX_SPEED, SKILL_BASE_SPEED + elapsed / 1000);
+    const actualBaseSpeed = 0.00085;
+    const actualMaxSpeed = 0.00095;
+    const speedRatio = (speedLevel - SKILL_BASE_SPEED) / (SKILL_MAX_SPEED - SKILL_BASE_SPEED);
+    const currentSpeed = actualBaseSpeed + (actualMaxSpeed - actualBaseSpeed) * speedRatio;
+    const accelerationTime = Math.min(elapsed, 10000);
+    const phase = actualBaseSpeed * accelerationTime +
+      0.5 * (actualMaxSpeed - actualBaseSpeed) * (accelerationTime * accelerationTime / 10000) +
+      (elapsed > 10000 ? actualMaxSpeed * (elapsed - 10000) : 0);
+    const cycle = phase % 2;
+    const position = cycle <= 1 ? cycle : 2 - cycle;
     setDiceSkillPosition(position);
     diceChargeRAF = requestAnimationFrame(tick);
   };
@@ -638,30 +674,77 @@ function canUseHumanRoll() {
 }
 
 function rollPairFromSkill(skill) {
-  const x = Math.max(0, Math.min(1, Number(skill ?? .5)));
-  let minTotal = 2, maxTotal = 5;
-  let rareBig = false;
-  const distanceFromCenter = Math.abs(x - .5) * 2;
-  if (distanceFromCenter < .22) {
-    minTotal = 6; maxTotal = 8; // central, harder medium zone
-  } else if (distanceFromCenter < .62) {
-    minTotal = 5; maxTotal = 9;
-  } else {
-    // Ends are mostly small, with a small chance to hit a spectacular big result.
-    if (Math.random() < .10) { minTotal = 9; maxTotal = 12; rareBig = true; }
-  }
-  const total = randomInt(minTotal, maxTotal);
-  let a = randomInt(1, 6);
-  let b = total - a;
-  if (b < 1 || b > 6) {
-    const pairs = [];
-    for (let i = 1; i <= 6; i++) {
-      const j = total - i;
-      if (j >= 1 && j <= 6) pairs.push([i, j]);
+  const x = Math.max(0, Math.min(1, Number(skill ?? 0)));
+
+  // Lima titik bintang adalah target PERFECT DOUBLE.
+  // Ujung kiri/kanan: 1+1 atau 2+2.
+  // Batas hijau-orange: 3+3 atau 4+4.
+  // Tengah merah: 5+5 atau 6+6.
+  const starPoints = [0, 0.25, 0.5, 0.75, 1];
+  let nearestStar = 0;
+  let nearestDistance = Infinity;
+  for (const point of starPoints) {
+    const distance = Math.abs(x - point);
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearestStar = point;
     }
-    [a, b] = pairs[randomInt(0, pairs.length - 1)];
   }
-  return { a, b, total, rareBig };
+
+  // Berhenti sangat dekat bintang = peluang double 95–100%.
+  // Tidak dipaksa 100% agar pemain tetap merasakan unsur keberuntungan.
+  const perfectWindow = 0.028;
+  const perfectChance = 0.90;
+  const inPerfectZone = nearestDistance <= perfectWindow;
+  const forceDouble = inPerfectZone && Math.random() < perfectChance;
+
+  let minTotal = 2;
+  let maxTotal = 4;
+
+  if (x < 0.25) {
+    minTotal = 2; maxTotal = 4;
+  } else if (x < 0.45) {
+    minTotal = 5; maxTotal = 7;
+  } else if (x < 0.50) {
+    minTotal = 8; maxTotal = 9;
+  } else if (x <= 0.55) {
+    minTotal = 10; maxTotal = 12;
+  } else if (x <= 0.75) {
+    minTotal = 5; maxTotal = 7;
+  } else if (x <= 0.80) {
+    minTotal = 2; maxTotal = 4;
+  } else {
+    minTotal = 2; maxTotal = 4;
+  }
+
+  // Jika tepat di sekitar bintang, target double mengikuti bintangnya.
+  // Bintang 0/1 -> 1+1 atau 2+2; 0.25/0.75 -> 3+3 atau 4+4;
+  // bintang 0.5 -> 5+5 atau 6+6.
+  if (forceDouble) {
+    let doubleValues;
+    if (nearestStar === 0 || nearestStar === 1) doubleValues = [1, 2];
+    else if (nearestStar === 0.25 || nearestStar === 0.75) doubleValues = [3, 4];
+    else doubleValues = [5, 6];
+
+    const value = doubleValues[randomInt(0, doubleValues.length - 1)];
+    return {
+      a: value,
+      b: value,
+      total: value * 2,
+      rareBig: value >= 5,
+      perfectDouble: true,
+      perfectStar: nearestStar
+    };
+  }
+
+  const total = randomInt(minTotal, maxTotal);
+  const pairs = [];
+  for (let i = 1; i <= 6; i++) {
+    const j = total - i;
+    if (j >= 1 && j <= 6) pairs.push([i, j]);
+  }
+  const [a, b] = pairs[randomInt(0, pairs.length - 1)];
+  return { a, b, total, rareBig: total >= 10, perfectDouble: false, perfectStar: null };
 }
 
 function renderGameHeader(active, turnStatus, activeColor) {
@@ -670,7 +753,7 @@ function renderGameHeader(active, turnStatus, activeColor) {
 
 function renderGame() {
   const board = state.tiles.length ? state.tiles : TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null, houses: 0, hotel: false }));
-  const active = state.players[state.activePlayer] || { name: state.player.name, cash: 1500, position: 0 };
+  const active = state.players[state.activePlayer] || { name: state.player.name, cash: 5000, position: 0 };
   const currentDice = selectedItem('dice');
   const showDiceResult = state.hasRolled || state.rolling || state.moving;
   const diceValue = state.rolling ? '?' : (showDiceResult ? (state.lastRoll ?? '—') : '—');
@@ -691,7 +774,7 @@ function renderGame() {
           <img class="board-theme-image" src="${versionedAsset(selectedItem('board')?.asset || '')}" alt="" onerror="this.style.display='none'" />
           <div class="board-camera" id="board-camera">
             <div class="board" aria-label="Papan permainan">
-              <div class="board-center"><div class="center-card-deck"><div class="chance-card-face">?</div><span>CHANCE</span></div><div class="board-center-copy"><div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='none'" /><span class="board-center-logo-fallback"></span></div><span class="center-mode">${MODE_LABELS[state.mode] || 'BATTLE ARENA'}</span><p class="center-tagline">Jawab Soal Benar · Lempar Dadu · Menang</p><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div>${diceSkillMarkup()}<button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
+              <div class="board-center"><div class="board-center-copy"><div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='none'" /><span class="board-center-logo-fallback"></span></div><span class="center-mode">${state.mode === 'ai' ? 'Mode 1 VS AI' : (MODE_LABELS[state.mode] || 'BATTLE ARENA')}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div>${diceSkillMarkup()}<button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
             ${board.map((tile, index) => renderBoardCell(tile, index)).join('')}
             </div>
           </div>
@@ -713,17 +796,19 @@ function renderGame() {
 
 function getRent(tile) {
   if (!tile) return 0;
-  if (tile.hotel) return Math.round(tile.rent * 6);
-  return Math.round(tile.rent * (1 + (tile.houses || 0) * .55));
+  const base = Math.round((tile.rent || 0) * 1.5);
+  if (tile.hotel) return Math.round(base * 10);
+  const houses = Math.max(0, Number(tile.houses || 0));
+  return Math.round(base * (1 + houses * 1.05));
 }
 
 function houseCost(tile) {
-  return Math.max(80, Math.round((tile?.price || 100) * .35));
+  return Math.max(80, Math.round((tile?.price || 100) * .28));
 }
 
 function ownsFullGroup(tile, owner) {
-  if (!tile || tile.type !== 'property') return false;
-  const group = state.tiles.filter((candidate) => candidate.type === 'property' && candidate.color === tile.color);
+  if (!tile || tile.type !== 'property' || !tile.group) return false;
+  const group = state.tiles.filter((candidate) => candidate.type === 'property' && candidate.group === tile.group);
   return group.length > 1 && group.every((candidate) => candidate.owner === owner);
 }
 
@@ -758,7 +843,7 @@ function renderBoardCell(tile, index) {
   const ownerColor = owner !== null && owner !== undefined ? playerColor(owner) : tile.color;
   const ownerPlayer = owner !== null && owner !== undefined ? state.players[owner] : null;
   const isBuyable = tile.type === 'property' || tile.type === 'utility';
-  const ownerBadge = isBuyable && ownerPlayer ? `<div class="owner-marker" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}" aria-label="Milik ${escapeHtml(ownerPlayer.name)}"></div>` : '';
+  const ownerBadge = isBuyable && ownerPlayer ? `<div class="owner-marker" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}" aria-label="Milik ${escapeHtml(ownerPlayer.name)}"><span>${escapeHtml(ownerPlayer.name.slice(0, 8))}</span></div>` : '';
   const building = tile.hotel ? '<span class="building-badge hotel">🏨</span>' : tile.houses ? `<span class="building-badge">${'▴'.repeat(tile.houses)}</span>` : '';
   const tileKey = TILE_ASSET_KEYS[index] || '';
   const tileNo = String(index + 1).padStart(2, '0');
@@ -894,7 +979,7 @@ function renderModal() {
       <div class="tile-info-prices">
         <div><span>Harga beli</span><strong>${formatCurrency(tile.price)}</strong></div>
         ${tile.rent ? `<div><span>Sewa dasar</span><strong>${formatCurrency(tile.rent)}</strong></div>` : ''}
-        ${isProperty ? `<div><span>Biaya rumah</span><strong>${formatCurrency(houseCost(tile))}</strong></div><div><span>Sewa hotel</span><strong>${formatCurrency(Math.round(tile.rent * 6))}</strong></div>` : ''}
+        ${isProperty ? `<div><span>Biaya rumah</span><strong>${formatCurrency(houseCost(tile))}</strong></div><div><span>Sewa hotel</span><strong>${formatCurrency(Math.round((tile.rent || 0) * 1.5 * 10))}</strong></div>` : ''}
         ${isUtility ? `<div><span>Sewa saat ini</span><strong>${formatCurrency(getRent(tile))}</strong></div>` : ''}
       </div>` : `<div class="tile-info-special">${escapeHtml(tile?.detail || 'Petak khusus')}</div>`;
     return `<div class="modal-layer"><div class="modal-card tile-info-modal">${asset ? `<div class="tile-info-art"><img src="${asset}" alt="${escapeHtml(tile.name)}" /></div>` : ''}<p class="eyebrow">${isProperty ? 'PROPERTI' : isUtility ? 'FASILITAS' : 'PETAK KHUSUS'}</p><h3>${escapeHtml(tile.name)}</h3>${priceRows}<div class="tile-info-owner">${tile.owner !== null && tile.owner !== undefined ? `Dimiliki oleh <strong>${escapeHtml(state.players[tile.owner]?.name || 'Pemain')}</strong>` : 'Belum dimiliki'}</div><div class="modal-actions"><button class="btn btn-primary btn-wide" data-action="modal-close">Tutup</button></div></div></div>`;
@@ -911,6 +996,10 @@ function renderModal() {
     const maxLoan = maxBankLoan(state.activePlayer);
     const owned = state.tiles.map((tile, index) => ({ tile, index })).filter(({ tile }) => tile.owner === state.activePlayer);
     return `<div class="modal-layer"><div class="modal-card emergency-modal"><div class="modal-property-icon">🏦</div><p class="eyebrow">DANA DARURAT</p><h3>${escapeHtml(modal.reason || (modal.paymentType === 'rent' ? 'Bayar rent' : 'Bayar pajak'))}</h3><p>Butuh <strong style="color:var(--danger)">${formatCurrency(need)}</strong> lagi. Pilih pinjaman bank atau jual properti.</p><div class="emergency-summary"><span>Uang ${formatCurrency(player?.cash || 0)}</span><span>Pinjaman max ${formatCurrency(maxLoan)}</span></div><div class="emergency-assets">${owned.length ? owned.map(({ tile, index }) => `<button class="emergency-asset" data-action="emergency-sell" data-tile-index="${index}"><span style="--asset-color:${tile.color}">${tile.icon}</span><b>${escapeHtml(tile.name)}</b><small>Jual ${formatCurrency(Math.floor(tile.price * .6))}</small></button>`).join('') : '<span class="muted small">Tidak ada properti untuk dijual.</span>'}</div><div class="modal-actions">${maxLoan > 0 ? `<button class="btn btn-primary" data-action="borrow-bank" data-loan-amount="${Math.min(need, maxLoan)}">Pinjam ${formatCurrency(Math.min(need, maxLoan))}</button>` : ''}<button class="btn btn-danger" data-action="declare-bankruptcy">Bangkrut</button></div></div></div>`;
+  }
+  if (modal.type === 'start-build') {
+    const items = eligibleBuildTiles(state.activePlayer);
+    return `<div class="modal-layer start-build-layer"><div class="modal-card start-build-modal"><p class="eyebrow">LEWATI START</p><h3>Kesempatan membangun rumah</h3><p class="muted small">Pilih properti satu grup yang ingin diperkuat sebelum perjalanan dilanjutkan.</p><div class="start-build-list">${items.map(({ tile, index }) => `<button class="start-build-item" data-action="buy-house-start" data-tile-index="${index}"><span class="start-build-color" style="background:${tile.color}"></span><span><strong>${escapeHtml(tile.name)}</strong><small>${tile.houses || 0}/4 rumah · ${formatCurrency(houseCost(tile))} · GRUP ${escapeHtml(tile.group || '—')}</small></span><b>＋</b></button>`).join('')}</div><div class="modal-actions"><button class="btn btn-primary btn-wide" data-action="continue-start-build">Lanjut perjalanan</button></div></div></div>`;
   }
   if (modal.type === 'manage') {
     const tile = modal.tile;
@@ -933,7 +1022,7 @@ function renderModal() {
     return `<div class="modal-layer"><div class="modal-card"><p class="eyebrow">Local demo</p><h3>Reset semua progres?</h3><p>Data lokal di perangkat ini akan dihapus. Aksi ini tidak menghapus data Firebase.</p><div class="modal-actions"><button class="btn btn-ghost" data-action="modal-close">Batal</button><button class="btn btn-danger" data-action="confirm-reset">Reset progres</button></div></div></div>`;
   }
   if (modal.type === 'win') {
-    return `<div class="modal-layer"><div class="modal-card" style="text-align:center"><div style="font-size:2.7rem;margin-bottom:8px">${modal.winner === 0 ? '🏆' : '🤖'}</div><p class="eyebrow">Arena selesai</p><h3>${modal.winner === 0 ? 'Kamu menjadi nomor satu!' : 'AI merebut kemenangan'}</h3><p>${modal.winner === 0 ? 'Jawaban akurat dan langkah strategis menaikkan ratingmu.' : 'Tidak apa-apa. Pelajari pola soal dan balas di arena berikutnya.'}</p><div class="row" style="justify-content:center;gap:9px;margin-top:14px"><span class="soft-chip">+${modal.points} rating</span><span class="soft-chip">◆ ${modal.diamond} bonus</span></div><div class="modal-actions" style="justify-content:center"><button class="btn btn-ghost" data-action="go-screen" data-screen="leaderboard">Lihat ranking</button><button class="btn btn-primary" data-action="begin-game">Main lagi</button></div></div></div>`;
+    return `<div class="modal-layer win-layer"><div class="fireworks" aria-hidden="true">${Array.from({length:18},(_,i)=>`<i style="--i:${i}"></i>`).join('')}</div><div class="modal-card win-card" style="text-align:center"><div class="win-trophy">🏆</div><p class="eyebrow">GAME OVER • VICTORY</p><h3>Selamat, ${escapeHtml(modal.winnerName || 'Pemenang')}!</h3><p>${escapeHtml(modal.reason || 'Permainan selesai.')} <strong>${escapeHtml(modal.winnerName || 'Pemenang')}</strong> menjadi pemenang Numeric Monopoly Matematic.</p><div class="row" style="justify-content:center;gap:9px;margin-top:14px"><span class="soft-chip">+${modal.points} rating</span><span class="soft-chip">◆ ${modal.diamond} bonus</span></div><div class="modal-actions" style="justify-content:center"><button class="btn btn-ghost" data-action="go-screen" data-screen="leaderboard">Lihat ranking</button><button class="btn btn-primary" data-action="begin-game">Main lagi</button></div></div></div>`;
   }
   return '';
 }
@@ -949,18 +1038,18 @@ function resetGame() {
     const host = state.room?.host || { name: 'Host', avatar: '♛' };
     const guest = state.room?.opponent || { name: 'Menunggu lawan', avatar: '🌐' };
     players = [
-      { id: 0, name: host.name, avatar: host.avatar, position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 },
-      { id: 1, name: guest.name, avatar: guest.avatar, position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }
+      { id: 0, name: host.name, avatar: host.avatar, position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 },
+      { id: 1, name: guest.name, avatar: guest.avatar, position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }
     ];
   } else if (state.mode === 'battle') {
     const names = ['Luna Logic', 'Astro Fox', 'Robo Knight', 'Dragon Spark', 'Crystal Golem'];
     const avatars = ['🤖', '🦊', '🤖', '🐉', '💎'];
     const count = Math.max(3, Math.min(6, Number(state.battleCount) || 4));
-    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }];
-    for (let i = 1; i < count; i += 1) players.push({ id: i, name: names[i - 1] || `Rival ${i}`, avatar: avatars[i - 1] || '🤖', position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 });
+    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }];
+    for (let i = 1; i < count; i += 1) players.push({ id: i, name: names[i - 1] || `Rival ${i}`, avatar: avatars[i - 1] || '🤖', position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 });
   } else {
-    const opponent = state.mode === 'ai' ? { id: 1, name: 'Luna Logic', avatar: '🤖', position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 } : { id: 1, name: 'Pemain 2', avatar: '🦊', position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 };
-    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 1500, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }, opponent];
+    const opponent = state.mode === 'ai' ? { id: 1, name: 'Luna Logic', avatar: '🤖', position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 } : { id: 1, name: 'Pemain 2', avatar: '🦊', position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 };
+    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }, opponent];
   }
   state.players = players;
   state.tiles = TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null, houses: 0, hotel: false }));
@@ -1056,7 +1145,7 @@ function playerAssetsValue(playerIndex) {
 
 function isBankrupt(playerIndex) {
   const player = state.players[playerIndex];
-  return Boolean(player && player.cash <= 0 && playerAssetsValue(playerIndex) <= 0);
+  return Boolean(player && (player.eliminated || (player.cash <= 0 && playerAssetsValue(playerIndex) <= 0)));
 }
 
 function markEliminatedPlayers() {
@@ -1278,26 +1367,127 @@ function moveTokenInDom(playerIndex, position) {
   void token.offsetWidth;
   token.classList.add('step-hop');
   window.setTimeout(() => token.classList.remove('step-hop'), 240);
-  focusActiveToken();
 }
 
-function animateTokenMovement(playerIndex, path, onComplete) {
+function updateMovementZoomFocus(playerIndex, activateZoom = false, startPosition = null, targetPosition = null) {
+  const camera = document.getElementById('board-camera');
+  const board = camera?.querySelector('.board');
+  const token = camera?.querySelector(`.token[data-player-index="${playerIndex}"]`);
+  if (!camera || !board || !token) return;
+  const cr = camera.getBoundingClientRect();
+  const br = board.getBoundingClientRect();
+  if (!cr.width || !cr.height || !br.width || !br.height) return;
+
+  if (!activateZoom) {
+    camera.style.removeProperty('--movement-scale');
+    camera.style.removeProperty('--movement-shift-x');
+    camera.style.removeProperty('--movement-shift-y');
+    camera.style.setProperty('--movement-origin', '0 0');
+    return;
+  }
+
+  const startCell = startPosition == null ? token.closest('.board-cell') : camera.querySelector(`.board-cell[data-tile-index="${startPosition}"]`);
+  const targetCell = targetPosition == null ? startCell : camera.querySelector(`.board-cell[data-tile-index="${targetPosition}"]`);
+  const sr = startCell?.getBoundingClientRect() || token.getBoundingClientRect();
+  const tr = targetCell?.getBoundingClientRect() || sr;
+  const start = { x: sr.left + sr.width / 2 - br.left, y: sr.top + sr.height / 2 - br.top };
+  const target = { x: tr.left + tr.width / 2 - br.left, y: tr.top + tr.height / 2 - br.top };
+  const mid = { x: (start.x + target.x) / 2, y: (start.y + target.y) / 2 };
+  const margin = Math.max(12, Math.min(28, Math.min(cr.width, cr.height) * .035));
+  const requestedScale = 1.35;
+  const spanX = Math.abs(target.x - start.x);
+  const spanY = Math.abs(target.y - start.y);
+  let scale = requestedScale;
+  if (spanX > 1) scale = Math.min(scale, (cr.width - margin * 2) / spanX);
+  if (spanY > 1) scale = Math.min(scale, (cr.height - margin * 2) / spanY);
+  scale = Math.max(1, Math.min(requestedScale, scale));
+
+  // Pusatkan titik tengah perjalanan, lalu geser papan agar kedua ujung
+  // (petak awal dan petak tujuan) tetap berada di dalam kamera.
+  const boardOffsetX = br.left - cr.left;
+  const boardOffsetY = br.top - cr.top;
+  const cameraCenterX = cr.width / 2;
+  const cameraCenterY = cr.height / 2;
+  let shiftX = cameraCenterX - (boardOffsetX + mid.x * scale);
+  let shiftY = cameraCenterY - (boardOffsetY + mid.y * scale);
+  const scaledW = br.width * scale;
+  const scaledH = br.height * scale;
+  const minShiftX = cr.width - (boardOffsetX + scaledW);
+  const maxShiftX = -boardOffsetX;
+  const minShiftY = cr.height - (boardOffsetY + scaledH);
+  const maxShiftY = -boardOffsetY;
+  if (scaledW >= cr.width) shiftX = Math.max(minShiftX, Math.min(maxShiftX, shiftX));
+  else shiftX = (cr.width - scaledW) / 2 - boardOffsetX;
+  if (scaledH >= cr.height) shiftY = Math.max(minShiftY, Math.min(maxShiftY, shiftY));
+  else shiftY = (cr.height - scaledH) / 2 - boardOffsetY;
+
+  camera.style.setProperty('--movement-scale', scale.toFixed(4));
+  camera.style.setProperty('--movement-shift-x', `${shiftX.toFixed(2)}px`);
+  camera.style.setProperty('--movement-shift-y', `${shiftY.toFixed(2)}px`);
+  camera.style.setProperty('--movement-origin', '0 0');
+  camera.classList.add('movement-zoom');
+}
+
+function stopMovementZoom() {
+  const camera = document.getElementById('board-camera');
+  if (!camera) return;
+  camera.classList.remove('movement-zoom');
+  camera.style.removeProperty('--movement-origin');
+  camera.style.removeProperty('--movement-scale');
+  camera.style.removeProperty('--movement-shift-x');
+  camera.style.removeProperty('--movement-shift-y');
+}
+
+function animateTokenMovement(playerIndex, path, onComplete, onPassStart = null, playerStartPosition = null) {
   let step = 0;
-  const advance = () => {
+  if (playerStartPosition == null) playerStartPosition = state.players[playerIndex]?.position ?? path[0];
+  state.moving = true;
+  // Tahap 1: kamera melihat pion yang akan bergerak dalam kondisi normal.
+  updateMovementZoomFocus(playerIndex, false, playerStartPosition, path[path.length - 1]);
+  updateMoveHud();
+
+  // Tahap 2: beri jeda kecil, lalu zoom ke 1.35x sebelum pion bergerak.
+  window.setTimeout(() => {
     if (state.screen !== 'game' || !state.players[playerIndex]) return;
-    state.players[playerIndex].position = path[step];
+    updateMovementZoomFocus(playerIndex, true, playerStartPosition, path[path.length - 1]);
+    window.setTimeout(() => advance(0), 620);
+  }, 300);
+
+  const advance = (nextStep = step) => {
+    step = nextStep;
+    if (state.screen !== 'game' || !state.players[playerIndex]) return;
+    const position = path[step];
+    state.players[playerIndex].position = position;
     state.moveStep = step + 1;
-    moveTokenInDom(playerIndex, path[step]);
+    moveTokenInDom(playerIndex, position);
+    // Kamera tetap terkunci pada fokus awal selama perjalanan agar layar tidak patah-patah.
     updateMoveHud();
+    if (position === 0 && step < path.length - 1) {
+      const resume = () => {
+        window.setTimeout(() => advance(step + 1), 520);
+      };
+      if (onPassStart) {
+        onPassStart(resume);
+      } else {
+        resume();
+      }
+      return;
+    }
     if (step < path.length - 1) {
       step += 1;
-      window.setTimeout(advance, 330);
+      window.setTimeout(advance, 470);
     } else {
-      state.moving = false;
-      onComplete?.();
+      // Tahap 3: pion sudah sampai. Beri jeda agar tujuan terlihat jelas.
+      window.setTimeout(() => {
+        stopMovementZoom();
+        // Tahap 4: zoom kembali normal secara halus, baru resolve petak tujuan.
+        window.setTimeout(() => {
+          state.moving = false;
+          onComplete?.();
+        }, 720);
+      }, 520);
     }
   };
-  advance();
 }
 
 const JAIL_INDEX = 10;
@@ -1409,16 +1599,9 @@ function rollDice(isAi = false, skill = null) {
     const oldPosition = player.position;
     const path = Array.from({ length: roll }, (_, step) => (oldPosition + step + 1) % state.tiles.length);
     const newPosition = path[path.length - 1];
-    if (oldPosition + roll >= state.tiles.length) {
-      player.cash += 200;
-      bankWithdraw(200);
-      addActivity('✦', `<strong>${escapeHtml(player.name)}</strong> melewati START dan mendapat bonus ${formatCurrency(200)}.`);
-    }
     // Beri jeda agar angka dadu terlihat dulu sebelum pion mulai berjalan.
     render();
     window.setTimeout(() => {
-      state.moving = true;
-      render();
       animateTokenMovement(playerIndex, path, () => {
         addActivity('◈', `<strong>${escapeHtml(player.name)}</strong> melempar ${roll} dan tiba di <strong>${escapeHtml(state.tiles[newPosition].name)}</strong>.`);
         resolveLanding(newPosition);
@@ -1429,7 +1612,23 @@ function rollDice(isAi = false, skill = null) {
         }
         if (state.mode === 'online') syncOnlineGame();
         render();
-      });
+      }, (resume) => {
+        // Setiap melewati START: berhenti, ambil bonus, lalu beri kesempatan membangun.
+        player.cash += 200;
+        bankWithdraw(200);
+        addActivity('✦', `<strong>${escapeHtml(player.name)}</strong> melewati START dan mendapat bonus ${formatCurrency(200)}.`);
+        if (state.mode === 'ai' && playerIndex === 1) {
+          aiDecideBuildAtStart();
+          render();
+          window.setTimeout(resume, 900);
+        } else if (state.mode === 'battle' && playerIndex !== state.localPlayerIndex) {
+          aiDecideBuildAtStart();
+          render();
+          window.setTimeout(resume, 900);
+        } else {
+          showStartBuildPause(resume);
+        }
+      }, oldPosition);
     }, 700);
   }, 850);
 }
@@ -1464,7 +1663,7 @@ function requestEmergencyFunds(amount, type, ownerIndex = null) {
       }
     }
     if (player.cash >= amount) completePendingPayment();
-    else { player.eliminated = true; state.pendingPayment = null; finishTurn(); }
+    else { player.cash = 0; player.eliminated = true; state.pendingPayment = null; addActivity('💥', `<strong>${escapeHtml(player.name)}</strong> tidak mampu membayar dan bangkrut.`); finishTurn(); }
     return;
   }
   state.modal = { type: 'emergency', amount, paymentType: type, ownerIndex, reason: type === 'rent' ? 'Bayar rent' : 'Bayar pajak' };
@@ -1537,6 +1736,81 @@ function showTurnEnd(tile, message) {
   state.modal = { type: 'turn-end', tile, message };
 }
 
+function eligibleBuildTiles(playerIndex) {
+  const player = state.players[playerIndex];
+  if (!player) return [];
+  return state.tiles.map((tile, index) => ({ tile, index }))
+    .filter(({ tile }) => tile.type === 'property' && tile.owner === playerIndex)
+    .filter(({ tile }) => ownsFullGroup(tile, playerIndex))
+    .filter(({ tile }) => !tile.hotel && (tile.houses || 0) < 4)
+    .filter(({ tile }) => player.cash >= houseCost(tile));
+}
+
+function aiDecideBuildAtStart() {
+  const playerIndex = state.activePlayer;
+  const player = state.players[playerIndex];
+  if (!player) return false;
+  const candidates = state.tiles.map((tile, index) => ({ tile, index }))
+    .filter(({ tile }) => tile.type === 'property' && tile.owner === playerIndex)
+    .filter(({ tile }) => ownsFullGroup(tile, playerIndex))
+    .filter(({ tile }) => !tile.hotel);
+  if (!candidates.length) return false;
+  const affordable = candidates.filter(({ tile }) => {
+    const cost = tile.houses >= 4 ? houseCost(tile) * 2 : houseCost(tile);
+    return player.cash - cost >= 300;
+  });
+  if (!affordable.length || Math.random() > 0.78) return false;
+  affordable.sort((a, b) => {
+    const aCost = a.tile.houses >= 4 ? houseCost(a.tile) * 2 : houseCost(a.tile);
+    const bCost = b.tile.houses >= 4 ? houseCost(b.tile) * 2 : houseCost(b.tile);
+    const aScore = (a.tile.houses >= 4 ? 1000 : (a.tile.houses || 0) * 100) + getRent(a.tile) - aCost * .02;
+    const bScore = (b.tile.houses >= 4 ? 1000 : (b.tile.houses || 0) * 100) + getRent(b.tile) - bCost * .02;
+    return bScore - aScore;
+  });
+  const pick = affordable[0];
+  const cost = pick.tile.houses >= 4 ? houseCost(pick.tile) * 2 : houseCost(pick.tile);
+  player.cash -= cost;
+  bankDeposit(cost);
+  if (pick.tile.houses >= 4) {
+    pick.tile.houses = 0;
+    pick.tile.hotel = true;
+    addActivity('🏨', `<strong>${escapeHtml(player.name)}</strong> membangun hotel di ${escapeHtml(pick.tile.name)} saat melewati START.`);
+  } else {
+    pick.tile.houses = (pick.tile.houses || 0) + 1;
+    addActivity('⌂', `<strong>${escapeHtml(player.name)}</strong> membangun rumah di ${escapeHtml(pick.tile.name)} saat melewati START.`);
+  }
+  refreshBoardCellDom(pick.index);
+  return true;
+}
+
+function showStartBuildPause(resume) {
+  state.movementResume = resume;
+  state.startBuildPause = true;
+  const eligible = eligibleBuildTiles(state.activePlayer);
+  if (!eligible.length) {
+    state.startBuildPause = false;
+    state.movementResume = null;
+    resume?.();
+    return;
+  }
+  state.modal = { type: 'start-build', tiles: eligible.map(({ tile, index }) => ({ name: tile.name, index, houses: tile.houses || 0, cost: houseCost(tile), color: tile.color })) };
+  render();
+}
+
+function continueFromStartBuild() {
+  state.modal = null;
+  state.startBuildPause = false;
+  const resume = state.movementResume;
+  state.movementResume = null;
+  resume?.();
+}
+
+function aiHandleLandingFinish() {
+  state.modal = null;
+  render();
+  window.setTimeout(() => finishTurn(), 650);
+}
+
 function resolveLanding(index) {
   const tile = state.tiles[index];
   const player = state.players[state.activePlayer];
@@ -1557,12 +1831,14 @@ function resolveLanding(index) {
       if (state.mode === 'ai' && state.activePlayer === 1) {
         const affordable = player.cash >= tile.price;
         const reserve = 350;
-        const groupOwned = state.tiles.filter(t => t.owner === 1 && t.color === tile.color).length;
+        const groupOwned = state.tiles.filter(t => t.owner === 1 && t.group === tile.group).length;
         const smartBuy = affordable && (player.cash - tile.price >= reserve || groupOwned > 0 || tile.price <= 220);
         if (smartBuy) {
           player.cash -= tile.price;
           bankDeposit(tile.price);
           tile.owner = state.activePlayer;
+          // Segarkan petak saat AI membeli agar penanda pemilik langsung terlihat.
+          refreshBoardCellDom(index);
           addActivity('🤖', `<strong>${escapeHtml(player.name)}</strong> memutuskan membeli ${escapeHtml(tile.name)}.`);
           showTurnEnd(tile, `Luna Logic membeli ${tile.name} untuk memperkuat asetnya.`);
         } else {
@@ -1594,7 +1870,27 @@ function resolveLanding(index) {
     } else {
       addActivity('★', `<strong>${escapeHtml(player.name)}</strong> kembali ke properti miliknya.`);
       if (tile.type === 'property') {
+        // AI mengelola asetnya sendiri; pemain tidak boleh menjadi pengambil keputusan AI.
+        if (state.mode === 'ai' && state.activePlayer === 1) {
+          const candidates = eligibleBuildTiles(state.activePlayer).filter(({ index: candidateIndex }) => candidateIndex === index);
+          if (candidates.length && Math.random() < 0.65) {
+            const cost = houseCost(tile);
+            if (player.cash - cost >= 300) {
+              player.cash -= cost;
+              bankDeposit(cost);
+              tile.houses = (tile.houses || 0) + 1;
+              refreshBoardCellDom(index);
+              addActivity('⌂', `<strong>${escapeHtml(player.name)}</strong> membeli rumah di ${escapeHtml(tile.name)}.`);
+            }
+          }
+          aiHandleLandingFinish();
+          return;
+        }
         state.modal = { type: 'manage', tile, tileIndex: index };
+        return;
+      }
+      if (state.mode === 'ai' && state.activePlayer === 1) {
+        aiHandleLandingFinish();
         return;
       }
       showTurnEnd(tile, 'Kamu berada di tempat milikmu.');
@@ -1611,6 +1907,11 @@ function resolveLanding(index) {
     showTurnEnd(tile, `Pajak ${formatCurrency(tax)} masuk ke bank.`);
   } else if (tile.type === 'chance') {
     state.modal = { type: 'chance', card: randomChanceCard() };
+    if (state.mode === 'ai' && state.activePlayer === 1) {
+      render();
+      window.setTimeout(() => resolveChanceCard(), 700);
+      return;
+    }
   } else if (tile.name === 'GO TO PRISON') {
     sendPlayerToJail(state.activePlayer);
     showTurnEnd(state.tiles[JAIL_INDEX], 'Pion langsung dipindahkan ke PRISON. Percobaan keluar dimulai pada giliran berikutnya.');
@@ -1654,7 +1955,8 @@ function finishTurn() {
     render();
     return;
   }
-  if (state.players.some((player) => isBankrupt(player.id))) {
+  markEliminatedPlayers();
+  if (state.players.some((player) => player.eliminated)) {
     finishGame();
     return;
   }
@@ -1682,7 +1984,7 @@ function finishGame() {
   state.stats.games += 1;
   if (winner === 0) { state.stats.wins += 1; state.stats.points += points; state.diamond += diamond; }
   else { state.stats.points += points; state.diamond += diamond; }
-  state.modal = { type: 'win', winner, points, diamond };
+  state.modal = { type: 'win', winner, winnerName: winnerPlayer.name, points, diamond, reason: state.players.find((player) => player.eliminated)?.name ? `${state.players.find((player) => player.eliminated)?.name} bangkrut.` : 'Permainan selesai.' };
   state.canRoll = false;
   state.question = null;
   persist();
@@ -1850,8 +2152,9 @@ function buyHouse(tileIndex, fromLanding = false) {
   const tile = state.tiles[tileIndex];
   const player = state.players[state.activePlayer];
   if (!tile || tile.owner !== state.activePlayer || tile.type !== 'property') return;
-  if (state.players[state.activePlayer]?.position !== tileIndex) {
-    showToast('Pion harus berada di petak ini untuk membeli rumah.', 'bad');
+  const remoteBuildAllowed = state.startBuildPause === true;
+  if (state.players[state.activePlayer]?.position !== tileIndex && !remoteBuildAllowed) {
+    showToast('Pion harus berada di petak ini atau sedang berhenti di START.', 'bad');
     return;
   }
   if (!ownsFullGroup(tile, state.activePlayer)) {
@@ -2349,6 +2652,12 @@ function handleClick(event) {
       showTurnEnd(state.tiles[JAIL_INDEX], `Denda ${formatCurrency(JAIL_FINE)} dibayar. Kamu keluar dari PRISON.`);
       render();
     }
+  } else if (action === 'buy-house-start') {
+    buyHouse(Number(target.dataset.tileIndex), true);
+    state.modal = { type: 'start-build', tiles: eligibleBuildTiles(state.activePlayer).map(({ tile, index }) => ({ name: tile.name, index, houses: tile.houses || 0, cost: houseCost(tile), color: tile.color })) };
+    render();
+  } else if (action === 'continue-start-build') {
+    continueFromStartBuild();
   } else if (action === 'buy-house') {
     buyHouse(Number(target.dataset.tileIndex), target.dataset.fromLanding === 'true');
   } else if (action === 'buy-hotel') {
@@ -2575,7 +2884,7 @@ window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; re
 window.addEventListener('resize', updateOrientationLock, { passive: true });
 window.addEventListener('orientationchange', () => window.setTimeout(updateOrientationLock, 80), { passive: true });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=47').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=50').catch(() => {}));
 }
 
 function preloadTileAssets() {
