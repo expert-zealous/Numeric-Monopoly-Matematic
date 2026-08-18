@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '59';
+const ASSET_VERSION = '62';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -858,7 +858,7 @@ function renderBoardCell(tile, index) {
   const edgeClass = pos.row === 11 ? 'edge-bottom' : pos.row === 1 ? 'edge-top' : pos.col === 1 ? 'edge-left' : pos.col === 11 ? 'edge-right' : '';
   const labelClass = edgeClass || 'edge-bottom';
   const hideCornerName = [0, 10, 20, 30].includes(index);
-  const nameMarkup = hideCornerName ? '' : `<div class="cell-name-outside ${labelClass}">${escapeHtml(name)}</div>`;
+  const nameMarkup = hideCornerName ? '' : `<div class="cell-name-outside ${labelClass} tile-label-${index}">${escapeHtml(name)}</div>`;
   return `<div class="board-cell ${tile.type === 'corner' ? 'corner' : ''} ${owner !== null && owner !== undefined ? 'owned' : ''} ${edgeClass}" data-tile-index="${index}" style="grid-row:${pos.row};grid-column:${pos.col};--cell-color:${tile.color}" title="${escapeHtml(tile.name)} — klik untuk melihat detail" role="button" tabindex="0"><img class="cell-art" src="${tileSrc}" data-fallback-1="${tileFallback1}" data-fallback-2="${tileFallback2}" data-fallback-3="${tileFallback3}" alt="${escapeHtml(tile.name)}" fetchpriority="high" decoding="async" onload="this.classList.remove('tile-art-missing')" onerror="${tileOnError}" />${nameMarkup}${building}${ownerBadge}${playersHere}</div>`;
 }
 

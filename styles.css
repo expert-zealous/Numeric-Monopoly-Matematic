@@ -1847,3 +1847,74 @@ body.is-game-screen .cash-player-avatar {
     min-height: 35px !important;
   }
 }
+
+
+/* === v62: mobile center breathing room + corner label collision fix === */
+@media (max-width: 900px) {
+  /* Smaller logo creates a clean vertical gap for Mode + dice. */
+  .board-center-mark {
+    width: 102px !important;
+    height: 70px !important;
+    top: 1% !important;
+  }
+  .board-center .center-mode {
+    top: 30.5% !important;
+    font-size: .74rem !important;
+  }
+  .board-center .center-roll-result {
+    top: 39.5% !important;
+  }
+  .board-center .dice-skill-arc-wrap {
+    top: 61.5% !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .board-center-mark {
+    width: 78px !important;
+    height: 55px !important;
+    top: .5% !important;
+  }
+  .board-center .center-mode {
+    top: 29.5% !important;
+    font-size: .60rem !important;
+  }
+  .board-center .center-roll-result {
+    top: 39% !important;
+  }
+  .board-center .dice-skill-arc-wrap {
+    top: 61% !important;
+    width: 250px !important;
+  }
+  .board-cell .cell-name-outside {
+    max-width: 56px !important;
+    font-size: .31rem !important;
+    padding: 2px 3px !important;
+  }
+
+  /* Keep the four corner-adjacent pairs visually separated on narrow phones. */
+  .board-cell[data-tile-index="9"] .cell-name-outside.edge-bottom {
+    left: 34% !important;
+  }
+  .board-cell[data-tile-index="11"] .cell-name-outside.edge-left {
+    top: 68% !important;
+  }
+  .board-cell[data-tile-index="19"] .cell-name-outside.edge-left {
+    top: 68% !important;
+  }
+  .board-cell[data-tile-index="21"] .cell-name-outside.edge-top {
+    left: 66% !important;
+  }
+  .board-cell[data-tile-index="30"] .cell-name-outside.edge-top {
+    left: 34% !important;
+  }
+  .board-cell[data-tile-index="31"] .cell-name-outside.edge-right {
+    top: 68% !important;
+  }
+  .board-cell[data-tile-index="39"] .cell-name-outside.edge-right {
+    top: 32% !important;
+  }
+  .board-cell[data-tile-index="1"] .cell-name-outside.edge-bottom {
+    left: 66% !important;
+  }
+}
