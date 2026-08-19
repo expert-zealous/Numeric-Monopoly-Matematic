@@ -92,3 +92,101 @@ body.is-game-screen .turn-focus-avatar {
   .board-center .dice-skill-arc-wrap { top:57% !important; width:220px !important; }
   .board-center .center-roll-button { bottom:.5% !important; min-width:116px !important; min-height:32px !important; font-size:.56rem !important; }
 }
+
+
+/* === v64: FINAL MOBILE COMPOSITION CORRECTION ===
+   The v63 logo/mode rules were still too large and the board sat directly
+   under the header. These rules are intentionally LAST and decisive. */
+@media (max-width: 900px) {
+  body.is-game-screen .game-header {
+    height: 34px !important;
+    min-height: 34px !important;
+    flex-basis: 34px !important;
+  }
+  body.is-game-screen .game-layout {
+    height: calc(100% - 34px) !important;
+    padding-top: 14px !important;
+    box-sizing: border-box !important;
+  }
+  body.is-game-screen .board-wrap {
+    height: calc(100% - 14px) !important;
+    padding: 0 4px 4px !important;
+    box-sizing: border-box !important;
+  }
+  body.is-game-screen .board-camera {
+    height: 100% !important;
+    padding: 6px 8px !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
+  }
+  body.is-game-screen .board-camera .board {
+    height: min(calc(100% - 12px), calc(100vw - 16px)) !important;
+    width: min(calc(100% - 16px), calc(100vw - 16px)) !important;
+    aspect-ratio: 1 / 1 !important;
+    max-height: calc(100% - 12px) !important;
+    max-width: calc(100% - 16px) !important;
+  }
+
+  /* Smaller logo; its physical box is now clearly separated from Mode. */
+  .board-center-mark {
+    width: 58px !important;
+    height: 40px !important;
+    top: 4% !important;
+  }
+  .board-center .center-mode {
+    top: 29% !important;
+    font-size: .58rem !important;
+    line-height: 1 !important;
+  }
+  .board-center .center-roll-result {
+    top: 40% !important;
+  }
+  .board-center .dice-skill-arc-wrap {
+    top: 61% !important;
+  }
+}
+
+@media (max-width: 560px) {
+  body.is-game-screen .game-header {
+    height: 34px !important;
+    min-height: 34px !important;
+    flex-basis: 34px !important;
+  }
+  body.is-game-screen .game-layout {
+    height: calc(100% - 34px) !important;
+    padding-top: 18px !important;
+  }
+  body.is-game-screen .board-wrap {
+    height: calc(100% - 18px) !important;
+    padding: 0 3px 3px !important;
+  }
+  body.is-game-screen .board-camera {
+    padding: 5px 6px !important;
+  }
+  body.is-game-screen .board-camera .board {
+    width: min(calc(100% - 12px), calc(100vw - 12px)) !important;
+    height: min(calc(100% - 10px), calc(100vw - 12px)) !important;
+    max-width: calc(100% - 12px) !important;
+    max-height: calc(100% - 10px) !important;
+  }
+  .board-center-mark {
+    width: 52px !important;
+    height: 36px !important;
+    top: 4% !important;
+  }
+  .board-center .center-mode {
+    top: 28% !important;
+    font-size: .54rem !important;
+    line-height: 1 !important;
+  }
+  .board-center .center-roll-result {
+    top: 40% !important;
+  }
+  .board-center .dice-skill-arc-wrap {
+    top: 61% !important;
+    width: 232px !important;
+  }
+  .board-center .center-roll-button {
+    bottom: 1% !important;
+  }
+}

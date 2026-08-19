@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '63';
+const ASSET_VERSION = '64';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -637,8 +637,8 @@ function startDiceSkill() {
     const SKILL_BASE_SPEED = 85;
     const SKILL_MAX_SPEED = 95;
     const speedLevel = Math.min(SKILL_MAX_SPEED, SKILL_BASE_SPEED + elapsed / 1000);
-    const actualBaseSpeed = 0.00016;
-    const actualMaxSpeed = 0.00020;
+    const actualBaseSpeed = 0.00085;
+    const actualMaxSpeed = 0.00095;
     const speedRatio = (speedLevel - SKILL_BASE_SPEED) / (SKILL_MAX_SPEED - SKILL_BASE_SPEED);
     const currentSpeed = actualBaseSpeed + (actualMaxSpeed - actualBaseSpeed) * speedRatio;
     const accelerationTime = Math.min(elapsed, 10000);
@@ -2884,7 +2884,7 @@ window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; re
 window.addEventListener('resize', updateOrientationLock, { passive: true });
 window.addEventListener('orientationchange', () => window.setTimeout(updateOrientationLock, 80), { passive: true });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=63').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=64').catch(() => {}));
 }
 
 function preloadTileAssets() {
