@@ -774,12 +774,22 @@ function renderGame() {
           <img class="board-theme-image" src="${versionedAsset(selectedItem('board')?.asset || '')}" alt="" onerror="this.style.display='none'" />
           <div class="board-camera" id="board-camera">
             <div class="board" aria-label="Papan permainan">
-              <div class="board-center"><div class="board-center-copy"><div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='none'" /><span class="board-center-logo-fallback"></span></div><span class="center-mode">${state.mode === 'ai' ? 'Mode 1 VS AI' : (MODE_LABELS[state.mode] || 'BATTLE ARENA')}</span><div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div>${diceSkillMarkup()}<button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button></div></div>
-            ${board.map((tile, index) => renderBoardCell(tile, index)).join('')}
+              ${board.map((tile, index) => renderBoardCell(tile, index)).join('')}
             </div>
           </div>
           <div class="board-vignette"></div>
           ${state.question || state.aiThinking ? renderQuestionOverlay() : ''}
+        </div>
+        <div class="game-center-layer" aria-label="Kontrol permainan">
+          <div class="board-center">
+            <div class="board-center-copy">
+              <div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='none'" /><span class="board-center-logo-fallback"></span></div>
+              <span class="center-mode">${state.mode === 'ai' ? 'Mode 1 VS AI' : (MODE_LABELS[state.mode] || 'BATTLE ARENA')}</span>
+              <div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div>
+              ${diceSkillMarkup()}
+              <button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button>
+            </div>
+          </div>
         </div>
         <aside class="game-side">
           <section class="turn-card panel"><div class="turn-heading"><h3>GILIRAN</h3><span class="turn-status">${turnStatus}</span></div>${state.players.map((player, index) => renderPlayerLine(player, index)).join('')}</section>
@@ -2884,7 +2894,7 @@ window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; re
 window.addEventListener('resize', updateOrientationLock, { passive: true });
 window.addEventListener('orientationchange', () => window.setTimeout(updateOrientationLock, 80), { passive: true });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=69').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=70').catch(() => {}));
 }
 
 function preloadTileAssets() {
