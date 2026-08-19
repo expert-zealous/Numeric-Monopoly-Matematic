@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '75';
+const ASSET_VERSION = '76';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -856,7 +856,8 @@ function renderBoardCell(tile, index) {
   const ownerPlayer = owner !== null && owner !== undefined ? state.players[owner] : null;
   const isBuyable = tile.type === 'property' || tile.type === 'utility';
   const ownerBadge = isBuyable && ownerPlayer ? `<div class="owner-marker" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}" aria-label="Milik ${escapeHtml(ownerPlayer.name)}"><span>${escapeHtml(ownerPlayer.name.slice(0, 8))}</span></div>` : '';
-  const building = tile.hotel ? '<span class="building-badge hotel">🏨</span>' : tile.houses ? `<span class="building-badge">${'▴'.repeat(tile.houses)}</span>` : '';
+  const houseCount = Number.isInteger(Number(tile.houses)) ? Math.max(0, Math.min(4, Number(tile.houses))) : 0;
+  const building = tile.owner !== null && tile.owner !== undefined && tile.hotel ? '<span class="building-badge hotel">🏨</span>' : tile.owner !== null && tile.owner !== undefined && houseCount > 0 ? `<span class="building-badge">${'▴'.repeat(houseCount)}</span>` : '';
   const tileKey = TILE_ASSET_KEYS[index] || '';
   const tileNo = String(index + 1).padStart(2, '0');
   const exactAsset = tile.asset || `assets/tiles/tile-${tileNo}-${tileKey}.png`;
@@ -1037,8 +1038,8 @@ function renderModal() {
     return `<div class="modal-layer"><div class="modal-card"><p class="eyebrow">Local demo</p><h3>Reset semua progres?</h3><p>Data lokal di perangkat ini akan dihapus. Aksi ini tidak menghapus data Firebase.</p><div class="modal-actions"><button class="btn btn-ghost" data-action="modal-close">Batal</button><button class="btn btn-danger" data-action="confirm-reset">Reset progres</button></div></div></div>`;
   }
   if (modal.type === 'win') {
-    const sparks = Array.from({length:72},(_,i)=>{ const burst=i%9; const group=Math.floor(i/9); const angle=(burst*40)-20; const hue=(group*47+burst*9)%360; const delay=((i%9)*-0.08-(group%3)*0.35).toFixed(2); return `<i style="--angle:${angle}deg;--hue:${hue};--delay:${delay}s;--burst:${group}"></i>`; }).join('');
-    return `<div class="modal-layer win-layer"><div class="fireworks" aria-hidden="true">${sparks}</div><div class="victory-glow"></div><div class="modal-card win-card" style="text-align:center"><div class="win-trophy">🏆</div><p class="eyebrow">GAME OVER • VICTORY</p><h3>Selamat, ${escapeHtml(modal.winnerName || 'Pemenang')}!</h3><p>${escapeHtml(modal.reason || 'Permainan selesai.')} <strong>${escapeHtml(modal.winnerName || 'Pemenang')}</strong> menjadi pemenang Numeric Monopoly Matematic.</p><div class="row" style="justify-content:center;gap:9px;margin-top:14px"><span class="soft-chip">+${modal.points} rating</span><span class="soft-chip">◆ ${modal.diamond} bonus</span></div><div class="modal-actions" style="justify-content:center"><button class="btn btn-ghost" data-action="go-screen" data-screen="leaderboard">Lihat ranking</button><button class="btn btn-primary" data-action="begin-game">Main lagi</button></div></div></div>`;
+    const fireworks = Array.from({length:10},(_,i)=>{ const x=10+i*9; const delay=(i*0.22).toFixed(2); return `<span class="firework-burst" style="--x:${x}%;--delay:${delay}s"><b class="rocket"></b>${Array.from({length:18},(_,j)=>`<i style="--angle:${j*20}deg;--hue:${(i*37+j*11)%360};--radius:${70+(j%4)*16}px"></i>`).join('')}</span>`; }).join('');
+    return `<div class="modal-layer win-layer"><div class="fireworks" aria-hidden="true">${fireworks}</div><div class="victory-glow"></div><div class="modal-card win-card" style="text-align:center"><div class="win-trophy">🏆</div><p class="eyebrow">GAME OVER • VICTORY</p><h3>Selamat, ${escapeHtml(modal.winnerName || 'Pemenang')}!</h3><p>${escapeHtml(modal.reason || 'Permainan selesai.')} <strong>${escapeHtml(modal.winnerName || 'Pemenang')}</strong> menjadi pemenang Numeric Monopoly Matematic.</p><div class="row" style="justify-content:center;gap:9px;margin-top:14px"><span class="soft-chip">+${modal.points} rating</span><span class="soft-chip">◆ ${modal.diamond} bonus</span></div><div class="modal-actions" style="justify-content:center"><button class="btn btn-ghost" data-action="go-screen" data-screen="leaderboard">Lihat ranking</button><button class="btn btn-primary" data-action="begin-game">Main lagi</button></div></div></div>`;
   }
   return '';
 }
@@ -1777,7 +1778,7 @@ function propertyGroup(tile) {
 }
 
 function canBuildHouseOn(tile, playerIndex) {
-  if (!tile || tile.type !== 'property' || tile.owner !== playerIndex || tile.hotel || tile.houses >= 4) return false;
+  if (!tile || tile.type !== 'property' || tile.owner !== playerIndex || tile.hotel || Number(tile.houses || 0) >= 4) return false;
   if (!ownsFullGroup(tile, playerIndex)) return false;
   const group = propertyGroup(tile);
   const minLevel = Math.min(...group.map((candidate) => candidate.hotel ? 5 : Number(candidate.houses || 0)));
@@ -1785,7 +1786,7 @@ function canBuildHouseOn(tile, playerIndex) {
 }
 
 function canBuildHotelOn(tile, playerIndex) {
-  if (!tile || tile.type !== 'property' || tile.owner !== playerIndex || tile.hotel || tile.houses < 4) return false;
+  if (!tile || tile.type !== 'property' || tile.owner !== playerIndex || tile.hotel || Number(tile.houses || 0) < 4) return false;
   if (!ownsFullGroup(tile, playerIndex)) return false;
   return propertyGroup(tile).every((candidate) => candidate.hotel || Number(candidate.houses || 0) >= 4);
 }
@@ -1916,7 +1917,7 @@ function resolveLanding(index) {
           aiHandleLandingFinish();
           return;
         }
-        state.modal = { type: 'manage', tile, tileIndex: index, source: 'landing' };
+        state.modal = { type: 'manage', tile, tileIndex: index, source: 'board-manage' };
         return;
       }
       if (state.mode === 'ai' && state.activePlayer === 1) {
@@ -2636,7 +2637,7 @@ function handleClick(event) {
     const tile = state.tiles[index] || TILE_BLUEPRINT[index];
     if (tile) {
       if (state.screen === 'game' && tile.type === 'property' && tile.owner === state.activePlayer && state.activePlayer === state.localPlayerIndex) {
-        state.modal = { type: 'manage', tile, tileIndex: index, source: 'landing' };
+        state.modal = { type: 'manage', tile, tileIndex: index, source: 'board-manage' };
       } else {
         state.modal = { type: 'tile-info', tile, tileIndex: index };
       }
@@ -2739,7 +2740,7 @@ function handleClick(event) {
     const closingType = state.modal?.type;
     const closesLanding = state.modal?.source === 'landing';
     state.modal = null;
-    if (closesLanding && (closingType === 'manage' || closingType === 'purchase' || closingType === 'auction')) {
+    if (closesLanding && (closingType === 'purchase' || closingType === 'auction')) {
       finishTurn();
     } else {
       render();
