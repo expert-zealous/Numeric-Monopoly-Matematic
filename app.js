@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '74';
+const ASSET_VERSION = '75';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -1849,11 +1849,13 @@ function resolveLanding(index) {
           player.cash -= tile.price;
           bankDeposit(tile.price);
           tile.owner = state.activePlayer;
+          refreshBoardCellDom(index);
           addActivity('♛', `<strong>${escapeHtml(player.name)}</strong> otomatis membeli ${escapeHtml(tile.name)} di room online.`);
-          showTurnEnd(tile, `${tile.name} dibeli otomatis.`);
         } else {
-          showTurnEnd(tile, `${tile.name} belum terbeli.`);
+          addActivity('♛', `<strong>${escapeHtml(player.name)}</strong> belum membeli ${escapeHtml(tile.name)} di room online.`);
         }
+        state.modal = null;
+        finishTurn();
         return;
       }
       if (state.mode === 'ai' && state.activePlayer === 1) {
@@ -1868,15 +1870,15 @@ function resolveLanding(index) {
           // Segarkan petak saat AI membeli agar penanda pemilik langsung terlihat.
           refreshBoardCellDom(index);
           addActivity('🤖', `<strong>${escapeHtml(player.name)}</strong> memutuskan membeli ${escapeHtml(tile.name)}.`);
-          showTurnEnd(tile, `Luna Logic membeli ${tile.name} untuk memperkuat asetnya.`);
+          aiHandleLandingFinish();
         } else {
           addActivity('🤖', `<strong>${escapeHtml(player.name)}</strong> memilih tidak membeli ${escapeHtml(tile.name)}.`);
-          showTurnEnd(tile, `Luna Logic memilih menyimpan dana.`);
+          aiHandleLandingFinish();
         }
         return;
       }
       if (player.cash >= tile.price) {
-        state.modal = { type: 'purchase', tile };
+        state.modal = { type: 'purchase', tile, tileIndex: index, source: 'landing' };
         return;
       }
       showTurnEnd(tile, `Saldo belum cukup untuk membeli ${tile.name}.`);
@@ -1914,7 +1916,7 @@ function resolveLanding(index) {
           aiHandleLandingFinish();
           return;
         }
-        state.modal = { type: 'manage', tile, tileIndex: index };
+        state.modal = { type: 'manage', tile, tileIndex: index, source: 'landing' };
         return;
       }
       if (state.mode === 'ai' && state.activePlayer === 1) {
@@ -2022,8 +2024,15 @@ function finishGame() {
 
 function buyProperty() {
   if (!state.modal?.tile) return;
-  const tile = state.modal.tile;
-  const player = state.players[state.activePlayer];
+  const tileIndex = Number.isInteger(state.modal.tileIndex) ? state.modal.tileIndex : state.tiles.indexOf(state.modal.tile);
+  const tile = state.tiles[tileIndex];
+  const playerIndex = state.activePlayer;
+  const player = state.players[playerIndex];
+  if (!tile || !player || tile.owner !== null && tile.owner !== undefined) {
+    state.modal = null;
+    render();
+    return;
+  }
   if (player.cash < tile.price) {
     showToast('Saldo belum cukup untuk properti ini.', 'bad');
     state.modal = null;
@@ -2032,12 +2041,15 @@ function buyProperty() {
   }
   player.cash -= tile.price;
   bankDeposit(tile.price);
-  const index = state.tiles.findIndex((candidate) => candidate.name === tile.name && candidate.owner === null);
-  if (index >= 0) { state.tiles[index].owner = state.activePlayer; refreshBoardCellDom(index); }
+  tile.owner = playerIndex;
+  refreshBoardCellDom(tileIndex);
   addActivity('♛', `<strong>${escapeHtml(player.name)}</strong> membeli ${escapeHtml(tile.name)}.`);
   showToast(`${tile.name} resmi menjadi milikmu.`, 'good');
-  showTurnEnd(tile, `${tile.name} menjadi milikmu.`);
+  state.modal = null;
   render();
+  // Pembelian properti menyelesaikan fase landing langsung.
+  // Tidak ada lagi modal PETAK TUJUAN kedua yang dapat membuat giliran tersangkut.
+  window.setTimeout(() => finishTurn(), 120);
 }
 
 function randomChanceCard() {
@@ -2624,7 +2636,7 @@ function handleClick(event) {
     const tile = state.tiles[index] || TILE_BLUEPRINT[index];
     if (tile) {
       if (state.screen === 'game' && tile.type === 'property' && tile.owner === state.activePlayer && state.activePlayer === state.localPlayerIndex) {
-        state.modal = { type: 'manage', tile, tileIndex: index };
+        state.modal = { type: 'manage', tile, tileIndex: index, source: 'landing' };
       } else {
         state.modal = { type: 'tile-info', tile, tileIndex: index };
       }
@@ -2724,8 +2736,14 @@ function handleClick(event) {
     state.modal = null;
     finishTurn();
   } else if (action === 'modal-close') {
+    const closingType = state.modal?.type;
+    const closesLanding = state.modal?.source === 'landing';
     state.modal = null;
-    render();
+    if (closesLanding && (closingType === 'manage' || closingType === 'purchase' || closingType === 'auction')) {
+      finishTurn();
+    } else {
+      render();
+    }
   } else if (action === 'shop-tab') {
     state.shopType = target.dataset.shopType;
     render();
