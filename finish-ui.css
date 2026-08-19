@@ -235,3 +235,89 @@ body.is-game-screen .question-card .question-hint{margin-top:5px!important;font-
   .board-cell[data-tile-index="29"] .cell-name-outside.edge-top{bottom:-12px!important}
   .board-cell[data-tile-index="31"] .cell-name-outside.edge-right{right:calc(100% + 3px)!important}
 }
+
+
+/* ===== v71 FINAL: question layer must be the topmost interactive UI ===== */
+body.is-game-screen .question-layer{
+  z-index:200!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  padding:6px 8px!important;
+  overflow:hidden!important;
+}
+body.is-game-screen .question-card{
+  width:min(74vw,290px)!important;
+  max-width:290px!important;
+  padding:8px 9px!important;
+  border-radius:12px!important;
+}
+body.is-game-screen .question-card .question-top{
+  gap:5px!important;
+  margin-bottom:6px!important;
+}
+body.is-game-screen .question-card h3{
+  margin:0 0 4px!important;
+  font-size:.70rem!important;
+  line-height:1.15!important;
+}
+body.is-game-screen .question-card .question-text{
+  margin:0 0 5px!important;
+  font-size:.88rem!important;
+  line-height:1.08!important;
+  letter-spacing:-.035em!important;
+}
+body.is-game-screen .question-card .answer-display{
+  min-height:29px!important;
+  margin-bottom:5px!important;
+  padding:4px 6px!important;
+  font-size:.78rem!important;
+}
+body.is-game-screen .question-card .numeric-keyboard{
+  gap:3px!important;
+}
+body.is-game-screen .question-card .key-btn{
+  min-height:25px!important;
+  padding:2px 4px!important;
+  font-size:.60rem!important;
+  border-radius:6px!important;
+}
+body.is-game-screen .question-card .key-btn.ok{
+  min-height:29px!important;
+}
+body.is-game-screen .question-card .question-hint{
+  margin-top:3px!important;
+  font-size:.39rem!important;
+  line-height:1.1!important;
+}
+body.is-game-screen .question-card .question-for,
+body.is-game-screen .question-card .eyebrow,
+body.is-game-screen .question-card .difficulty-pill,
+body.is-game-screen .question-card .question-timer{
+  font-size:.40rem!important;
+}
+
+/* Keep the successful v70 center layout untouched while a question is shown. */
+body.is-game-screen .game-center-layer{z-index:80!important}
+
+/* ===== Logo size control: edit ONLY these two values when fine-tuning ===== */
+body.is-game-screen .game-center-layer .board-center-mark{
+  width:44px!important;
+  height:31px!important;
+}
+body.is-game-screen .game-center-layer .board-center-mark img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+}
+@media (max-width:900px) and (orientation:landscape){
+  body.is-game-screen .game-center-layer .board-center-mark{
+    width:44px!important;
+    height:31px!important;
+  }
+}
+@media (max-width:560px) and (orientation:landscape){
+  body.is-game-screen .game-center-layer .board-center-mark{
+    width:44px!important;
+    height:31px!important;
+  }
+}
