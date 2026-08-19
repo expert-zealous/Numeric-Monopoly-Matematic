@@ -695,7 +695,7 @@ body.is-game-screen .cash-player-avatar { width:30px !important; height:30px !im
 body.is-game-screen .cash-character-image { width:30px !important; height:30px !important; object-fit:contain; }
 body.is-game-screen .cash-player b { font-size:.58rem !important; }
 body.is-game-screen .cash-player small { font-size:.52rem !important; }
-
+body.is-game-screen .turn-focus-banner { z-index:30 !important; }
 
 .board-center-mark { width:clamp(70px,8vw,108px) !important; height:clamp(54px,6vw,82px) !important; padding:5px !important; transform:none !important; background:rgba(5,10,35,.45) !important; }
 .board-center-mark img { display:block; width:100%; height:100%; object-fit:contain; object-position:center; }
@@ -719,7 +719,11 @@ body.is-game-screen .cash-player small { font-size:.52rem !important; }
   body.is-game-screen .player-cash-strip { top:5px !important; left:0 !important; right:0 !important; transform:none !important; justify-content:space-between !important; padding:0 5px; }
   body.is-game-screen .cash-player { min-width:112px; max-width:42vw !important; transform:none !important; }
   body.is-game-screen .cash-player:nth-child(2) { transform:none !important; }
-  
+  body.is-game-screen .turn-focus-banner { top:6px !important; transform:translateX(-50%) scale(.9) !important; }
+  .center-dice-pair .dice-3d-mini-wrap { width:58px !important; height:58px !important; }
+  .center-dice-pair .dice-3d { width:54px !important; height:54px !important; }
+  .center-roll-result>b { min-width:42px !important; height:38px !important; font-size:1.1rem !important; }
+  .board-center-mark { width:70px !important; height:54px !important; }
 }
 
 /* === v42 board readability corrections === */
@@ -1418,7 +1422,73 @@ body.is-game-screen .cash-player small { font-size:.52rem !important; }
   opacity: 1 !important;
   pointer-events: auto !important;
 }
+/* Compact and raise the turn banner so it never cuts into the top row. */
+body.is-game-screen .turn-focus-banner {
+  top: -7px !important;
+  width: 178px !important;
+  min-height: 38px !important;
+  max-height: 40px !important;
+  padding: 3px 7px !important;
+  gap: 6px !important;
+  transform: translateX(-50%) scale(.86) !important;
+  transform-origin: top center !important;
+}
+body.is-game-screen .turn-focus-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+}
+body.is-game-screen .turn-focus-copy strong { font-size: .58rem !important; }
+body.is-game-screen .turn-focus-copy small { font-size: .38rem !important; }
+body.is-game-screen .turn-focus-banner > b { font-size: .38rem !important; }
 
+@media (max-width: 900px) {
+  .board-center-mark { top: 2% !important; width: 142px !important; height: 96px !important; }
+  .board-center .center-mode { top: 29% !important; font-size: .86rem !important; }
+  .board-center .center-tagline { top: 35% !important; font-size: .68rem !important; }
+  .board-center .center-roll-result { top: 42% !important; }
+  .board-center .dice-skill-arc-wrap { top: 57% !important; width: min(330px, 82%) !important; }
+  .board-center .center-roll-button { bottom: 3% !important; min-width: 138px !important; min-height: 38px !important; font-size: .68rem !important; }
+  body.is-game-screen .turn-focus-banner {
+    top: -9px !important;
+    width: 170px !important;
+    min-height: 36px !important;
+    max-height: 38px !important;
+    transform: translateX(-50%) scale(.82) !important;
+  }
+}
+@media (max-width: 560px) {
+  .board-center-mark { top: 1.5% !important; width: 122px !important; height: 82px !important; }
+  .board-center .center-mode { top: 28% !important; font-size: .72rem !important; }
+  .board-center .center-tagline { top: 34% !important; font-size: .56rem !important; }
+  .board-center .center-roll-result { top: 41% !important; }
+  .center-dice-pair { gap: 5px !important; }
+  .board-center .dice-skill-arc-wrap { top: 57% !important; width: 270px !important; }
+  .board-center .center-roll-button { bottom: 2.5% !important; min-width: 125px !important; min-height: 36px !important; font-size: .62rem !important; }
+  body.is-game-screen .turn-focus-banner {
+    top: -10px !important;
+    width: 160px !important;
+    min-height: 34px !important;
+    max-height: 36px !important;
+    transform: translateX(-50%) scale(.78) !important;
+  }
+}
+
+/* === v53: faster skill start, fixed START resume, stronger smooth movement zoom === */
+body.is-game-screen .turn-focus-banner {
+  top: -14px !important;
+  width: 192px !important;
+  min-height: 46px !important;
+  max-height: 48px !important;
+  padding: 4px 9px !important;
+  gap: 7px !important;
+  transform: translateX(-50%) scale(.94) !important;
+}
+body.is-game-screen .turn-focus-avatar { width: 36px !important; height: 36px !important; min-width:36px !important; min-height:36px !important; }
+body.is-game-screen .turn-focus-copy strong { font-size: .64rem !important; }
+body.is-game-screen .turn-focus-copy small { font-size: .41rem !important; }
+body.is-game-screen .turn-focus-banner > b { font-size: .41rem !important; }
 
 .board-cell .owner-marker {
   z-index: 4 !important;
@@ -1563,8 +1633,8 @@ body.is-game-screen .turn-focus-banner > b { font-size: .38rem !important; }
 }
 @media (max-width:560px) {
   body.is-game-screen .turn-focus-banner {
-    top: 8px !important; width: 166px !important; min-height: 36px !important; max-height: 38px !important;
-    transform: translateX(-50%) scale(.96) !important;
+    top: 2px !important; width: 166px !important; min-height: 36px !important; max-height: 38px !important;
+    transform: translateX(-50%) scale(.80) !important;
   }
 }
 
@@ -1689,4 +1759,162 @@ body.is-game-screen .game-layout { height: calc(100% - 32px) !important; }
 @media (max-width: 560px) {
   .board-center .center-mode { top: 35% !important; }
   .board-center .dice-skill-arc-wrap { top: 63% !important; }
+}
+
+/* === v61: header turn card + face-only character avatars === */
+body.is-game-screen .turn-focus-banner {
+  top: 8px !important;
+  width: 196px !important;
+  min-height: 44px !important;
+  max-height: 48px !important;
+  padding: 4px 9px !important;
+  gap: 8px !important;
+  transform: translateX(-50%) scale(.92) !important;
+  transform-origin: center top !important;
+  z-index: 120 !important;
+}
+body.is-game-screen .turn-focus-avatar {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  overflow: hidden !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+}
+/* Header avatars show only the character's face/head, never the tiny full body. */
+body.is-game-screen .turn-focus-avatar .turn-character-image,
+body.is-game-screen .cash-player-avatar .cash-character-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: 50% 18% !important;
+  transform: scale(2.55) !important;
+  transform-origin: 50% 18% !important;
+}
+body.is-game-screen .turn-focus-avatar .character-avatar-fallback,
+body.is-game-screen .cash-player-avatar .character-avatar-fallback {
+  transform: scale(1.35);
+}
+body.is-game-screen .turn-focus-copy strong { font-size: .67rem !important; }
+body.is-game-screen .turn-focus-copy small { font-size: .41rem !important; }
+body.is-game-screen .turn-focus-banner > b { font-size: .41rem !important; }
+
+/* Player info strip: face-only avatar, slightly clearer than the old full-body crop. */
+body.is-game-screen .cash-player-avatar {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  border-radius: 50% !important;
+}
+
+@media (max-width: 900px) {
+  body.is-game-screen .turn-focus-banner {
+    top: 6px !important;
+    width: 190px !important;
+    min-height: 42px !important;
+    max-height: 46px !important;
+    transform: translateX(-50%) scale(.90) !important;
+  }
+  body.is-game-screen .turn-focus-avatar {
+    width: 37px !important;
+    height: 37px !important;
+    min-width: 37px !important;
+    min-height: 37px !important;
+  }
+  body.is-game-screen .cash-player-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  body.is-game-screen .turn-focus-banner {
+    top: 5px !important;
+    width: 184px !important;
+    min-height: 40px !important;
+    max-height: 44px !important;
+    transform: translateX(-50%) scale(.88) !important;
+  }
+  body.is-game-screen .turn-focus-avatar {
+    width: 35px !important;
+    height: 35px !important;
+    min-width: 35px !important;
+    min-height: 35px !important;
+  }
+}
+
+
+/* === v62: mobile center breathing room + corner label collision fix === */
+@media (max-width: 900px) {
+  /* Smaller logo creates a clean vertical gap for Mode + dice. */
+  .board-center-mark {
+    width: 102px !important;
+    height: 70px !important;
+    top: 1% !important;
+  }
+  .board-center .center-mode {
+    top: 30.5% !important;
+    font-size: .74rem !important;
+  }
+  .board-center .center-roll-result {
+    top: 39.5% !important;
+  }
+  .board-center .dice-skill-arc-wrap {
+    top: 61.5% !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .board-center-mark {
+    width: 78px !important;
+    height: 55px !important;
+    top: .5% !important;
+  }
+  .board-center .center-mode {
+    top: 29.5% !important;
+    font-size: .60rem !important;
+  }
+  .board-center .center-roll-result {
+    top: 39% !important;
+  }
+  .board-center .dice-skill-arc-wrap {
+    top: 61% !important;
+    width: 250px !important;
+  }
+  .board-cell .cell-name-outside {
+    max-width: 56px !important;
+    font-size: .31rem !important;
+    padding: 2px 3px !important;
+  }
+
+  /* Keep the four corner-adjacent pairs visually separated on narrow phones. */
+  .board-cell[data-tile-index="9"] .cell-name-outside.edge-bottom {
+    left: 34% !important;
+  }
+  .board-cell[data-tile-index="11"] .cell-name-outside.edge-left {
+    top: 68% !important;
+  }
+  .board-cell[data-tile-index="19"] .cell-name-outside.edge-left {
+    top: 68% !important;
+  }
+  .board-cell[data-tile-index="21"] .cell-name-outside.edge-top {
+    left: 66% !important;
+  }
+  .board-cell[data-tile-index="30"] .cell-name-outside.edge-top {
+    left: 34% !important;
+  }
+  .board-cell[data-tile-index="31"] .cell-name-outside.edge-right {
+    top: 68% !important;
+  }
+  .board-cell[data-tile-index="39"] .cell-name-outside.edge-right {
+    top: 32% !important;
+  }
+  .board-cell[data-tile-index="1"] .cell-name-outside.edge-bottom {
+    left: 66% !important;
+  }
 }

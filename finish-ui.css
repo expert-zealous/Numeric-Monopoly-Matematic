@@ -1,192 +1,182 @@
-/* === v63: FINAL MOBILE/VIEWPORT COMPOSITION ===
-   Loaded LAST so older v47-v62 rules cannot override this layout.
+/* Numeric Monopoly Matematic — v65 FINAL LAYOUT
+   This file is intentionally the LAST stylesheet.
+   Do not append another duplicate mobile-layout block here.
 */
-body.is-game-screen .game-layout {
-  display:block !important;
-  flex:1 1 auto !important;
-  min-height:0 !important;
-  height:calc(100% - 32px) !important;
-  overflow:hidden !important;
-}
-body.is-game-screen .game-header {
-  flex:0 0 32px !important;
-  height:32px !important;
-  min-height:32px !important;
+
+/* ---------- Game frame ---------- */
+body.is-game-screen .game-header{
+  flex:0 0 34px !important;
+  height:34px !important;
+  min-height:34px !important;
   margin:0 !important;
   padding:2px 0 !important;
 }
-body.is-game-screen .board-wrap {
+
+body.is-game-screen .game-layout{
+  display:block !important;
+  position:relative !important;
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  height:calc(100% - 34px) !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+body.is-game-screen .board-wrap{
   width:100% !important;
   height:100% !important;
   min-height:0 !important;
-  padding:3px !important;
+  padding:0 3px 4px !important;
+  box-sizing:border-box !important;
   overflow:hidden !important;
 }
-body.is-game-screen .board-camera {
+
+body.is-game-screen .board-camera{
   width:100% !important;
   height:100% !important;
   min-height:0 !important;
   box-sizing:border-box !important;
-  padding:8px 10px !important;
+  padding:0 5px 4px !important;
   display:flex !important;
-  align-items:center !important;
+  align-items:flex-end !important;
   justify-content:center !important;
   overflow:hidden !important;
 }
-body.is-game-screen .board-camera .board {
+
+/* Keep the board square and bottom-aligned.
+   This removes the excessive bottom gap without stretching the board. */
+body.is-game-screen .board-camera .board{
   flex:0 0 auto !important;
-  width:auto !important;
-  height:calc(100% - 16px) !important;
+  width:min(calc(100% - 10px), calc(100vh - 42px)) !important;
+  height:min(calc(100% - 4px), calc(100vh - 42px)) !important;
   aspect-ratio:1 / 1 !important;
-  max-width:calc(100% - 20px) !important;
-  max-height:calc(100% - 16px) !important;
-}
-body.is-game-screen .turn-focus-banner {
-  top:2px !important;
-  width:188px !important;
-  min-height:38px !important;
-  max-height:42px !important;
-  padding:3px 8px !important;
-  transform:translateX(-50%) scale(.86) !important;
-  transform-origin:center top !important;
-}
-body.is-game-screen .turn-focus-avatar {
-  width:35px !important;
-  height:35px !important;
-  min-width:35px !important;
-  min-height:35px !important;
+  max-width:calc(100% - 10px) !important;
+  max-height:calc(100% - 4px) !important;
 }
 
-/* Center composition: logo first, then Mode, dice, skill arc, and button. */
-.board-center-mark {
-  width:92px !important;
-  height:62px !important;
-  top:4% !important;
+/* ---------- Center composition ---------- */
+.board-center-mark{
+  width:52px !important;
+  height:36px !important;
+  top:3% !important;
 }
-.board-center .center-mode {
-  top:25% !important;
-  font-size:.68rem !important;
+
+.board-center .center-mode{
+  top:27% !important;
+  font-size:.56rem !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
 }
-.board-center .center-roll-result { top:35% !important; }
-.board-center .dice-skill-arc-wrap {
-  top:58% !important;
-  width:min(280px,72%) !important;
+
+.board-center .center-roll-result{
+  top:39% !important;
 }
-.board-center .center-roll-button {
+
+/* The arc is deliberately lower than the dice so the two never occupy
+   the same vertical band. */
+.board-center .dice-skill-arc-wrap{
+  top:66% !important;
+  width:min(232px,72%) !important;
+}
+
+.board-center .center-roll-button{
   bottom:1% !important;
-  min-width:128px !important;
-  min-height:34px !important;
-  font-size:.62rem !important;
+  min-width:116px !important;
+  min-height:32px !important;
+  font-size:.56rem !important;
 }
 
-@media (max-width:560px) {
-  body.is-game-screen .board-camera { padding:7px 8px !important; }
-  body.is-game-screen .board-camera .board {
-    height:calc(100% - 14px) !important;
-    max-width:calc(100% - 16px) !important;
-    max-height:calc(100% - 14px) !important;
-  }
-  .board-center-mark { width:68px !important; height:48px !important; top:3% !important; }
-  .board-center .center-mode { top:24% !important; font-size:.56rem !important; }
-  .board-center .center-roll-result { top:34% !important; }
-  .board-center .dice-skill-arc-wrap { top:57% !important; width:220px !important; }
-  .board-center .center-roll-button { bottom:.5% !important; min-width:116px !important; min-height:32px !important; font-size:.56rem !important; }
+/* ---------- Character feet anchor ---------- */
+/* Do not move/scale the character on the top row.
+   Anchor the artwork by its feet to the tile's bottom edge. */
+.board-cell .token{
+  left:50% !important;
+  top:auto !important;
+  bottom:0 !important;
+  transform:translateX(-50%) !important;
+}
+.board-cell .token img{
+  object-position:center bottom !important;
 }
 
-
-/* === v64: FINAL MOBILE COMPOSITION CORRECTION ===
-   The v63 logo/mode rules were still too large and the board sat directly
-   under the header. These rules are intentionally LAST and decisive. */
-@media (max-width: 900px) {
-  body.is-game-screen .game-header {
-    height: 34px !important;
-    min-height: 34px !important;
-    flex-basis: 34px !important;
-  }
-  body.is-game-screen .game-layout {
-    height: calc(100% - 34px) !important;
-    padding-top: 14px !important;
-    box-sizing: border-box !important;
-  }
-  body.is-game-screen .board-wrap {
-    height: calc(100% - 14px) !important;
-    padding: 0 4px 4px !important;
-    box-sizing: border-box !important;
-  }
-  body.is-game-screen .board-camera {
-    height: 100% !important;
-    padding: 6px 8px !important;
-    box-sizing: border-box !important;
-    align-items: center !important;
-  }
-  body.is-game-screen .board-camera .board {
-    height: min(calc(100% - 12px), calc(100vw - 16px)) !important;
-    width: min(calc(100% - 16px), calc(100vw - 16px)) !important;
-    aspect-ratio: 1 / 1 !important;
-    max-height: calc(100% - 12px) !important;
-    max-width: calc(100% - 16px) !important;
+/* ---------- Narrow landscape phones ---------- */
+@media (max-width:900px) and (orientation:landscape){
+  body.is-game-screen .game-header{
+    flex-basis:34px !important;
+    height:34px !important;
+    min-height:34px !important;
   }
 
-  /* Smaller logo; its physical box is now clearly separated from Mode. */
-  .board-center-mark {
-    width: 58px !important;
-    height: 40px !important;
-    top: 4% !important;
+  body.is-game-screen .board-camera{
+    padding:0 4px 4px !important;
   }
-  .board-center .center-mode {
-    top: 29% !important;
-    font-size: .58rem !important;
-    line-height: 1 !important;
+
+  body.is-game-screen .board-camera .board{
+    width:min(calc(100% - 8px), calc(100vw - 8px)) !important;
+    height:min(calc(100% - 4px), calc(100vw - 8px)) !important;
+    max-width:calc(100% - 8px) !important;
+    max-height:calc(100% - 4px) !important;
   }
-  .board-center .center-roll-result {
-    top: 40% !important;
+
+  .board-center-mark{
+    width:52px !important;
+    height:36px !important;
+    top:3% !important;
   }
-  .board-center .dice-skill-arc-wrap {
-    top: 61% !important;
+
+  .board-center .center-mode{
+    top:27% !important;
+    font-size:.56rem !important;
+  }
+
+  .board-center .center-roll-result{
+    top:38% !important;
+  }
+
+  .board-center .dice-skill-arc-wrap{
+    top:66% !important;
+    width:232px !important;
   }
 }
 
-@media (max-width: 560px) {
-  body.is-game-screen .game-header {
-    height: 34px !important;
-    min-height: 34px !important;
-    flex-basis: 34px !important;
+/* Very narrow landscape devices */
+@media (max-width:560px) and (orientation:landscape){
+  body.is-game-screen .board-camera{
+    padding:0 3px 4px !important;
   }
-  body.is-game-screen .game-layout {
-    height: calc(100% - 34px) !important;
-    padding-top: 18px !important;
+
+  body.is-game-screen .board-camera .board{
+    width:min(calc(100% - 6px), calc(100vw - 6px)) !important;
+    height:min(calc(100% - 4px), calc(100vw - 6px)) !important;
+    max-width:calc(100% - 6px) !important;
+    max-height:calc(100% - 4px) !important;
   }
-  body.is-game-screen .board-wrap {
-    height: calc(100% - 18px) !important;
-    padding: 0 3px 3px !important;
+
+  .board-center-mark{
+    width:48px !important;
+    height:34px !important;
+    top:3% !important;
   }
-  body.is-game-screen .board-camera {
-    padding: 5px 6px !important;
+
+  .board-center .center-mode{
+    top:27% !important;
+    font-size:.53rem !important;
   }
-  body.is-game-screen .board-camera .board {
-    width: min(calc(100% - 12px), calc(100vw - 12px)) !important;
-    height: min(calc(100% - 10px), calc(100vw - 12px)) !important;
-    max-width: calc(100% - 12px) !important;
-    max-height: calc(100% - 10px) !important;
+
+  .board-center .center-roll-result{
+    top:38% !important;
   }
-  .board-center-mark {
-    width: 52px !important;
-    height: 36px !important;
-    top: 4% !important;
+
+  .board-center .dice-skill-arc-wrap{
+    top:66% !important;
+    width:224px !important;
   }
-  .board-center .center-mode {
-    top: 28% !important;
-    font-size: .54rem !important;
-    line-height: 1 !important;
+
+  .board-center .center-roll-button{
+    bottom:1% !important;
   }
-  .board-center .center-roll-result {
-    top: 40% !important;
-  }
-  .board-center .dice-skill-arc-wrap {
-    top: 61% !important;
-    width: 232px !important;
-  }
-  .board-center .center-roll-button {
-    bottom: 1% !important;
+
+  .board-cell .token{
+    bottom:0 !important;
   }
 }
