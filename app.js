@@ -531,7 +531,7 @@ function setAnswerNotice(correct, message) {
 }
 
 function renderPlayerCashStrip() {
-  return `<div class="player-cash-strip">${state.players.map((player, index) => `<div class="cash-player ${state.activePlayer === index ? 'active' : ''}" style="--player-color:${playerColor(index)}"><span class="cash-player-avatar">${characterMarkup(index, player, 'cash-character-image')}</span><span><b>${escapeHtml(player.name.slice(0, 8))}</b><small>${player.eliminated ? 'OUT' : formatCurrency(player.cash)}</small></span></div>`).join('')}</div>`;
+  return `<div class="player-cash-strip">${state.players.map((player, index) => `<div class="cash-player ${state.activePlayer === index ? 'active' : ''}" style="--player-color:${playerColor(index)}"><span class="cash-player-avatar">${characterMarkup(index, player, 'cash-character-image')}</span><span><b>${escapeHtml(player.name)}</b><small>${player.eliminated ? 'OUT' : formatCurrency(player.cash)}</small></span></div>`).join('')}</div>`;
 }
 
 function dicePips(value) {
@@ -868,7 +868,7 @@ function renderPlayerLine(player, index) {
 }
 
 function renderOwnershipLegend() {
-  return `<section class="ownership-legend panel"><div class="ownership-title">WARNA PEMILIK</div><div class="ownership-list">${state.players.map((player, index) => `<span class="ownership-item"><i style="background:${playerColor(index)}"></i>${escapeHtml(player.name.slice(0, 8))}</span>`).join('')}</div></section>`;
+  return `<section class="ownership-legend panel"><div class="ownership-title">WARNA PEMILIK</div><div class="ownership-list">${state.players.map((player, index) => `<span class="ownership-item"><i style="background:${playerColor(index)}"></i>${escapeHtml(player.name)}</span>`).join('')}</div></section>`;
 }
 
 function renderActivity() {
@@ -2884,7 +2884,7 @@ window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; re
 window.addEventListener('resize', updateOrientationLock, { passive: true });
 window.addEventListener('orientationchange', () => window.setTimeout(updateOrientationLock, 80), { passive: true });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=67').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=68').catch(() => {}));
 }
 
 function preloadTileAssets() {
