@@ -1,399 +1,250 @@
-/* Numeric Monopoly Matematic — v68 FINAL
-   Clean final layout layer.
-   v65 board geometry is preserved.
-   v66/v67 header/layout overrides are intentionally removed.
+/* Numeric Monopoly Matematic — v69 FINAL
+   SINGLE SOURCE OF TRUTH for finishing layout.
+   Based on the successful v65 board geometry.
 */
 
-/* ===== GAME FRAME ===== */
-html:has(body.is-game-screen),
-body.is-game-screen{
-  height:100% !important;
-  overflow:hidden !important;
+/* ---------- FRAME: keep the tested v65 board geometry ---------- */
+html:has(body.is-game-screen), body.is-game-screen{
+  height:100%!important; overflow:hidden!important;
 }
 body.is-game-screen #app,
 body.is-game-screen .app-shell,
 body.is-game-screen .app-content{
-  height:100svh !important;
-  min-height:0 !important;
-  max-height:100svh !important;
-  overflow:hidden !important;
+  height:100svh!important; min-height:0!important; max-height:100svh!important; overflow:hidden!important;
 }
-body.is-game-screen .app-content{
-  padding:0 !important;
-}
+body.is-game-screen .app-content{padding:0!important;}
 body.is-game-screen .game-screen{
-  display:flex !important;
-  flex-direction:column !important;
-  height:100% !important;
-  min-height:0 !important;
-  max-height:100% !important;
-  overflow:hidden !important;
+  display:flex!important; flex-direction:column!important;
+  height:100%!important; min-height:0!important; max-height:100%!important; overflow:hidden!important;
 }
 
-/* ===== HEADER: one clean definition ===== */
+/* ---------- HEADER: unchanged from the successful v68 result ---------- */
 body.is-game-screen .game-header{
-  position:relative !important;
-  display:block !important;
-  flex:0 0 34px !important;
-  width:100% !important;
-  height:34px !important;
-  min-height:34px !important;
-  max-height:34px !important;
-  margin:0 !important;
-  padding:2px 0 !important;
-  box-sizing:border-box !important;
-  overflow:visible !important;
-  z-index:200 !important;
+  position:relative!important; display:block!important;
+  flex:0 0 34px!important; width:100%!important;
+  height:34px!important; min-height:34px!important; max-height:34px!important;
+  margin:0!important; padding:2px 0!important; box-sizing:border-box!important;
+  overflow:visible!important; z-index:200!important;
 }
-
-/* Hide obsolete in-game chips/menu without changing header height. */
-body.is-game-screen .game-menu-toggle{ display:none !important; }
+body.is-game-screen .game-menu-toggle{display:none!important;}
 body.is-game-screen .game-header-actions{
-  position:absolute !important;
-  top:0 !important;
-  right:0 !important;
-  height:100% !important;
-  pointer-events:none !important;
+  position:absolute!important; top:0!important; right:0!important; height:100%!important;
+  pointer-events:none!important;
 }
-body.is-game-screen .game-header-actions .game-chips{ display:none !important; }
+body.is-game-screen .game-header-actions .game-chips{display:none!important;}
 body.is-game-screen .game-header-actions .battle-leave-btn{
-  display:block !important;
-  pointer-events:auto !important;
+  display:block!important; pointer-events:auto!important;
 }
 
-/* ===== PLAYER INFO: stays fully inside header ===== */
+/* Player cards */
 body.is-game-screen .player-cash-strip{
-  position:absolute !important;
-  z-index:205 !important;
-  top:2px !important;
-  left:0 !important;
-  right:0 !important;
-  width:100% !important;
-  height:28px !important;
-  min-height:28px !important;
-  max-height:28px !important;
-  margin:0 !important;
-  padding:0 4px !important;
-  box-sizing:border-box !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:space-between !important;
-  gap:4px !important;
-  flex-wrap:nowrap !important;
-  pointer-events:none !important;
+  position:absolute!important; z-index:205!important; top:2px!important; left:0!important; right:0!important;
+  width:100%!important; height:28px!important; min-height:28px!important; max-height:28px!important;
+  margin:0!important; padding:0 4px!important; box-sizing:border-box!important;
+  display:flex!important; align-items:center!important; justify-content:space-between!important;
+  gap:4px!important; flex-wrap:nowrap!important; pointer-events:none!important;
 }
-
 body.is-game-screen .cash-player{
-  box-sizing:border-box !important;
-  flex:0 1 150px !important;
-  width:150px !important;
-  max-width:150px !important;
-  min-width:0 !important;
-  height:26px !important;
-  min-height:26px !important;
-  max-height:26px !important;
-  padding:2px 5px !important;
-  margin:0 !important;
-  gap:4px !important;
-  overflow:hidden !important;
-  transform:none !important;
-  border-radius:7px !important;
-  pointer-events:none !important;
+  box-sizing:border-box!important; flex:0 1 150px!important; width:150px!important; max-width:150px!important; min-width:0!important;
+  height:26px!important; min-height:26px!important; max-height:26px!important;
+  padding:2px 5px!important; margin:0!important; gap:4px!important; overflow:hidden!important;
+  transform:none!important; border-radius:7px!important; pointer-events:none!important;
 }
-
-body.is-game-screen .cash-player:nth-child(2){
-  transform:none !important;
-}
-
 body.is-game-screen .cash-player-avatar{
-  flex:0 0 22px !important;
-  width:22px !important;
-  height:22px !important;
-  min-width:22px !important;
-  min-height:22px !important;
-  border-radius:50% !important;
-  overflow:hidden !important;
+  flex:0 0 22px!important; width:22px!important; height:22px!important;
+  min-width:22px!important; min-height:22px!important; border-radius:50%!important; overflow:hidden!important;
 }
-
-body.is-game-screen .cash-player > span:last-child{
-  min-width:0 !important;
-  flex:1 1 auto !important;
-  overflow:hidden !important;
-}
-
+body.is-game-screen .cash-player>span:last-child{min-width:0!important; flex:1 1 auto!important; overflow:hidden!important;}
 body.is-game-screen .cash-player b{
-  display:block !important;
-  width:100% !important;
-  max-width:none !important;
-  margin:0 !important;
-  overflow:hidden !important;
-  text-overflow:clip !important;
-  white-space:nowrap !important;
-  font-size:.34rem !important;
-  line-height:1 !important;
-  letter-spacing:-.035em !important;
+  display:block!important; width:100%!important; max-width:none!important; margin:0!important;
+  overflow:hidden!important; text-overflow:clip!important; white-space:nowrap!important;
+  font-size:.34rem!important; line-height:1!important; letter-spacing:-.035em!important;
 }
-
 body.is-game-screen .cash-player small{
-  display:block !important;
-  margin-top:2px !important;
-  white-space:nowrap !important;
-  font-size:.32rem !important;
-  line-height:1 !important;
+  display:block!important; margin-top:2px!important; white-space:nowrap!important;
+  font-size:.32rem!important; line-height:1!important;
 }
 
-/* ===== TURN BOX: same header, no overflow ===== */
+/* Turn box */
 body.is-game-screen .turn-focus-banner{
-  position:absolute !important;
-  z-index:220 !important;
-  top:2px !important;
-  left:50% !important;
-  width:184px !important;
-  height:30px !important;
-  min-height:30px !important;
-  max-height:30px !important;
-  margin:0 !important;
-  padding:2px 6px !important;
-  box-sizing:border-box !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:5px !important;
-  overflow:hidden !important;
-  transform:translateX(-50%) !important;
-  transform-origin:center center !important;
-  border-radius:8px !important;
+  position:absolute!important; z-index:220!important; top:2px!important; left:50%!important;
+  width:184px!important; height:30px!important; min-height:30px!important; max-height:30px!important;
+  margin:0!important; padding:2px 6px!important; box-sizing:border-box!important;
+  display:flex!important; align-items:center!important; justify-content:center!important; gap:5px!important;
+  overflow:hidden!important; transform:translateX(-50%)!important; transform-origin:center center!important;
+  border-radius:8px!important;
 }
-
 body.is-game-screen .turn-focus-avatar{
-  flex:0 0 24px !important;
-  width:24px !important;
-  height:24px !important;
-  min-width:24px !important;
-  min-height:24px !important;
-  border-radius:50% !important;
-  overflow:hidden !important;
+  flex:0 0 24px!important; width:24px!important; height:24px!important;
+  min-width:24px!important; min-height:24px!important; border-radius:50%!important; overflow:hidden!important;
 }
-
 body.is-game-screen .turn-focus-copy{
-  min-width:0 !important;
-  max-width:105px !important;
-  overflow:hidden !important;
-  display:flex !important;
-  flex-direction:column !important;
-  justify-content:center !important;
+  min-width:0!important; max-width:105px!important; overflow:hidden!important;
+  display:flex!important; flex-direction:column!important; justify-content:center!important;
 }
-
 body.is-game-screen .turn-focus-copy small{
-  display:block !important;
-  margin:0 !important;
-  font-size:.29rem !important;
-  line-height:1 !important;
-  white-space:nowrap !important;
+  display:block!important; margin:0!important; font-size:.29rem!important; line-height:1!important; white-space:nowrap!important;
 }
-
 body.is-game-screen .turn-focus-copy strong{
-  display:block !important;
-  max-width:100% !important;
-  overflow:hidden !important;
-  text-overflow:clip !important;
-  white-space:nowrap !important;
-  font-size:.40rem !important;
-  line-height:1 !important;
-  letter-spacing:-.025em !important;
+  display:block!important; max-width:100%!important; overflow:hidden!important;
+  text-overflow:clip!important; white-space:nowrap!important; font-size:.40rem!important; line-height:1!important; letter-spacing:-.025em!important;
 }
-
-body.is-game-screen .turn-focus-banner > b{
-  flex:0 0 auto !important;
-  font-size:.30rem !important;
-  line-height:1 !important;
-  white-space:nowrap !important;
+body.is-game-screen .turn-focus-banner>b{
+  flex:0 0 auto!important; font-size:.30rem!important; line-height:1!important; white-space:nowrap!important;
 }
-
-/* Face-only avatar crop remains from the successful v61 design. */
 body.is-game-screen .turn-focus-avatar .turn-character-image,
 body.is-game-screen .cash-player-avatar .cash-character-image{
-  width:100% !important;
-  height:100% !important;
-  object-fit:contain !important;
-  object-position:50% 18% !important;
-  transform:scale(2.55) !important;
-  transform-origin:50% 18% !important;
+  width:100%!important; height:100%!important; object-fit:contain!important;
+  object-position:50% 18%!important; transform:scale(2.55)!important; transform-origin:50% 18%!important;
 }
 body.is-game-screen .turn-focus-avatar .character-avatar-fallback,
-body.is-game-screen .cash-player-avatar .character-avatar-fallback{
-  transform:scale(1.25) !important;
-}
+body.is-game-screen .cash-player-avatar .character-avatar-fallback{transform:scale(1.25)!important;}
 
-/* ===== BOARD: exact successful v65 geometry ===== */
+/* ---------- BOARD: EXACT v65 geometry ---------- */
 body.is-game-screen .game-layout{
-  display:block !important;
-  position:relative !important;
-  flex:1 1 auto !important;
-  min-height:0 !important;
-  height:calc(100% - 34px) !important;
-  padding:0 !important;
-  margin:0 !important;
-  overflow:hidden !important;
+  display:block!important; position:relative!important; flex:1 1 auto!important;
+  min-height:0!important; height:calc(100% - 34px)!important; padding:0!important; margin:0!important; overflow:hidden!important;
 }
-
 body.is-game-screen .board-wrap{
-  width:100% !important;
-  height:100% !important;
-  min-height:0 !important;
-  padding:0 3px 4px !important;
-  box-sizing:border-box !important;
-  overflow:hidden !important;
+  width:100%!important; height:100%!important; min-height:0!important;
+  padding:0 3px 4px!important; box-sizing:border-box!important; overflow:hidden!important;
 }
-
 body.is-game-screen .board-camera{
-  width:100% !important;
-  height:100% !important;
-  min-height:0 !important;
-  box-sizing:border-box !important;
-  padding:0 5px 4px !important;
-  display:flex !important;
-  align-items:flex-end !important;
-  justify-content:center !important;
-  overflow:hidden !important;
+  width:100%!important; height:100%!important; min-height:0!important; box-sizing:border-box!important;
+  padding:0 5px 4px!important; display:flex!important; align-items:flex-end!important;
+  justify-content:center!important; overflow:hidden!important;
 }
-
 body.is-game-screen .board-camera .board{
-  flex:0 0 auto !important;
-  width:min(calc(100% - 10px),calc(100vh - 42px)) !important;
-  height:min(calc(100% - 4px),calc(100vh - 42px)) !important;
-  aspect-ratio:1 / 1 !important;
-  max-width:calc(100% - 10px) !important;
-  max-height:calc(100% - 4px) !important;
+  flex:0 0 auto!important;
+  width:min(calc(100% - 10px),calc(100vh - 42px))!important;
+  height:min(calc(100% - 4px),calc(100vh - 42px))!important;
+  aspect-ratio:1/1!important; max-width:calc(100% - 10px)!important; max-height:calc(100% - 4px)!important;
 }
 
-/* ===== CENTER CONTROLS: one 50% axis ===== */
+/* ---------- CENTER CONTROLS: one clean horizontal axis ---------- */
 body.is-game-screen .board-center-copy{
-  position:absolute !important;
-  left:50% !important;
-  width:100vw !important;
-  max-width:none !important;
-  margin:0 !important;
-  padding:0 !important;
-  transform:translateX(-50%) !important;
-  text-align:center !important;
+  position:absolute!important; inset:0!important; left:0!important; width:100%!important; height:100%!important;
+  max-width:none!important; margin:0!important; padding:0!important; transform:none!important;
+  text-align:center!important;
 }
-
 body.is-game-screen .board-center-mark,
 body.is-game-screen .board-center .center-mode,
 body.is-game-screen .board-center .center-roll-result,
 body.is-game-screen .board-center .dice-skill-arc-wrap,
 body.is-game-screen .board-center .center-roll-button{
-  left:50% !important;
-  transform:translateX(-50%) !important;
+  left:50%!important; transform:translateX(-50%)!important;
 }
 
+/* The old tagline/percentage/title/deck have no role in the final compact UI. */
+body.is-game-screen .board-center .center-tagline,
+body.is-game-screen .board-center .dice-skill-title,
+body.is-game-screen .board-center .dice-skill-hint,
+body.is-game-screen .board-center #dice-skill-percent,
+body.is-game-screen .center-card-deck{display:none!important;}
+
+/* Compact vertical rhythm: logo → mode → dice → arc → button. */
 body.is-game-screen .board-center-mark{
-  width:52px !important;
-  height:36px !important;
-  top:3% !important;
+  width:52px!important; height:36px!important; top:3%!important;
 }
-
 body.is-game-screen .board-center .center-mode{
-  top:27% !important;
-  font-size:.56rem !important;
-  line-height:1 !important;
-  white-space:nowrap !important;
+  top:20%!important; font-size:.56rem!important; line-height:1!important; white-space:nowrap!important;
 }
-
 body.is-game-screen .board-center .center-roll-result{
-  top:38% !important;
+  top:30%!important; margin-top:0!important;
 }
-
 body.is-game-screen .board-center .dice-skill-arc-wrap{
-  top:66% !important;
-  width:min(232px,72%) !important;
+  top:49%!important; width:min(232px,72%)!important; margin:0!important;
 }
-
 body.is-game-screen .board-center .center-roll-button{
-  bottom:1% !important;
-  min-width:116px !important;
-  min-height:32px !important;
-  font-size:.56rem !important;
+  bottom:2%!important; min-width:116px!important; min-height:32px!important;
+  font-size:.56rem!important; margin:0!important;
 }
 
-/* ===== CHARACTER: successful v65 bottom anchor ===== */
+/* ---------- TOKEN: feet anchored to the tile base ---------- */
 .board-cell .token{
-  left:50% !important;
-  top:auto !important;
-  bottom:0 !important;
-  transform:translateX(-50%) !important;
+  left:50%!important; top:auto!important; bottom:0!important; transform:translateX(-50%)!important;
 }
-.board-cell .token.edge-top-token{
-  top:auto !important;
-  bottom:0 !important;
+.board-cell .token.edge-top-token{top:auto!important; bottom:0!important;}
+.board-cell .token img{object-position:center bottom!important;}
+
+/* ---------- PROPERTY NAMES: move toward their own tile to clear corners ---------- */
+.board-cell .cell-name-outside{
+  z-index:70!important; pointer-events:none!important;
+  max-width:68px!important; box-sizing:border-box!important;
 }
-.board-cell .token img{
-  object-position:center bottom !important;
+.board-cell .cell-name-outside.edge-bottom{
+  top:-12px!important; bottom:auto!important; left:50%!important; transform:translateX(-50%)!important;
+}
+.board-cell .cell-name-outside.edge-top{
+  bottom:-12px!important; top:auto!important; left:50%!important; transform:translateX(-50%)!important;
+}
+.board-cell .cell-name-outside.edge-left{
+  left:calc(100% + 2px)!important; right:auto!important; top:50%!important; transform:translateY(-50%)!important;
+}
+.board-cell .cell-name-outside.edge-right{
+  right:calc(100% + 2px)!important; left:auto!important; top:50%!important; transform:translateY(-50%)!important;
 }
 
-/* ===== MOBILE LANDSCAPE: same board, only compact controls ===== */
+/* The three problematic corner pairs get a little extra inward separation.
+   Index map: Skyline=9/Solara=11, Moonlight=19/Nebula=21, Infinity=29/Prism=31. */
+.board-cell[data-tile-index="9"] .cell-name-outside.edge-bottom{top:-9px!important;}
+.board-cell[data-tile-index="11"] .cell-name-outside.edge-left{left:calc(100% + 1px)!important;}
+.board-cell[data-tile-index="19"] .cell-name-outside.edge-left{left:calc(100% + 1px)!important;}
+.board-cell[data-tile-index="21"] .cell-name-outside.edge-top{bottom:-9px!important;}
+.board-cell[data-tile-index="29"] .cell-name-outside.edge-top{bottom:-9px!important;}
+.board-cell[data-tile-index="31"] .cell-name-outside.edge-right{right:calc(100% + 1px)!important;}
+
+/* ---------- MOBILE LANDSCAPE ---------- */
 @media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .cash-player{
-    flex-basis:135px !important;
-    width:135px !important;
-    max-width:135px !important;
-    height:26px !important;
-    min-height:26px !important;
-  }
-  body.is-game-screen .cash-player b{ font-size:.32rem !important; }
-  body.is-game-screen .cash-player small{ font-size:.30rem !important; }
-  body.is-game-screen .turn-focus-banner{
-    width:184px !important;
-    height:30px !important;
-    min-height:30px !important;
-    max-height:30px !important;
-  }
-  body.is-game-screen .board-camera{
-    padding:0 4px 4px !important;
-  }
+  body.is-game-screen .cash-player{flex-basis:135px!important; width:135px!important; max-width:135px!important;}
+  body.is-game-screen .cash-player b{font-size:.32rem!important;}
+  body.is-game-screen .cash-player small{font-size:.30rem!important;}
+  body.is-game-screen .turn-focus-banner{width:184px!important; height:30px!important; min-height:30px!important; max-height:30px!important;}
+  body.is-game-screen .board-camera{padding:0 4px 4px!important;}
   body.is-game-screen .board-camera .board{
-    width:min(calc(100% - 8px),calc(100vw - 8px)) !important;
-    height:min(calc(100% - 4px),calc(100vw - 8px)) !important;
-    max-width:calc(100% - 8px) !important;
-    max-height:calc(100% - 4px) !important;
+    width:min(calc(100% - 8px),calc(100vw - 8px))!important;
+    height:min(calc(100% - 4px),calc(100vw - 8px))!important;
+    max-width:calc(100% - 8px)!important; max-height:calc(100% - 4px)!important;
   }
+  body.is-game-screen .board-center-mark{width:50px!important; height:35px!important; top:3%!important;}
+  body.is-game-screen .board-center .center-mode{top:20%!important; font-size:.54rem!important;}
+  body.is-game-screen .board-center .center-roll-result{top:30%!important;}
+  body.is-game-screen .board-center .dice-skill-arc-wrap{top:49%!important; width:226px!important;}
+  body.is-game-screen .board-center .center-roll-button{bottom:2%!important; min-width:116px!important; min-height:31px!important;}
 }
 
 @media (max-width:560px) and (orientation:landscape){
-  body.is-game-screen .cash-player{
-    flex-basis:122px !important;
-    width:122px !important;
-    max-width:122px !important;
+  body.is-game-screen .cash-player{flex-basis:122px!important; width:122px!important; max-width:122px!important;}
+  body.is-game-screen .cash-player b{font-size:.30rem!important; letter-spacing:-.035em!important;}
+  body.is-game-screen .cash-player small{font-size:.29rem!important;}
+  body.is-game-screen .turn-focus-banner{width:174px!important; height:30px!important; min-height:30px!important; max-height:30px!important;}
+  body.is-game-screen .turn-focus-avatar{flex-basis:22px!important; width:22px!important; height:22px!important;}
+  body.is-game-screen .turn-focus-copy{max-width:98px!important;}
+  body.is-game-screen .turn-focus-copy strong{font-size:.37rem!important;}
+  body.is-game-screen .board-center-mark{width:48px!important; height:34px!important; top:3%!important;}
+  body.is-game-screen .board-center .center-mode{top:20%!important; font-size:.51rem!important;}
+  body.is-game-screen .board-center .center-roll-result{top:30%!important;}
+  body.is-game-screen .board-center .dice-skill-arc-wrap{top:49%!important; width:224px!important;}
+  body.is-game-screen .board-center .center-roll-button{bottom:2%!important; min-width:112px!important; min-height:30px!important;}
+  .board-cell .cell-name-outside{
+    max-width:68px!important; font-size:.34rem!important; padding:2px 3px!important;
   }
-  body.is-game-screen .cash-player b{ font-size:.30rem !important; }
-  body.is-game-screen .cash-player small{ font-size:.29rem !important; }
-  body.is-game-screen .turn-focus-banner{
-    width:174px !important;
-    height:30px !important;
-    min-height:30px !important;
-    max-height:30px !important;
-  }
-  body.is-game-screen .turn-focus-avatar{
-    flex-basis:22px !important;
-    width:22px !important;
-    height:22px !important;
-  }
-  body.is-game-screen .turn-focus-copy{
-    max-width:98px !important;
-  }
-  body.is-game-screen .turn-focus-copy strong{ font-size:.37rem !important; }
-  body.is-game-screen .board-center-mark{
-    width:48px !important;
-    height:34px !important;
-  }
-  body.is-game-screen .board-center .center-mode{
-    top:27% !important;
-    font-size:.53rem !important;
-  }
-  body.is-game-screen .board-center .center-roll-result{ top:38% !important; }
-  body.is-game-screen .board-center .dice-skill-arc-wrap{
-    top:66% !important;
-    width:224px !important;
-  }
+  .board-cell .cell-name-outside.edge-bottom{top:-10px!important;}
+  .board-cell .cell-name-outside.edge-top{bottom:-10px!important;}
+  .board-cell .cell-name-outside.edge-left{left:calc(100% + 1px)!important;}
+  .board-cell .cell-name-outside.edge-right{right:calc(100% + 1px)!important;}
+  .board-cell[data-tile-index="9"] .cell-name-outside.edge-bottom{top:-7px!important;}
+  .board-cell[data-tile-index="11"] .cell-name-outside.edge-left{left:100%!important;}
+  .board-cell[data-tile-index="19"] .cell-name-outside.edge-left{left:100%!important;}
+  .board-cell[data-tile-index="21"] .cell-name-outside.edge-top{bottom:-7px!important;}
+  .board-cell[data-tile-index="29"] .cell-name-outside.edge-top{bottom:-7px!important;}
+  .board-cell[data-tile-index="31"] .cell-name-outside.edge-right{right:100%!important;}
+}
+
+/* ---------- Preserve tested dice tuning ---------- */
+:root{
+  --numeric-dice-skill-base:85;
+  --numeric-dice-skill-max:95;
+  --numeric-double-chance:90%;
+  --numeric-movement-zoom:1.35;
 }
