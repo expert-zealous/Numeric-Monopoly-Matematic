@@ -22,3 +22,7 @@
 .chance-card-large { display:grid;width:72px;height:92px;place-items:center;margin:0 auto 12px;border:1px solid rgba(255,217,118,.55);border-radius:12px;color:#16204d;background:linear-gradient(145deg,#fff1aa,#ffb84d);box-shadow:0 15px 30px rgba(255,173,62,.23);font-family:"Space Grotesk";font-size:2.3rem;font-weight:700;transform:rotate(-7deg); }
 @media (max-width: 900px) { .property-panel { padding:12px; } }
 @media (max-width: 560px) { .property-panel { order:3; } .owned-property-copy strong{font-size:.56rem}.owned-property-copy small{font-size:.48rem} }
+
+/* v74: group-building controls are available from any owned group tile. */
+.manage-group-status{display:flex;flex-direction:column;gap:4px;margin:10px 0;padding:8px 9px;border:1px solid rgba(91,228,255,.14);border-radius:10px;background:rgba(255,255,255,.035)}
+.manage-group-status strong{font-size:.52rem;color:#dce7ff;letter-spacing:.08em}.manage-group-status small{font-size:.48rem;line-height:1.45;color:#8494bf}.build-rule-note{max-width:190px;color:#8b98bd;font-size:.48rem;line-height:1.3;text-align:left}

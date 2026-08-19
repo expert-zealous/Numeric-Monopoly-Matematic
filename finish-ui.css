@@ -1,10 +1,10 @@
-/* Numeric Monopoly Matematic — v72 STABLE UI ARCHITECTURE
+/* Numeric Monopoly Matematic — v74 STABLE UI ARCHITECTURE
    ONE active source for game HUD + question overlay.
    Board zoom affects only .board-camera/.board.
    HUD and question are siblings of .game-layout, never descendants of the board.
 */
 
-/* Numeric Monopoly Matematic — v70 FINAL
+/* Numeric Monopoly Matematic — v74 FINAL
    Clean finishing layer.
    IMPORTANT: board zoom transforms only .board inside .board-camera.
    The game HUD is a sibling of .game-layout, so it never zooms or travels with the board.
@@ -154,7 +154,7 @@ body.is-game-screen .game-screen{
   --nm-mode-top:23%;
   --nm-dice-top:30%;
   --nm-skill-top:48%;
-  --nm-roll-top:78%;
+  --nm-roll-top:74%;
 }
 
 /* The board occupies the area below the fixed header. */
@@ -259,16 +259,16 @@ body.is-game-screen .nm-hud-skill #dice-skill-percent{display:none!important}
 body.is-game-screen .nm-hud-skill .dice-skill-svg{overflow:visible!important}
 body.is-game-screen .nm-hud-skill .dice-skill-svg .perfect-label{paint-order:stroke!important;dominant-baseline:middle!important}
 
-/* ===== ROLL BUTTON ===== */
+/* ===== ROLL BUTTON: circular control aligned to the skill arc ===== */
 body.is-game-screen .nm-hud-roll{
   top:var(--nm-roll-top)!important;bottom:auto!important;
-  min-width:124px!important;min-height:35px!important;padding:0 18px!important;
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  border:1px solid rgba(91,228,255,.48)!important;border-radius:11px!important;
-  color:#071433!important;background:linear-gradient(110deg,#5be4ff,#a6f4dc)!important;
-  box-shadow:0 8px 18px rgba(91,228,255,.18)!important;
-  font-size:.61rem!important;font-weight:900!important;letter-spacing:.06em!important;
-  cursor:pointer!important;pointer-events:auto!important;z-index:10!important;
+  width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important;
+  padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  border:2px solid rgba(91,228,255,.58)!important;border-radius:50%!important;
+  color:#071433!important;background:linear-gradient(145deg,#8ff0ff,#a6f4dc)!important;
+  box-shadow:0 9px 24px rgba(91,228,255,.24),inset 0 2px 0 rgba(255,255,255,.65)!important;
+  font-size:.55rem!important;font-weight:1000!important;letter-spacing:.045em!important;
+  line-height:1.05!important;text-align:center!important;cursor:pointer!important;pointer-events:auto!important;z-index:10!important;
   touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;
 }
 body.is-game-screen .nm-hud-roll:disabled{cursor:not-allowed!important;opacity:.45!important;filter:saturate(.5)!important}
@@ -299,11 +299,9 @@ body.is-game-screen .nm-question-layer{
   pointer-events:auto!important;
 }
 body.is-game-screen .nm-question-layer .question-card{
-  width:286px!important;max-width:calc(100vw - 20px)!important;
-  max-height:calc(100% - 10px)!important;
-  overflow:auto!important;
-  margin:0!important;padding:8px 9px!important;border-radius:12px!important;
-  box-sizing:border-box!important;
+  width:min(58vw,520px)!important;max-width:520px!important;
+  max-height:calc(100% - 10px)!important;overflow:auto!important;
+  margin:0!important;padding:14px 16px!important;border-radius:18px!important;box-sizing:border-box!important
 }
 body.is-game-screen .nm-question-layer .question-top{gap:5px!important;margin-bottom:5px!important}
 body.is-game-screen .nm-question-layer .question-for,
@@ -343,7 +341,7 @@ body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.5
 
 /* ===== Mobile landscape keeps the same architecture; only scale, never re-position by selector wars ===== */
 @media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .game-screen{--nm-header-h:34px;--nm-logo-w:56px;--nm-logo-h:40px;--nm-dice-top:30%;--nm-skill-top:48%;--nm-roll-top:78%;}
+  body.is-game-screen .game-screen{--nm-header-h:34px;--nm-logo-w:56px;--nm-logo-h:40px;--nm-dice-top:30%;--nm-skill-top:48%;--nm-roll-top:74%;}
   body.is-game-screen .nm-hud-mode{font-size:.57rem!important}
   body.is-game-screen .nm-hud-dice-pair{gap:8px!important;min-height:70px!important}
   body.is-game-screen .nm-hud-dice-pair .dice-3d-mini-wrap{width:64px!important;height:64px!important}
@@ -358,12 +356,43 @@ body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.5
   body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-bottom{transform:rotateX(-90deg) translateZ(24px)!important}
   body.is-game-screen .nm-hud-skill{width:250px!important}
   body.is-game-screen .nm-hud-roll{min-width:120px!important;min-height:34px!important;font-size:.58rem!important}
-  body.is-game-screen .nm-question-layer .question-card{width:280px!important}
 }
 
 @media (max-width:560px) and (orientation:landscape){
   body.is-game-screen .game-screen{--nm-header-h:34px;--nm-logo-w:54px;--nm-logo-h:38px;}
   body.is-game-screen .nm-hud-mode{font-size:.53rem!important}
   body.is-game-screen .nm-hud-skill{width:238px!important}
-  body.is-game-screen .nm-question-layer .question-card{width:272px!important}
 }
+
+/* ===== v74 canonical finishing controls ===== */
+body.is-game-screen .nm-hud-roll{top:74%!important;width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important;border-radius:50%!important;padding:0!important}
+body.is-game-screen .nm-question-layer .question-card{width:min(58vw,520px)!important;max-width:520px!important}
+@media (max-width:900px) and (orientation:landscape){
+  body.is-game-screen .nm-hud-roll{top:73%!important;width:62px!important;height:62px!important;min-width:62px!important;min-height:62px!important;font-size:.50rem!important}
+  body.is-game-screen .nm-question-layer .question-card{width:min(68vw,500px)!important;max-width:500px!important}
+}
+@media (max-width:560px) and (orientation:landscape){
+  body.is-game-screen .nm-hud-roll{top:72%!important;width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;font-size:.47rem!important}
+  body.is-game-screen .nm-question-layer .question-card{width:min(72vw,470px)!important;max-width:470px!important}
+}
+
+/* ===== v74 movement camera: fit both endpoints with a safe top/header margin ===== */
+body.is-game-screen .board-camera.movement-zoom .board{will-change:transform;transform-origin:0 0!important}
+
+/* ===== v74 slightly smaller board characters; preserve visibility and transparent PNG art ===== */
+body.is-game-screen .board-cell .token{width:clamp(70px,8.2vw,108px)!important;height:clamp(84px,10vw,124px)!important}
+@media(max-width:560px){body.is-game-screen .board-cell .token{width:68px!important;height:82px!important}}
+
+/* ===== v74 stronger ownership/rent building presentation ===== */
+.manage-group-status{display:flex;flex-direction:column;gap:4px;margin:10px 0;padding:8px 9px;border:1px solid rgba(91,228,255,.14);border-radius:10px;background:rgba(255,255,255,.035)}
+.manage-group-status strong{font-size:.52rem;color:#dce7ff;letter-spacing:.08em}
+.manage-group-status small{font-size:.48rem;line-height:1.45;color:#8494bf}
+.build-rule-note{max-width:190px;color:#8b98bd;font-size:.48rem;line-height:1.3;text-align:left}
+
+/* ===== v74 victory fireworks: multiple radial bursts across the screen ===== */
+.win-layer{background:rgba(3,7,24,.68)!important}
+.victory-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(255,217,118,.12),transparent 38%),radial-gradient(circle at 20% 70%,rgba(91,228,255,.08),transparent 32%),radial-gradient(circle at 80% 30%,rgba(255,117,191,.08),transparent 32%);z-index:1}
+.fireworks{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden}
+.fireworks i{position:absolute;left:calc(12% + ((var(--burst) * 17)%76)*1%);top:calc(18% + ((var(--burst) * 29)%60)*1%);width:5px;height:5px;border-radius:50%;background:hsl(var(--hue),100%,68%);box-shadow:0 0 10px currentColor,0 0 22px currentColor;opacity:0;animation:megaFirework 1.55s cubic-bezier(.15,.7,.2,1) infinite;animation-delay:var(--delay);transform-origin:center}
+@keyframes megaFirework{0%{opacity:0;transform:rotate(var(--angle)) translateX(0) scale(.15)}12%{opacity:1}62%{opacity:1;transform:rotate(var(--angle)) translateX(55px) scale(1.35)}100%{opacity:0;transform:rotate(var(--angle)) translateX(115px) scale(.05)}}
+.win-card{z-index:20!important}

@@ -1,4 +1,4 @@
-/* Numeric Monopoly Matematic — v73 overlay architecture
+/* Numeric Monopoly Matematic — v74 overlay architecture
    This file documents the single overlay stack. It contains no selector-war patches.
 */
 :root{
@@ -20,7 +20,6 @@
 
 /* All modal variants inherit the same interactive layer. */
 .modal-layer.turn-end-layer,
-.modal-layer.start-build-layer,
 .modal-layer.win-layer{z-index:var(--nm-z-modal)!important;}
 
 /* The modal backdrop must receive taps/clicks; the game underneath must not. */
