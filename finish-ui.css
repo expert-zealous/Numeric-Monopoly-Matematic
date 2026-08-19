@@ -1,94 +1,150 @@
-/* Numeric Monopoly Matematic — v65 FINAL LAYOUT
-   This file is intentionally the LAST stylesheet.
-   Do not append another duplicate mobile-layout block here.
+/* Numeric Monopoly Matematic — v66 FINAL UI OVERRIDE
+   Keep this stylesheet last. It intentionally contains one final rule set
+   for the mobile/compact HUD so older duplicated CSS cannot override it.
 */
 
-/* ---------- Game frame ---------- */
+/* Header itself is NOT changed. The contents are compacted to fit inside it. */
 body.is-game-screen .game-header{
-  flex:0 0 34px !important;
-  height:34px !important;
-  min-height:34px !important;
-  margin:0 !important;
-  padding:2px 0 !important;
+  overflow:visible !important;
 }
 
-body.is-game-screen .game-layout{
+/* Compact player cash boxes inside the existing header height. */
+body.is-game-screen .player-cash-strip{
+  top:2px !important;
+  height:30px !important;
+  align-items:center !important;
+  gap:4px !important;
+}
+body.is-game-screen .cash-player{
+  width:auto !important;
+  max-width:112px !important;
+  min-height:25px !important;
+  height:25px !important;
+  padding:2px 6px !important;
+  gap:4px !important;
+  border-radius:8px !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+}
+body.is-game-screen .cash-player-avatar{
+  width:20px !important;
+  height:20px !important;
+  min-width:20px !important;
+  min-height:20px !important;
+  border-radius:7px !important;
+  overflow:hidden !important;
+}
+body.is-game-screen .cash-player-avatar img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:50% 18% !important;
+}
+body.is-game-screen .cash-player > span:last-child{
+  min-width:0 !important;
+  line-height:1 !important;
+}
+body.is-game-screen .cash-player b{
   display:block !important;
-  position:relative !important;
-  flex:1 1 auto !important;
-  min-height:0 !important;
-  height:calc(100% - 34px) !important;
-  padding:0 !important;
+  max-width:72px !important;
   overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+  font-size:.43rem !important;
+  line-height:1 !important;
 }
-
-body.is-game-screen .board-wrap{
-  width:100% !important;
-  height:100% !important;
-  min-height:0 !important;
-  padding:0 3px 4px !important;
-  box-sizing:border-box !important;
-  overflow:hidden !important;
-}
-
-body.is-game-screen .board-camera{
-  width:100% !important;
-  height:100% !important;
-  min-height:0 !important;
-  box-sizing:border-box !important;
-  padding:0 5px 4px !important;
-  display:flex !important;
-  align-items:flex-end !important;
-  justify-content:center !important;
-  overflow:hidden !important;
-}
-
-/* Keep the board square and bottom-aligned.
-   This removes the excessive bottom gap without stretching the board. */
-body.is-game-screen .board-camera .board{
-  flex:0 0 auto !important;
-  width:min(calc(100% - 10px), calc(100vh - 42px)) !important;
-  height:min(calc(100% - 4px), calc(100vh - 42px)) !important;
-  aspect-ratio:1 / 1 !important;
-  max-width:calc(100% - 10px) !important;
-  max-height:calc(100% - 4px) !important;
-}
-
-/* ---------- Center composition ---------- */
-.board-center-mark{
-  width:52px !important;
-  height:36px !important;
-  top:3% !important;
-}
-
-.board-center .center-mode{
-  top:27% !important;
-  font-size:.56rem !important;
+body.is-game-screen .cash-player small{
+  display:block !important;
+  margin-top:2px !important;
+  font-size:.36rem !important;
   line-height:1 !important;
   white-space:nowrap !important;
 }
 
-.board-center .center-roll-result{
-  top:39% !important;
+/* Compact centered turn box. It stays entirely inside the unchanged header. */
+body.is-game-screen .turn-focus-banner{
+  top:2px !important;
+  width:148px !important;
+  min-height:28px !important;
+  height:28px !important;
+  max-height:28px !important;
+  padding:2px 6px !important;
+  gap:5px !important;
+  border-radius:8px !important;
+  box-sizing:border-box !important;
+  transform:translateX(-50%) !important;
+  overflow:hidden !important;
+}
+body.is-game-screen .turn-focus-avatar{
+  width:21px !important;
+  height:21px !important;
+  min-width:21px !important;
+  min-height:21px !important;
+  border-radius:7px !important;
+}
+body.is-game-screen .turn-focus-avatar .turn-character-image{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:50% 18% !important;
+}
+body.is-game-screen .turn-focus-copy{
+  min-width:0 !important;
+  line-height:1 !important;
+}
+body.is-game-screen .turn-focus-copy small{
+  font-size:.32rem !important;
+  letter-spacing:.08em !important;
+}
+body.is-game-screen .turn-focus-copy strong{
+  display:block !important;
+  max-width:78px !important;
+  margin-top:2px !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+  font-size:.48rem !important;
+  line-height:1 !important;
+}
+body.is-game-screen .turn-focus-banner>b{
+  margin-left:auto !important;
+  font-size:.32rem !important;
+  white-space:nowrap !important;
 }
 
-/* The arc is deliberately lower than the dice so the two never occupy
-   the same vertical band. */
+/* ---------- Center composition: close the excessive vertical gaps ---------- */
+.board-center-mark{
+  top:1% !important;
+  width:48px !important;
+  height:33px !important;
+}
+.board-center .center-mode{
+  top:19% !important;
+  font-size:.54rem !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+}
+.board-center .center-roll-result{
+  top:29% !important;
+}
+.center-dice-pair{
+  min-height:62px !important;
+  gap:9px !important;
+}
 .board-center .dice-skill-arc-wrap{
-  top:66% !important;
+  top:52% !important;
   width:min(232px,72%) !important;
 }
-
 .board-center .center-roll-button{
   bottom:1% !important;
-  min-width:116px !important;
-  min-height:32px !important;
-  font-size:.56rem !important;
 }
 
-/* ---------- Character feet anchor ---------- */
-/* Do not move/scale the character on the top row.
-   Anchor the artwork by its feet to the tile's bottom edge. */
+/* Preserve the successful v65 board placement and square geometry. */
+body.is-game-screen .board-camera .board{
+  aspect-ratio:1 / 1 !important;
+}
+
+/* Character feet remain anchored to the tile base. */
 .board-cell .token{
   left:50% !important;
   top:auto !important;
@@ -99,84 +155,35 @@ body.is-game-screen .board-camera .board{
   object-position:center bottom !important;
 }
 
-/* ---------- Narrow landscape phones ---------- */
-@media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .game-header{
-    flex-basis:34px !important;
-    height:34px !important;
-    min-height:34px !important;
-  }
+@media (max-width:900px){
+  /* Do not change header height: only compact its contents. */
+  body.is-game-screen .player-cash-strip{top:2px !important;height:29px !important;}
+  body.is-game-screen .cash-player{max-width:104px !important;height:24px !important;min-height:24px !important;padding:2px 5px !important;}
+  body.is-game-screen .cash-player-avatar{width:19px !important;height:19px !important;min-width:19px !important;min-height:19px !important;}
+  body.is-game-screen .cash-player b{font-size:.40rem !important;max-width:65px !important;}
+  body.is-game-screen .cash-player small{font-size:.34rem !important;}
+  body.is-game-screen .turn-focus-banner{top:2px !important;width:142px !important;height:27px !important;min-height:27px !important;max-height:27px !important;padding:2px 5px !important;}
+  body.is-game-screen .turn-focus-avatar{width:20px !important;height:20px !important;min-width:20px !important;min-height:20px !important;}
+  body.is-game-screen .turn-focus-copy strong{font-size:.45rem !important;max-width:72px !important;}
+  body.is-game-screen .turn-focus-copy small{font-size:.30rem !important;}
+  body.is-game-screen .turn-focus-banner>b{font-size:.30rem !important;}
 
-  body.is-game-screen .board-camera{
-    padding:0 4px 4px !important;
-  }
-
-  body.is-game-screen .board-camera .board{
-    width:min(calc(100% - 8px), calc(100vw - 8px)) !important;
-    height:min(calc(100% - 4px), calc(100vw - 8px)) !important;
-    max-width:calc(100% - 8px) !important;
-    max-height:calc(100% - 4px) !important;
-  }
-
-  .board-center-mark{
-    width:52px !important;
-    height:36px !important;
-    top:3% !important;
-  }
-
-  .board-center .center-mode{
-    top:27% !important;
-    font-size:.56rem !important;
-  }
-
-  .board-center .center-roll-result{
-    top:38% !important;
-  }
-
-  .board-center .dice-skill-arc-wrap{
-    top:66% !important;
-    width:232px !important;
-  }
+  .board-center-mark{top:1% !important;width:46px !important;height:31px !important;}
+  .board-center .center-mode{top:18% !important;font-size:.51rem !important;}
+  .board-center .center-roll-result{top:28% !important;}
+  .center-dice-pair{min-height:58px !important;gap:8px !important;}
+  .board-center .dice-skill-arc-wrap{top:51% !important;width:min(220px,70%) !important;}
 }
 
-/* Very narrow landscape devices */
-@media (max-width:560px) and (orientation:landscape){
-  body.is-game-screen .board-camera{
-    padding:0 3px 4px !important;
-  }
-
-  body.is-game-screen .board-camera .board{
-    width:min(calc(100% - 6px), calc(100vw - 6px)) !important;
-    height:min(calc(100% - 4px), calc(100vw - 6px)) !important;
-    max-width:calc(100% - 6px) !important;
-    max-height:calc(100% - 4px) !important;
-  }
-
-  .board-center-mark{
-    width:48px !important;
-    height:34px !important;
-    top:3% !important;
-  }
-
-  .board-center .center-mode{
-    top:27% !important;
-    font-size:.53rem !important;
-  }
-
-  .board-center .center-roll-result{
-    top:38% !important;
-  }
-
-  .board-center .dice-skill-arc-wrap{
-    top:66% !important;
-    width:224px !important;
-  }
-
-  .board-center .center-roll-button{
-    bottom:1% !important;
-  }
-
-  .board-cell .token{
-    bottom:0 !important;
-  }
+@media (max-width:560px){
+  body.is-game-screen .cash-player{max-width:96px !important;padding:2px 4px !important;}
+  body.is-game-screen .cash-player b{max-width:58px !important;font-size:.38rem !important;}
+  body.is-game-screen .cash-player small{font-size:.32rem !important;}
+  body.is-game-screen .turn-focus-banner{width:136px !important;}
+  body.is-game-screen .turn-focus-copy strong{max-width:67px !important;}
+  .board-center-mark{width:44px !important;height:30px !important;}
+  .board-center .center-mode{top:17% !important;font-size:.49rem !important;}
+  .board-center .center-roll-result{top:27% !important;}
+  .center-dice-pair{min-height:55px !important;}
+  .board-center .dice-skill-arc-wrap{top:50% !important;width:min(214px,68%) !important;}
 }
