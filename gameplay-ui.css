@@ -1,19 +1,19 @@
 /* Dice result, movement path, board orientation, and chance deck */
-.dice-number { position:relative;z-index:2;display:grid;width:62%;height:62%;place-items:center;border-radius:14px;color:#0b1642;background:linear-gradient(145deg,#ffffff,#b7eaff);box-shadow:inset 2px 2px 0 rgba(255,255,255,.75),0 5px 12px rgba(0,0,0,.18);font-family:'Space Grotesk';font-size:clamp(1.55rem,3vw,2.3rem);font-weight:700; }
+.dice-number { position:relative;z-index:2;display:grid;width:62%;height:62%;place-items:center;border-radius:14px;color:#0b1642;background:linear-gradient(145deg,#ffffff,#b7eaff);box-shadow:inset 2px 2px 0 rgba(255,255,255,.75),0 5px 12px rgba(0,0,0,.18);font-family:"Space Grotesk";font-size:clamp(1.55rem,3vw,2.3rem);font-weight:700; }
 .dice-visual.dice-moving .dice-number { animation:diceNumberPulse .34s ease-in-out infinite alternate; }
 @keyframes diceNumberPulse { to { transform:translateY(-3px) scale(1.06);box-shadow:0 0 18px rgba(91,228,255,.5); } }
 .center-card-deck { position:absolute;z-index:2;top:17%;right:12%;display:flex;align-items:center;flex-direction:column;gap:5px;transform:rotate(9deg); }
-.chance-card-face { display:grid;width:38px;height:49px;place-items:center;border:1px solid rgba(255,217,118,.62);border-radius:7px;color:#17224c;background:linear-gradient(145deg,#fff1a8,#ffad4d);box-shadow:0 8px 15px rgba(0,0,0,.3);font-family:'Space Grotesk';font-size:1.4rem;font-weight:700; }
+.chance-card-face { display:grid;width:38px;height:49px;place-items:center;border:1px solid rgba(255,217,118,.62);border-radius:7px;color:#17224c;background:linear-gradient(145deg,#fff1a8,#ffad4d);box-shadow:0 8px 15px rgba(0,0,0,.3);font-family:"Space Grotesk";font-size:1.4rem;font-weight:700; }
 .center-card-deck span { color:#ffd976;font-size:.43rem;font-weight:800;letter-spacing:.12em; }
-.center-roll-result { display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:5px 9px;border:1px solid rgba(91,228,255,.2);border-radius:9px;color:#7f8bb8;background:rgba(91,228,255,.07);font-size:.5rem;font-weight:800;letter-spacing:.12em; }
-.center-roll-result b { display:grid;min-width:22px;height:22px;place-items:center;border-radius:6px;color:#081437;background:var(--cyan);font-family:'Space Grotesk';font-size:.8rem;letter-spacing:0; }
-.center-roll-result em { color:var(--game-green,#bcf26a);font-size:.45rem;font-style:normal;letter-spacing:0; }
+
+
+
 .board-cell { transition:filter .2s ease,box-shadow .2s ease; }
 .board-cell:has(.token) { filter:brightness(1.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2),0 0 14px rgba(91,228,255,.14); }
 .token { transition:left .22s ease,top .22s ease,filter .2s ease; }
 @media (max-width:560px) {
   .center-card-deck { top:10%;right:8%;transform:scale(.8) rotate(9deg); }
-  .center-roll-result { margin-top:7px; }
+  
 }
 
 /* Only the token hops. The board itself never blinks during movement. */

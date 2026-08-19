@@ -1,0 +1,27 @@
+/* Numeric Monopoly Matematic — v73 overlay architecture
+   This file documents the single overlay stack. It contains no selector-war patches.
+*/
+:root{
+  --nm-z-board:1;
+  --nm-z-hud:200;
+  --nm-z-money:850;
+  --nm-z-answer-notice:900;
+  --nm-z-question:1000;
+  --nm-z-modal:1100;
+  --nm-z-toast:1200;
+}
+
+/* Interactive notifications must always sit above the game HUD and dice. */
+.modal-layer{z-index:var(--nm-z-modal)!important;}
+.nm-question-layer{z-index:var(--nm-z-question)!important;}
+.answer-notice{z-index:var(--nm-z-answer-notice)!important;}
+.money-float{z-index:var(--nm-z-money)!important;}
+.toast-stack{z-index:var(--nm-z-toast)!important;}
+
+/* All modal variants inherit the same interactive layer. */
+.modal-layer.turn-end-layer,
+.modal-layer.start-build-layer,
+.modal-layer.win-layer{z-index:var(--nm-z-modal)!important;}
+
+/* The modal backdrop must receive taps/clicks; the game underneath must not. */
+.modal-layer{pointer-events:auto!important;}

@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '69';
+const ASSET_VERSION = '73';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -579,7 +579,7 @@ function updateDiceFace(id, value, rolling) {
 function diceSkillMarkup() {
   const charge = Math.max(0, Math.min(1, Number(state.diceCharge ?? 0.5)));
   const percent = Math.round(charge * 100);
-  return `<div class="dice-skill-wrap dice-skill-arc-wrap" aria-label="Kontrol kekuatan lemparan dadu">
+  return `<div class="nm-hud-skill dice-skill-wrap" aria-label="Kontrol kekuatan lemparan dadu">
     <div class="dice-skill-arc" id="dice-skill-track">
       <svg viewBox="0 0 360 190" aria-hidden="true" class="dice-skill-svg">
         <path class="arc-shadow" d="M25 165 A155 155 0 0 1 335 165" pathLength="100" />
@@ -778,16 +778,15 @@ function renderGame() {
             </div>
           </div>
           <div class="board-vignette"></div>
-          ${state.question || state.aiThinking ? renderQuestionOverlay() : ''}
         </div>
-        <div class="game-center-layer" aria-label="Kontrol permainan">
-          <div class="board-center">
-            <div class="board-center-copy">
-              <div class="board-center-mark"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='none'" /><span class="board-center-logo-fallback"></span></div>
-              <span class="center-mode">${state.mode === 'ai' ? 'Mode 1 VS AI' : (MODE_LABELS[state.mode] || 'BATTLE ARENA')}</span>
-              <div class="center-roll-result"><span>DADU</span><div class="center-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div>
+        <div class="nm-hud-layer" aria-label="Kontrol permainan">
+          <div class="nm-hud-stage">
+            <div class="nm-hud-stack">
+              <div class="nm-hud-logo"><img src="${versionedAsset('assets/logo-numeric-monopoly-matematic.png')}" alt="Numeric Monopoly Matematic" onerror="this.style.display='none';this.nextElementSibling.style.display='none'" /><span class="board-center-logo-fallback"></span></div>
+              <span class="nm-hud-mode">${state.mode === 'ai' ? 'Mode 1 VS AI' : (MODE_LABELS[state.mode] || 'BATTLE ARENA')}</span>
+              <div class="nm-hud-dice"><span>DADU</span><div class="nm-hud-dice-pair"><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-a', diceA, state.rolling, currentDice?.asset)}</span><em>+</em><span class="dice-3d-mini-wrap">${dice3DMarkup('center-die-b', diceB, state.rolling, currentDice?.asset)}</span></div><b id="center-roll-value">${diceValue}</b><small id="center-roll-progress">${isMoving ? `${state.moveStep}/${state.lastRoll}` : ''}</small></div>
               ${diceSkillMarkup()}
-              <button class="center-roll-button" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button>
+              <button class="nm-hud-roll" data-action="roll-dice" ${rollLocked ? 'disabled' : ''}>${rollLabel}</button>
             </div>
           </div>
         </div>
@@ -800,6 +799,7 @@ function renderGame() {
           <section class="activity-card panel"><h3>AKTIVITAS</h3><div class="activity-list">${renderActivity()}</div></section>
         </aside>
       </div>
+      ${state.question || state.aiThinking ? renderQuestionOverlay() : ''}
     </section>
   `;
 }
@@ -889,16 +889,16 @@ function renderActivity() {
 
 function renderQuestionOverlay() {
   if (state.mode === 'online' && state.activePlayer !== state.localPlayerIndex) {
-    return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="eyebrow">Online realtime</p><span class="difficulty-pill">LIVE</span></div><div class="thinking" aria-label="Menunggu lawan"><span></span><span></span><span></span></div><h3>Menunggu ${escapeHtml(state.players[state.activePlayer]?.name || 'lawan')}…</h3><p class="muted small">Giliran lawan sedang menjawab atau melempar dadu.</p></div></div>`;
+    return `<div class="nm-question-layer"><div class="question-card"><div class="question-top"><p class="eyebrow">Online realtime</p><span class="difficulty-pill">LIVE</span></div><div class="thinking" aria-label="Menunggu lawan"><span></span><span></span><span></span></div><h3>Menunggu ${escapeHtml(state.players[state.activePlayer]?.name || 'lawan')}…</h3><p class="muted small">Giliran lawan sedang menjawab atau melempar dadu.</p></div></div>`;
   }
   if (state.aiThinking) {
     const thinkingPlayer = state.players[state.activePlayer] || { name: 'AI' };
-    return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="question-for"><span>GILIRAN</span><strong>${escapeHtml(thinkingPlayer.name)}</strong></p><span class="difficulty-pill">${DIFFICULTIES[state.difficulty].label}</span></div><div class="thinking" aria-label="AI sedang menghitung"><span></span><span></span><span></span></div><h3>${escapeHtml(thinkingPlayer.name)} sedang berpikir</h3><p class="muted small">Jika salah, dadu direbut.</p></div></div>`;
+    return `<div class="nm-question-layer"><div class="question-card"><div class="question-top"><p class="question-for"><span>GILIRAN</span><strong>${escapeHtml(thinkingPlayer.name)}</strong></p><span class="difficulty-pill">${DIFFICULTIES[state.difficulty].label}</span></div><div class="thinking" aria-label="AI sedang menghitung"><span></span><span></span><span></span></div><h3>${escapeHtml(thinkingPlayer.name)} sedang berpikir</h3><p class="muted small">Jika salah, dadu direbut.</p></div></div>`;
   }
   const q = state.question;
   const difficulty = DIFFICULTIES[state.difficulty];
   const targetPlayer = state.players[state.activePlayer] || { name: 'Pemain' };
-  return `<div class="question-layer"><div class="question-card"><div class="question-top"><p class="question-for"><span>SOAL UNTUK</span><strong>${escapeHtml(targetPlayer.name)}</strong></p><span class="difficulty-pill" style="color:${difficulty.color}">${difficulty.label}</span><span id="question-timer" class="question-timer">${state.questionTimeLeft}s</span></div><h3>Jawab untuk membuka dadu</h3><p class="question-text">${q.text} = ?</p><div id="answer-display" class="answer-display ${state.answer ? '' : 'empty'}">${state.answer ? escapeHtml(state.answer) : 'ketik jawabanmu'}</div><div class="numeric-keyboard">${['1','2','3','4','5','6','7','8','9','-','0','⌫'].map((key) => `<button class="key-btn ${key === '⌫' ? 'control' : ''}" data-action="answer-key" data-key="${key === '⌫' ? 'backspace' : key}">${key}</button>`).join('')}<button class="key-btn control" data-action="answer-key" data-key="clear">Hapus</button><button class="key-btn ok" data-action="submit-answer">OK</button></div><p class="question-hint">Tekan OK untuk lanjut.</p></div></div>`;
+  return `<div class="nm-question-layer"><div class="question-card"><div class="question-top"><p class="question-for"><span>SOAL UNTUK</span><strong>${escapeHtml(targetPlayer.name)}</strong></p><span class="difficulty-pill" style="color:${difficulty.color}">${difficulty.label}</span><span id="question-timer" class="question-timer">${state.questionTimeLeft}s</span></div><h3>Jawab untuk membuka dadu</h3><p class="question-text">${q.text} = ?</p><div id="answer-display" class="answer-display ${state.answer ? '' : 'empty'}">${state.answer ? escapeHtml(state.answer) : 'ketik jawabanmu'}</div><div class="numeric-keyboard">${['1','2','3','4','5','6','7','8','9','-','0','⌫'].map((key) => `<button class="key-btn ${key === '⌫' ? 'control' : ''}" data-action="answer-key" data-key="${key === '⌫' ? 'backspace' : key}">${key}</button>`).join('')}<button class="key-btn control" data-action="answer-key" data-key="clear">Hapus</button><button class="key-btn ok" data-action="submit-answer">OK</button></div><p class="question-hint">Tekan OK untuk lanjut.</p></div></div>`;
 }
 
 function renderBattle() {
@@ -2556,10 +2556,9 @@ function updateGameInPlace() {
   const header = screen.querySelector('.game-header');
   if (header) header.outerHTML = renderGameHeader(active, status, playerColor(state.activePlayer));
   const needsQuestion = Boolean(state.question || state.aiThinking);
-  const boardWrap = screen.querySelector('.board-wrap');
-  const questionLayer = boardWrap?.querySelector('.question-layer');
-  if (needsQuestion && boardWrap && questionLayer) questionLayer.outerHTML = renderQuestionOverlay();
-  else if (needsQuestion && boardWrap && !questionLayer) boardWrap.insertAdjacentHTML('beforeend', renderQuestionOverlay());
+  const questionLayer = screen.querySelector('.nm-question-layer');
+  if (needsQuestion && questionLayer) questionLayer.outerHTML = renderQuestionOverlay();
+  else if (needsQuestion && !questionLayer) screen.insertAdjacentHTML('beforeend', renderQuestionOverlay());
   else if (!needsQuestion && questionLayer) questionLayer.remove();
   const notice = screen.querySelector('.answer-notice');
   if (state.answerNotice && notice) notice.outerHTML = renderAnswerNotice();
@@ -2568,7 +2567,7 @@ function updateGameInPlace() {
   updateMoveHud();
   const rollLocked = !state.canRoll || state.rolling || state.moving || state.aiThinking || (state.mode === 'ai' && state.activePlayer === 1) || (state.mode === 'battle' && state.activePlayer !== state.localPlayerIndex) || (state.mode === 'online' && state.activePlayer !== state.localPlayerIndex);
   const rollLabel = state.rolling ? 'MENGGELINDING…' : state.moving ? 'BERJALAN…' : 'LEMPAR DADU';
-  const rollButton = screen.querySelector('.center-roll-button');
+  const rollButton = screen.querySelector('.nm-hud-roll');
   if (rollButton) { rollButton.disabled = rollLocked; rollButton.textContent = rollLabel; }
   const modal = document.querySelector('.modal-layer');
   if (state.modal && modal) modal.outerHTML = renderModal();

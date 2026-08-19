@@ -1,8 +1,13 @@
+/* Numeric Monopoly Matematic — v72 STABLE UI ARCHITECTURE
+   ONE active source for game HUD + question overlay.
+   Board zoom affects only .board-camera/.board.
+   HUD and question are siblings of .game-layout, never descendants of the board.
+*/
+
 /* Numeric Monopoly Matematic — v70 FINAL
    Clean finishing layer.
    IMPORTANT: board zoom transforms only .board inside .board-camera.
-   The center controls live in .game-center-layer, outside the board, so
-   logo/mode/dice/skill/button never zoom or travel with the board.
+   The game HUD is a sibling of .game-layout, so it never zooms or travels with the board.
 */
 
 /* ===== FRAME / HEADER: preserve the tested v68/v69 geometry ===== */
@@ -94,49 +99,6 @@ body.is-game-screen .board-camera .board{
   max-width:calc(100% - 10px)!important;max-height:calc(100% - 4px)!important
 }
 
-/* ===== CENTER UI: separate layer, NOT a child of the zoomed board ===== */
-body.is-game-screen .game-center-layer{
-  position:absolute!important;inset:0!important;z-index:80!important;pointer-events:none!important;
-  overflow:hidden!important
-}
-body.is-game-screen .game-center-layer .board-center{
-  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
-  pointer-events:none!important
-}
-body.is-game-screen .game-center-layer .board-center-copy{
-  position:absolute!important;left:50%!important;top:0!important;
-  width:240px!important;height:100%!important;max-width:240px!important;margin:0!important;padding:0!important;
-  transform:translateX(-50%)!important;text-align:center!important;pointer-events:none!important
-}
-body.is-game-screen .game-center-layer .board-center-mark,
-body.is-game-screen .game-center-layer .center-mode,
-body.is-game-screen .game-center-layer .center-roll-result,
-body.is-game-screen .game-center-layer .dice-skill-arc-wrap,
-body.is-game-screen .game-center-layer .center-roll-button{
-  left:50%!important;transform:translateX(-50%)!important
-}
-body.is-game-screen .game-center-layer .board-center-mark{position:absolute!important;top:3%!important;width:48px!important;height:34px!important}
-body.is-game-screen .game-center-layer .board-center-mark img{width:100%!important;height:100%!important;object-fit:contain!important}
-body.is-game-screen .game-center-layer .center-mode{
-  position:absolute!important;top:19%!important;font-size:.55rem!important;line-height:1!important;
-  white-space:nowrap!important;font-weight:900!important
-}
-body.is-game-screen .game-center-layer .center-roll-result{
-  position:absolute!important;top:29%!important;margin:0!important;min-width:150px!important
-}
-body.is-game-screen .game-center-layer .dice-skill-arc-wrap{
-  position:absolute!important;top:47%!important;width:224px!important;margin:0!important
-}
-body.is-game-screen .game-center-layer .center-roll-button{
-  position:absolute!important;top:78%!important;bottom:auto!important;min-width:112px!important;min-height:30px!important;
-  font-size:.55rem!important;margin:0!important;pointer-events:auto!important
-}
-body.is-game-screen .game-center-layer .center-tagline,
-body.is-game-screen .game-center-layer .dice-skill-title,
-body.is-game-screen .game-center-layer .dice-skill-hint,
-body.is-game-screen .game-center-layer #dice-skill-percent,
-body.is-game-screen .game-center-layer .center-card-deck{display:none!important}
-
 /* ===== Token anchor: preserve tested v65/v68 result ===== */
 .board-cell .token{left:50%!important;top:auto!important;bottom:0!important;transform:translateX(-50%)!important}
 .board-cell .token.edge-top-token{top:auto!important;bottom:0!important}
@@ -180,144 +142,228 @@ body.is-game-screen .tile-info-owner{font-size:.53rem!important;margin-bottom:5p
 body.is-game-screen .tile-info-modal .modal-actions{margin-top:8px!important}
 body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.52rem!important}
 
-/* ===== Question: compact so it does not dominate the board ===== */
-body.is-game-screen .question-card{
-  width:min(82vw,320px)!important;max-width:320px!important;padding:11px 10px!important;border-radius:14px!important
-}
-body.is-game-screen .question-card .question-text{
-  font-size:clamp(1.05rem,3.2vw,1.35rem)!important;line-height:1.18!important;margin-bottom:8px!important
-}
-body.is-game-screen .question-card .answer-display{min-height:37px!important;margin-bottom:7px!important;font-size:1rem!important}
-body.is-game-screen .question-card .numeric-keyboard{gap:4px!important}
-body.is-game-screen .question-card .key-btn{min-height:31px!important;font-size:.72rem!important;border-radius:7px!important}
-body.is-game-screen .question-card .key-btn.ok{min-height:36px!important}
-body.is-game-screen .question-card .question-hint{margin-top:5px!important;font-size:.47rem!important}
-
-/* ===== Mobile landscape ===== */
-@media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .cash-player{flex-basis:135px!important;width:135px!important;max-width:135px!important}
-  body.is-game-screen .cash-player b{font-size:.32rem!important}
-  body.is-game-screen .cash-player small{font-size:.30rem!important}
-  body.is-game-screen .turn-focus-banner{width:184px!important;height:30px!important;min-height:30px!important;max-height:30px!important}
-  body.is-game-screen .board-camera{padding:0 4px 4px!important}
-  body.is-game-screen .board-camera .board{
-    width:min(calc(100% - 8px),calc(100vw - 8px))!important;height:min(calc(100% - 4px),calc(100vw - 8px))!important;
-    max-width:calc(100% - 8px)!important;max-height:calc(100% - 4px)!important
-  }
-  body.is-game-screen .game-center-layer .board-center-mark{top:3%!important;width:46px!important;height:32px!important}
-  body.is-game-screen .game-center-layer .center-mode{top:19%!important;font-size:.53rem!important}
-  body.is-game-screen .game-center-layer .center-roll-result{top:29%!important}
-  body.is-game-screen .game-center-layer .dice-skill-arc-wrap{top:47%!important;width:218px!important}
-  body.is-game-screen .game-center-layer .center-roll-button{top:78%!important;min-width:108px!important;min-height:29px!important;font-size:.53rem!important}
-}
-@media (max-width:560px) and (orientation:landscape){
-  body.is-game-screen .cash-player{flex-basis:122px!important;width:122px!important;max-width:122px!important}
-  body.is-game-screen .cash-player b{font-size:.30rem!important;letter-spacing:-.035em!important}
-  body.is-game-screen .cash-player small{font-size:.29rem!important}
-  body.is-game-screen .turn-focus-banner{width:174px!important;height:30px!important;min-height:30px!important;max-height:30px!important}
-  body.is-game-screen .turn-focus-avatar{flex-basis:22px!important;width:22px!important;height:22px!important}
-  body.is-game-screen .turn-focus-copy{max-width:98px!important}
-  body.is-game-screen .turn-focus-copy strong{font-size:.37rem!important}
-  body.is-game-screen .game-center-layer .board-center-mark{width:44px!important;height:31px!important;top:3%!important}
-  body.is-game-screen .game-center-layer .center-mode{top:19%!important;font-size:.50rem!important}
-  body.is-game-screen .game-center-layer .center-roll-result{top:29%!important}
-  body.is-game-screen .game-center-layer .dice-skill-arc-wrap{top:47%!important;width:214px!important}
-  body.is-game-screen .game-center-layer .center-roll-button{top:78%!important;min-width:104px!important;min-height:28px!important}
-  .board-cell .cell-name-outside{max-width:68px!important;font-size:.34rem!important;padding:2px 3px!important}
-  .board-cell .cell-name-outside.edge-bottom{top:-11px!important}
-  .board-cell .cell-name-outside.edge-top{bottom:-11px!important}
-  .board-cell .cell-name-outside.edge-left{left:calc(100% + 2px)!important}
-  .board-cell .cell-name-outside.edge-right{right:calc(100% + 2px)!important}
-  .board-cell[data-tile-index="9"] .cell-name-outside.edge-bottom{top:-12px!important}
-  .board-cell[data-tile-index="11"] .cell-name-outside.edge-left{left:calc(100% + 3px)!important}
-  .board-cell[data-tile-index="19"] .cell-name-outside.edge-left{left:calc(100% + 3px)!important}
-  .board-cell[data-tile-index="21"] .cell-name-outside.edge-top{bottom:-12px!important}
-  .board-cell[data-tile-index="29"] .cell-name-outside.edge-top{bottom:-12px!important}
-  .board-cell[data-tile-index="31"] .cell-name-outside.edge-right{right:calc(100% + 3px)!important}
-}
 
 
-/* ===== v71 FINAL: question layer must be the topmost interactive UI ===== */
-body.is-game-screen .question-layer{
+/* ===== Stable game coordinate system ===== */
+body.is-game-screen .game-screen{
+  position:relative!important;
+  --nm-header-h:34px;
+  --nm-logo-top:7%;
+  --nm-logo-w:58px;
+  --nm-logo-h:41px;
+  --nm-mode-top:23%;
+  --nm-dice-top:30%;
+  --nm-skill-top:48%;
+  --nm-roll-top:78%;
+}
+
+/* The board occupies the area below the fixed header. */
+body.is-game-screen .game-layout{
+  position:absolute!important;
+  left:0!important;right:0!important;top:var(--nm-header-h)!important;bottom:0!important;
+  width:100%!important;height:auto!important;
+  margin:0!important;padding:0!important;overflow:hidden!important;
+  display:block!important;
+}
+
+/* ===== HUD: completely independent of board camera/zoom ===== */
+body.is-game-screen .nm-hud-layer{
+  position:absolute!important;
+  left:0!important;right:0!important;top:var(--nm-header-h)!important;bottom:0!important;
   z-index:200!important;
-  align-items:flex-start!important;
-  justify-content:center!important;
-  padding:6px 8px!important;
+  pointer-events:none!important;
   overflow:hidden!important;
 }
-body.is-game-screen .question-card{
-  width:min(74vw,290px)!important;
-  max-width:290px!important;
-  padding:8px 9px!important;
-  border-radius:12px!important;
-}
-body.is-game-screen .question-card .question-top{
-  gap:5px!important;
-  margin-bottom:6px!important;
-}
-body.is-game-screen .question-card h3{
-  margin:0 0 4px!important;
-  font-size:.70rem!important;
-  line-height:1.15!important;
-}
-body.is-game-screen .question-card .question-text{
-  margin:0 0 5px!important;
-  font-size:.88rem!important;
-  line-height:1.08!important;
-  letter-spacing:-.035em!important;
-}
-body.is-game-screen .question-card .answer-display{
-  min-height:29px!important;
-  margin-bottom:5px!important;
-  padding:4px 6px!important;
-  font-size:.78rem!important;
-}
-body.is-game-screen .question-card .numeric-keyboard{
-  gap:3px!important;
-}
-body.is-game-screen .question-card .key-btn{
-  min-height:25px!important;
-  padding:2px 4px!important;
-  font-size:.60rem!important;
-  border-radius:6px!important;
-}
-body.is-game-screen .question-card .key-btn.ok{
-  min-height:29px!important;
-}
-body.is-game-screen .question-card .question-hint{
-  margin-top:3px!important;
-  font-size:.39rem!important;
-  line-height:1.1!important;
-}
-body.is-game-screen .question-card .question-for,
-body.is-game-screen .question-card .eyebrow,
-body.is-game-screen .question-card .difficulty-pill,
-body.is-game-screen .question-card .question-timer{
-  font-size:.40rem!important;
+body.is-game-screen .nm-hud-stage,
+body.is-game-screen .nm-hud-stack{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  margin:0!important;padding:0!important;
+  pointer-events:none!important;text-align:center!important;
 }
 
-/* Keep the successful v70 center layout untouched while a question is shown. */
-body.is-game-screen .game-center-layer{z-index:80!important}
+/* All center controls use the same exact horizontal axis: 50%. */
+body.is-game-screen .nm-hud-logo,
+body.is-game-screen .nm-hud-mode,
+body.is-game-screen .nm-hud-dice,
+body.is-game-screen .nm-hud-skill,
+body.is-game-screen .nm-hud-roll{
+  position:absolute!important;left:50%!important;transform:translateX(-50%)!important;
+  margin:0!important;
+}
 
-/* ===== Logo size control: edit ONLY these two values when fine-tuning ===== */
-body.is-game-screen .game-center-layer .board-center-mark{
-  width:44px!important;
-  height:31px!important;
+/* ===== SINGLE PLACE TO TUNE LOGO ===== */
+body.is-game-screen .nm-hud-logo{
+  top:var(--nm-logo-top)!important;
+  width:var(--nm-logo-w)!important;height:var(--nm-logo-h)!important;
+  padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;z-index:4!important;
 }
-body.is-game-screen .game-center-layer .board-center-mark img{
-  width:100%!important;
-  height:100%!important;
-  object-fit:contain!important;
+body.is-game-screen .nm-hud-logo img{
+  display:block!important;width:100%!important;height:100%!important;
+  object-fit:contain!important;object-position:center!important;
+  border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;
 }
+
+/* ===== MODE ===== */
+body.is-game-screen .nm-hud-mode{
+  top:var(--nm-mode-top)!important;
+  color:#fff!important;font-size:.62rem!important;line-height:1!important;
+  font-weight:1000!important;letter-spacing:.025em!important;white-space:nowrap!important;
+  text-shadow:0 2px 8px rgba(0,0,0,.65),0 0 12px rgba(91,228,255,.16)!important;
+  z-index:5!important;
+}
+
+/* ===== DICE ===== */
+body.is-game-screen .nm-hud-dice{
+  top:var(--nm-dice-top)!important;
+  width:100%!important;min-width:0!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  gap:2px!important;padding:0!important;border:0!important;background:transparent!important;
+  box-shadow:none!important;z-index:6!important;
+}
+body.is-game-screen .nm-hud-dice>span,
+body.is-game-screen .nm-hud-dice>b,
+body.is-game-screen .nm-hud-dice>small{display:none!important}
+body.is-game-screen .nm-hud-dice-pair{
+  display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+  gap:10px!important;min-height:74px!important;
+}
+body.is-game-screen .nm-hud-dice-pair em{
+  margin:0!important;font-size:1rem!important;font-style:normal!important;font-weight:1000!important;color:#c8ff5a!important;
+}
+body.is-game-screen .nm-hud-dice-pair .dice-3d-mini-wrap{
+  width:68px!important;height:68px!important;perspective:700px!important;display:grid!important;place-items:center!important;
+}
+body.is-game-screen .nm-hud-dice-pair .dice-3d{width:62px!important;height:62px!important;display:block!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube{width:50px!important;height:50px!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube-face{width:50px!important;height:50px!important;border-radius:11px!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-front{transform:translateZ(25px)!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-back{transform:rotateY(180deg) translateZ(25px)!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-right{transform:rotateY(90deg) translateZ(25px)!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-left{transform:rotateY(-90deg) translateZ(25px)!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-top{transform:rotateX(90deg) translateZ(25px)!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-bottom{transform:rotateX(-90deg) translateZ(25px)!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube-face .dice-pips{grid-template-columns:repeat(3,7px)!important;grid-template-rows:repeat(3,7px)!important;gap:5px!important}
+body.is-game-screen .nm-hud-dice-pair .dice-cube-face .dice-pips .pip{width:7px!important;height:7px!important}
+
+/* ===== SKILL ARC ===== */
+body.is-game-screen .nm-hud-skill{
+  top:var(--nm-skill-top)!important;width:250px!important;
+  z-index:7!important;
+}
+body.is-game-screen .nm-hud-skill .dice-skill-arc{height:112px!important}
+body.is-game-screen .nm-hud-skill .dice-skill-title,
+body.is-game-screen .nm-hud-skill .dice-skill-hint,
+body.is-game-screen .nm-hud-skill #dice-skill-percent{display:none!important}
+body.is-game-screen .nm-hud-skill .dice-skill-svg{overflow:visible!important}
+body.is-game-screen .nm-hud-skill .dice-skill-svg .perfect-label{paint-order:stroke!important;dominant-baseline:middle!important}
+
+/* ===== ROLL BUTTON ===== */
+body.is-game-screen .nm-hud-roll{
+  top:var(--nm-roll-top)!important;bottom:auto!important;
+  min-width:124px!important;min-height:35px!important;padding:0 18px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  border:1px solid rgba(91,228,255,.48)!important;border-radius:11px!important;
+  color:#071433!important;background:linear-gradient(110deg,#5be4ff,#a6f4dc)!important;
+  box-shadow:0 8px 18px rgba(91,228,255,.18)!important;
+  font-size:.61rem!important;font-weight:900!important;letter-spacing:.06em!important;
+  cursor:pointer!important;pointer-events:auto!important;z-index:10!important;
+  touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;
+}
+body.is-game-screen .nm-hud-roll:disabled{cursor:not-allowed!important;opacity:.45!important;filter:saturate(.5)!important}
+
+/*
+ * OVERLAY HIERARCHY (v73)
+ * 1100 = interactive modal notifications (tile, purchase, destination, chance, jail, build, auction, win, etc.)
+ * 1000 = question / answer overlay
+ * 900  = answer notice
+ * 850  = transient money feedback
+ * 200  = game HUD
+ * 1    = board
+ *
+ * The values above are intentionally separated by responsibility.
+ * Do not solve future overlay bugs by adding another z-index elsewhere.
+ */
+
+/* ===== QUESTION: independent top layer, never inside board or HUD ===== */
+body.is-game-screen .nm-question-layer{
+  position:absolute!important;left:0!important;right:0!important;
+  top:var(--nm-header-h)!important;bottom:0!important;
+  z-index:1000!important;
+  display:flex!important;align-items:flex-start!important;justify-content:center!important;
+  padding:5px 8px!important;box-sizing:border-box!important;
+  overflow:auto!important;
+  background:rgba(4,8,31,.34)!important;
+  backdrop-filter:blur(1px)!important;-webkit-backdrop-filter:blur(1px)!important;
+  pointer-events:auto!important;
+}
+body.is-game-screen .nm-question-layer .question-card{
+  width:286px!important;max-width:calc(100vw - 20px)!important;
+  max-height:calc(100% - 10px)!important;
+  overflow:auto!important;
+  margin:0!important;padding:8px 9px!important;border-radius:12px!important;
+  box-sizing:border-box!important;
+}
+body.is-game-screen .nm-question-layer .question-top{gap:5px!important;margin-bottom:5px!important}
+body.is-game-screen .nm-question-layer .question-for,
+body.is-game-screen .nm-question-layer .eyebrow,
+body.is-game-screen .nm-question-layer .difficulty-pill,
+body.is-game-screen .nm-question-layer .question-timer{font-size:.40rem!important}
+body.is-game-screen .nm-question-layer h3{font-size:.68rem!important;line-height:1.1!important;margin:0 0 4px!important}
+body.is-game-screen .nm-question-layer .question-text{font-size:.84rem!important;line-height:1.05!important;letter-spacing:-.025em!important;margin:0 0 5px!important}
+body.is-game-screen .nm-question-layer .answer-display{min-height:28px!important;margin-bottom:5px!important;padding:4px 6px!important;font-size:.76rem!important}
+body.is-game-screen .nm-question-layer .numeric-keyboard{gap:3px!important}
+body.is-game-screen .nm-question-layer .key-btn{min-height:24px!important;padding:2px 4px!important;font-size:.58rem!important;border-radius:6px!important}
+body.is-game-screen .nm-question-layer .key-btn.ok{min-height:28px!important}
+body.is-game-screen .nm-question-layer .question-hint{margin-top:3px!important;font-size:.38rem!important;line-height:1.1!important}
+
+/* ===== Small tile/detail polish retained from v71 ===== */
+body.is-game-screen .tile-info-modal{
+  width:min(82vw,330px)!important;max-width:330px!important;max-height:78vh!important;
+  padding:14px!important;border-radius:16px!important;overflow:auto!important
+}
+body.is-game-screen .tile-info-art{
+  width:100%!important;height:82px!important;max-height:82px!important;margin:0 0 8px!important;
+  border-radius:11px!important;overflow:hidden!important;display:grid!important;place-items:center!important
+}
+body.is-game-screen .tile-info-art img{
+  width:auto!important;height:auto!important;max-width:82%!important;max-height:76px!important;
+  object-fit:contain!important;object-position:center!important
+}
+body.is-game-screen .tile-info-modal h3{font-size:.86rem!important;margin:0 0 7px!important}
+body.is-game-screen .tile-info-modal .eyebrow{font-size:.48rem!important;margin-bottom:3px!important}
+body.is-game-screen .tile-info-prices{gap:5px!important;margin:7px 0 8px!important}
+body.is-game-screen .tile-info-prices div{padding:6px 7px!important;border-radius:8px!important}
+body.is-game-screen .tile-info-prices span{font-size:.46rem!important;margin-bottom:2px!important}
+body.is-game-screen .tile-info-prices strong{font-size:.62rem!important}
+body.is-game-screen .tile-info-owner{font-size:.53rem!important;margin-bottom:5px!important}
+body.is-game-screen .tile-info-modal .modal-actions{margin-top:8px!important}
+body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.52rem!important}
+
+/* ===== Mobile landscape keeps the same architecture; only scale, never re-position by selector wars ===== */
 @media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .game-center-layer .board-center-mark{
-    width:44px!important;
-    height:31px!important;
-  }
+  body.is-game-screen .game-screen{--nm-header-h:34px;--nm-logo-w:56px;--nm-logo-h:40px;--nm-dice-top:30%;--nm-skill-top:48%;--nm-roll-top:78%;}
+  body.is-game-screen .nm-hud-mode{font-size:.57rem!important}
+  body.is-game-screen .nm-hud-dice-pair{gap:8px!important;min-height:70px!important}
+  body.is-game-screen .nm-hud-dice-pair .dice-3d-mini-wrap{width:64px!important;height:64px!important}
+  body.is-game-screen .nm-hud-dice-pair .dice-3d{width:58px!important;height:58px!important}
+  body.is-game-screen .nm-hud-dice-pair .dice-cube,
+  body.is-game-screen .nm-hud-dice-pair .dice-cube-face{width:48px!important;height:48px!important}
+  body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-front{transform:translateZ(24px)!important}
+  body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-back{transform:rotateY(180deg) translateZ(24px)!important}
+  body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-right{transform:rotateY(90deg) translateZ(24px)!important}
+  body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-left{transform:rotateY(-90deg) translateZ(24px)!important}
+  body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-top{transform:rotateX(90deg) translateZ(24px)!important}
+  body.is-game-screen .nm-hud-dice-pair .dice-cube-face.face-bottom{transform:rotateX(-90deg) translateZ(24px)!important}
+  body.is-game-screen .nm-hud-skill{width:250px!important}
+  body.is-game-screen .nm-hud-roll{min-width:120px!important;min-height:34px!important;font-size:.58rem!important}
+  body.is-game-screen .nm-question-layer .question-card{width:280px!important}
 }
+
 @media (max-width:560px) and (orientation:landscape){
-  body.is-game-screen .game-center-layer .board-center-mark{
-    width:44px!important;
-    height:31px!important;
-  }
+  body.is-game-screen .game-screen{--nm-header-h:34px;--nm-logo-w:54px;--nm-logo-h:38px;}
+  body.is-game-screen .nm-hud-mode{font-size:.53rem!important}
+  body.is-game-screen .nm-hud-skill{width:238px!important}
+  body.is-game-screen .nm-question-layer .question-card{width:272px!important}
 }

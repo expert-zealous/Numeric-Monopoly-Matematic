@@ -3,6 +3,6 @@
 body.is-game-screen .game-menu-toggle { display:grid; }
 body.is-game-screen .sidebar { z-index:90; transform:translateX(-110%); transition:transform .22s ease,opacity .22s ease; opacity:0; }
 body.is-game-screen.game-menu-open .sidebar { transform:translateX(0); opacity:1; }
-body.is-game-screen.game-menu-open::after { position:fixed;z-index:70;inset:0;background:rgba(2,5,22,.48);content:'';pointer-events:none; }
+body.is-game-screen.game-menu-open::after { position:fixed;z-index:70;inset:0;background:rgba(2,5,22,.48);content:"";pointer-events:none; }
 body.is-game-screen .app-content { padding-left:0 !important; }
 @media(max-width:900px){.game-menu-toggle{top:8px;left:8px;width:31px;height:31px;font-size:.85rem}.game-menu-toggle:focus{outline:none}}
