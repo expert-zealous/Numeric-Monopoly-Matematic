@@ -11,7 +11,7 @@
 @media(max-width:900px){.question-for{font-size:.57rem}.question-card{width:min(92%,350px);padding:15px 12px}}
 @media(max-width:560px){.question-card{width:min(92%,330px);padding:14px 11px}.question-card .key-btn{min-height:34px}.question-card .question-hint{margin-top:7px;font-size:.5rem}}
 /* ===== HP: INPUT JAWABAN & TOMBOL ANGKA ===== */
-@media (max-width:560px) and (orientation:landscape){
+@media (max-width:900px) and (orientation:landscape){
 
   .question-card .answer-display{
     min-height:40px!important;
