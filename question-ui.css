@@ -10,3 +10,25 @@
 .question-card .key-btn.ok { min-height:43px; }
 @media(max-width:900px){.question-for{font-size:.57rem}.question-card{width:min(92%,350px);padding:15px 12px}}
 @media(max-width:560px){.question-card{width:min(92%,330px);padding:14px 11px}.question-card .key-btn{min-height:34px}.question-card .question-hint{margin-top:7px;font-size:.5rem}}
+/* ===== HP: INPUT JAWABAN & TOMBOL ANGKA ===== */
+@media (max-width:560px) and (orientation:landscape){
+
+  .question-card .answer-display{
+    min-height:40px!important;
+    height:40px!important;
+    margin-bottom:8px!important;
+  }
+
+  .question-card .key-btn{
+    width:44px!important;
+    min-width:44px!important;
+    height:40px!important;
+    min-height:40px!important;
+    padding:0!important;
+  }
+
+  .question-card .key-btn.ok{
+    height:42px!important;
+    min-height:42px!important;
+  }
+}
