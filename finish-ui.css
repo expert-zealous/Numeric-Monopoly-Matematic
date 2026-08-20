@@ -357,7 +357,7 @@ body.is-game-screen .nm-hud-roll{top:58%!important;width:68px!important;height:6
   body.is-game-screen .nm-question-layer .question-text{font-size:1.12rem!important}
 }
 @media (max-width:560px) and (orientation:landscape){
-  body.is-game-screen .nm-hud-roll{top:60%!important;width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;font-size:.47rem!important}
+  body.is-game-screen .nm-hud-roll{top:50%!important;width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;font-size:.47rem!important}
   body.is-game-screen .nm-question-layer .question-card{
     width:min(86vw,600px)!important;max-width:600px!important;
     min-height:350px!important;padding:20px 18px 18px!important
