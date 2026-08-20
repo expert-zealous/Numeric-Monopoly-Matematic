@@ -148,7 +148,7 @@ body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.5
 body.is-game-screen .game-screen{
   position:relative!important;
   --nm-header-h:34px;
-  --nm-mode-top:23%;
+  --nm-mode-top:10%;
   --nm-dice-top:30%;
   --nm-skill-top:48%;
   --nm-roll-top:74%;
@@ -191,7 +191,7 @@ body.is-game-screen .nm-hud-roll{
 /* ===== MODE ===== */
 body.is-game-screen .nm-hud-mode{
   top:var(--nm-mode-top)!important;
-  color:#fff!important;font-size:.82rem!important;line-height:1.05!important;
+  color:#fff!important;font-size:1rem!important;line-height:1.05!important;
   font-weight:1000!important;letter-spacing:.025em!important;white-space:nowrap!important;
   text-shadow:0 2px 8px rgba(0,0,0,.65),0 0 12px rgba(91,228,255,.16)!important;
   z-index:5!important;
@@ -347,7 +347,7 @@ body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.5
 }
 
 /* ===== v74 canonical finishing controls ===== */
-body.is-game-screen .nm-hud-roll{top:74%!important;width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important;border-radius:50%!important;padding:0!important}
+body.is-game-screen .nm-hud-roll{top:58%!important;width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important;border-radius:50%!important;padding:0!important}
 @media (max-width:900px) and (orientation:landscape){
   body.is-game-screen .nm-hud-roll{top:73%!important;width:62px!important;height:62px!important;min-width:62px!important;min-height:62px!important;font-size:.50rem!important}
   body.is-game-screen .nm-question-layer .question-card{
@@ -357,7 +357,7 @@ body.is-game-screen .nm-hud-roll{top:74%!important;width:68px!important;height:6
   body.is-game-screen .nm-question-layer .question-text{font-size:1.12rem!important}
 }
 @media (max-width:560px) and (orientation:landscape){
-  body.is-game-screen .nm-hud-roll{top:72%!important;width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;font-size:.47rem!important}
+  body.is-game-screen .nm-hud-roll{top:60%!important;width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;font-size:.47rem!important}
   body.is-game-screen .nm-question-layer .question-card{
     width:min(86vw,600px)!important;max-width:600px!important;
     min-height:350px!important;padding:20px 18px 18px!important
