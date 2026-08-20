@@ -349,7 +349,7 @@ body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.5
 /* ===== v74 canonical finishing controls ===== */
 body.is-game-screen .nm-hud-roll{top:58%!important;width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important;border-radius:50%!important;padding:0!important}
 @media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .nm-hud-roll{top:60%!important;width:62px!important;height:62px!important;min-width:62px!important;min-height:62px!important;font-size:.50rem!important}
+  body.is-game-screen .nm-hud-roll{top:65%!important;width:62px!important;height:62px!important;min-width:62px!important;min-height:62px!important;font-size:.50rem!important}
   body.is-game-screen .nm-question-layer .question-card{
     width:min(82vw,560px)!important;max-width:560px!important;
     min-height:340px!important;padding:20px 18px 18px!important
