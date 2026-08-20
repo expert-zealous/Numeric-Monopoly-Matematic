@@ -1,10 +1,10 @@
 /* =========================================================
-   PERBAIKAN QUESTION CARD & NUMERIC KEYBOARD (GRID SYSTEM)
+   KEYBOARD NUMERIK: 3 KOLOM ANGKA + 1 KOLOM TOMBOL OK BESAR
    ========================================================= */
 
 /* Card Utama */
 .question-card { 
-  width: min(90%, 360px);
+  width: min(92%, 380px);
   padding: 16px 14px;
   box-shadow: 0 25px 70px rgba(0,0,0,.48), 0 0 36px rgba(91,228,255,.1);
   display: flex;
@@ -38,18 +38,20 @@
   box-sizing: border-box;
 }
 
-/* ===== LAYOUT KEYBOARD ANGKA (GRID 3 KOLOM) ===== */
+/* ===== LAYOUT KEYBOARD ANGKA (GRID 4 KOLOM) ===== */
 .question-card .numeric-keyboard { 
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 Kolom Sama Besar */
-  gap: 8px; /* Jarak antar tombol */
+  /* 3 kolom seimbang untuk angka, 1 kolom khusus tombol OK di kanan */
+  grid-template-columns: repeat(3, 1fr) 1.1fr;
+  grid-template-rows: repeat(4, 38px); /* 4 Baris Tinggi Konsisten */
+  gap: 6px; 
   width: 100%;
 }
 
+/* Base style tombol angka */
 .question-card .key-btn { 
   width: 100%;
-  height: 42px; /* Ukuran tinggi konsisten */
-  min-height: unset;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,19 +72,24 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Pengaturan Khusus Tombol "Hapus" dan "OK" di Baris Bawah */
+/* 1. SEMBUNYIKAN TOMBOL "HAPUS" TEKS YANG GANDA */
 .question-card .key-btn.clear,
 .question-card .key-btn.hapus {
-  grid-column: span 1; /* Mengambil 1 kolom */
+  display: none !important;
 }
 
+/* 2. TOMBOL OK BESAR DI SEBELAH KANAN (Tinggi penuh 4 baris) */
 .question-card .key-btn.ok { 
-  grid-column: span 2; /* Tombol OK melebar mengambil 2 kolom sisanya */
-  height: 42px;
+  grid-column: 4;          /* Pindah ke kolom ke-4 (paling kanan) */
+  grid-row: 1 / span 4;    /* Memanjang dari baris 1 sampai baris 4 */
+  height: 100% !important;
+  min-height: 100% !important;
   background: #5be4ff;
   color: #0b132b;
+  font-size: 1.2rem;
   font-weight: 800;
   border: none;
+  border-radius: 8px;
 }
 
 .question-card .key-btn.ok:active {
@@ -92,29 +99,27 @@
 /* ===== RESPONSIVE TABLET & HP (PORTRAIT) ===== */
 @media(max-width: 900px) {
   .question-for { font-size: .57rem; }
-  .question-card { width: min(92%, 340px); padding: 14px 12px; }
-  .question-card .key-btn { height: 38px; font-size: 1rem; }
-  .question-card .key-btn.ok { height: 38px; }
+  .question-card { width: min(94%, 350px); padding: 14px 12px; }
+  .question-card .numeric-keyboard { grid-template-rows: repeat(4, 36px); gap: 5px; }
+  .question-card .key-btn { font-size: 1rem; }
 }
 
 @media(max-width: 560px) {
-  .question-card { width: min(92%, 320px); padding: 12px 10px; }
-  .question-card .numeric-keyboard { gap: 6px; }
-  .question-card .key-btn { height: 36px; font-size: 0.95rem; }
-  .question-card .key-btn.ok { height: 36px; }
-  .question-card .question-hint { margin-top: 6px; font-size: .5rem; }
+  .question-card { width: min(94%, 330px); padding: 12px 10px; }
+  .question-card .numeric-keyboard { grid-template-rows: repeat(4, 34px); gap: 4px; }
+  .question-card .key-btn { font-size: 0.95rem; }
 }
 
-/* ===== HP MODE LANDSCAPE (Layar Pendek) ===== */
+/* ===== HP MODE LANDSCAPE (LAYAR PENDEK) ===== */
 @media (max-width: 900px) and (orientation: landscape) {
   .question-card {
-    width: min(95%, 340px);
+    width: min(95%, 350px);
     padding: 8px 12px;
   }
 
   .question-card .question-text {
     font-size: 1.1rem;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .question-card .answer-display {
@@ -125,18 +130,11 @@
   }
 
   .question-card .numeric-keyboard {
+    grid-template-rows: repeat(4, 28px) !important; /* Dikecilkan agar muat di landscape */
     gap: 4px !important;
   }
 
   .question-card .key-btn {
-    width: 100% !important;
-    height: 30px !important;
-    min-height: 30px !important;
     font-size: 0.85rem;
-  }
-
-  .question-card .key-btn.ok {
-    height: 30px !important;
-    min-height: 30px !important;
   }
 }
