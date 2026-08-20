@@ -1,34 +1,142 @@
-/* Question card stays compact and centered over the full board. */
+/* =========================================================
+   PERBAIKAN QUESTION CARD & NUMERIC KEYBOARD (GRID SYSTEM)
+   ========================================================= */
 
-.question-card { width:min(90%,360px);padding:16px 14px;box-shadow:0 25px 70px rgba(0,0,0,.48),0 0 36px rgba(91,228,255,.1); }
-.question-for { display:flex;align-items:center;gap:7px;margin:0;color:var(--cyan);font-size:.62rem;font-weight:800;letter-spacing:.12em; }
-.question-for strong { color:#fff;letter-spacing:.03em; }
-.question-card .question-text { font-size:clamp(1.45rem,4vw,1.9rem);margin-bottom:13px; }
-.question-card .answer-display { min-height:45px;margin-bottom:9px;font-size:1.18rem; }
-.question-card .numeric-keyboard { gap:6px; }
-.question-card .key-btn { min-height:37px; }
-.question-card .key-btn.ok { min-height:43px; }
-@media(max-width:900px){.question-for{font-size:.57rem}.question-card{width:min(92%,350px);padding:15px 12px}}
-@media(max-width:560px){.question-card{width:min(92%,330px);padding:14px 11px}.question-card .key-btn{min-height:34px}.question-card .question-hint{margin-top:7px;font-size:.5rem}}
-/* ===== HP: INPUT JAWABAN & TOMBOL ANGKA ===== */
-@media (max-width:900px) and (orientation:landscape){
+/* Card Utama */
+.question-card { 
+  width: min(90%, 360px);
+  padding: 16px 14px;
+  box-shadow: 0 25px 70px rgba(0,0,0,.48), 0 0 36px rgba(91,228,255,.1);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
 
-  .question-card .answer-display{
-    min-height:40px!important;
-    height:40px!important;
-    margin-bottom:8px!important;
+.question-for { 
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--cyan, #5be4ff);
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .12em; 
+}
+.question-for strong { color: #fff; letter-spacing: .03em; }
+
+.question-card .question-text { 
+  font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.question-card .answer-display { 
+  min-height: 42px;
+  margin-bottom: 12px;
+  font-size: 1.18rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===== LAYOUT KEYBOARD ANGKA (GRID 3 KOLOM) ===== */
+.question-card .numeric-keyboard { 
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 Kolom Sama Besar */
+  gap: 8px; /* Jarak antar tombol */
+  width: 100%;
+}
+
+.question-card .key-btn { 
+  width: 100%;
+  height: 42px; /* Ukuran tinggi konsisten */
+  min-height: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  box-sizing: border-box;
+  padding: 0;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.question-card .key-btn:active {
+  transform: scale(0.96);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Pengaturan Khusus Tombol "Hapus" dan "OK" di Baris Bawah */
+.question-card .key-btn.clear,
+.question-card .key-btn.hapus {
+  grid-column: span 1; /* Mengambil 1 kolom */
+}
+
+.question-card .key-btn.ok { 
+  grid-column: span 2; /* Tombol OK melebar mengambil 2 kolom sisanya */
+  height: 42px;
+  background: #5be4ff;
+  color: #0b132b;
+  font-weight: 800;
+  border: none;
+}
+
+.question-card .key-btn.ok:active {
+  background: #3acfd5;
+}
+
+/* ===== RESPONSIVE TABLET & HP (PORTRAIT) ===== */
+@media(max-width: 900px) {
+  .question-for { font-size: .57rem; }
+  .question-card { width: min(92%, 340px); padding: 14px 12px; }
+  .question-card .key-btn { height: 38px; font-size: 1rem; }
+  .question-card .key-btn.ok { height: 38px; }
+}
+
+@media(max-width: 560px) {
+  .question-card { width: min(92%, 320px); padding: 12px 10px; }
+  .question-card .numeric-keyboard { gap: 6px; }
+  .question-card .key-btn { height: 36px; font-size: 0.95rem; }
+  .question-card .key-btn.ok { height: 36px; }
+  .question-card .question-hint { margin-top: 6px; font-size: .5rem; }
+}
+
+/* ===== HP MODE LANDSCAPE (Layar Pendek) ===== */
+@media (max-width: 900px) and (orientation: landscape) {
+  .question-card {
+    width: min(95%, 340px);
+    padding: 8px 12px;
   }
 
-  .question-card .key-btn{
-    width:44px!important;
-    min-width:44px!important;
-    height:40px!important;
-    min-height:40px!important;
-    padding:0!important;
+  .question-card .question-text {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
   }
 
-  .question-card .key-btn.ok{
-    height:42px!important;
-    min-height:42px!important;
+  .question-card .answer-display {
+    min-height: 32px !important;
+    height: 32px !important;
+    margin-bottom: 6px !important;
+    font-size: 0.95rem;
+  }
+
+  .question-card .numeric-keyboard {
+    gap: 4px !important;
+  }
+
+  .question-card .key-btn {
+    width: 100% !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    font-size: 0.85rem;
+  }
+
+  .question-card .key-btn.ok {
+    height: 30px !important;
+    min-height: 30px !important;
   }
 }
