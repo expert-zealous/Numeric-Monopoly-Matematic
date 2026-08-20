@@ -148,9 +148,6 @@ body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.5
 body.is-game-screen .game-screen{
   position:relative!important;
   --nm-header-h:34px;
-  --nm-logo-top:7%;
-  --nm-logo-w:58px;
-  --nm-logo-h:41px;
   --nm-mode-top:23%;
   --nm-dice-top:30%;
   --nm-skill-top:48%;
@@ -182,7 +179,6 @@ body.is-game-screen .nm-hud-stack{
 }
 
 /* All center controls use the same exact horizontal axis: 50%. */
-body.is-game-screen .nm-hud-logo,
 body.is-game-screen .nm-hud-mode,
 body.is-game-screen .nm-hud-dice,
 body.is-game-screen .nm-hud-skill,
@@ -191,24 +187,11 @@ body.is-game-screen .nm-hud-roll{
   margin:0!important;
 }
 
-/* ===== SINGLE PLACE TO TUNE LOGO ===== */
-body.is-game-screen .nm-hud-logo{
-  top:var(--nm-logo-top)!important;
-  width:var(--nm-logo-w)!important;height:var(--nm-logo-h)!important;
-  padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;
-  box-shadow:none!important;z-index:4!important;
-}
-body.is-game-screen .nm-hud-logo img{
-  display:block!important;width:100%!important;height:100%!important;
-  object-fit:contain!important;object-position:center!important;
-  border:0!important;border-radius:0!important;background:transparent!important;
-  box-shadow:none!important;
-}
 
 /* ===== MODE ===== */
 body.is-game-screen .nm-hud-mode{
   top:var(--nm-mode-top)!important;
-  color:#fff!important;font-size:.62rem!important;line-height:1!important;
+  color:#fff!important;font-size:.82rem!important;line-height:1.05!important;
   font-weight:1000!important;letter-spacing:.025em!important;white-space:nowrap!important;
   text-shadow:0 2px 8px rgba(0,0,0,.65),0 0 12px rgba(91,228,255,.16)!important;
   z-index:5!important;
@@ -291,29 +274,30 @@ body.is-game-screen .nm-question-layer{
   position:absolute!important;left:0!important;right:0!important;
   top:var(--nm-header-h)!important;bottom:0!important;
   z-index:1000!important;
-  display:flex!important;align-items:flex-start!important;justify-content:center!important;
-  padding:5px 8px!important;box-sizing:border-box!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:10px 12px!important;box-sizing:border-box!important;
   overflow:auto!important;
   background:rgba(4,8,31,.34)!important;
   backdrop-filter:blur(1px)!important;-webkit-backdrop-filter:blur(1px)!important;
   pointer-events:auto!important;
 }
 body.is-game-screen .nm-question-layer .question-card{
-  width:min(58vw,520px)!important;max-width:520px!important;
-  max-height:calc(100% - 10px)!important;overflow:auto!important;
-  margin:0!important;padding:14px 16px!important;border-radius:18px!important;box-sizing:border-box!important
+  width:min(42vw,460px)!important;max-width:460px!important;
+  min-height:330px!important;max-height:calc(100% - 16px)!important;
+  overflow:auto!important;margin:0!important;padding:20px 20px 18px!important;
+  border-radius:18px!important;box-sizing:border-box!important
 }
 body.is-game-screen .nm-question-layer .question-top{gap:5px!important;margin-bottom:5px!important}
 body.is-game-screen .nm-question-layer .question-for,
 body.is-game-screen .nm-question-layer .eyebrow,
 body.is-game-screen .nm-question-layer .difficulty-pill,
 body.is-game-screen .nm-question-layer .question-timer{font-size:.40rem!important}
-body.is-game-screen .nm-question-layer h3{font-size:.68rem!important;line-height:1.1!important;margin:0 0 4px!important}
-body.is-game-screen .nm-question-layer .question-text{font-size:.84rem!important;line-height:1.05!important;letter-spacing:-.025em!important;margin:0 0 5px!important}
-body.is-game-screen .nm-question-layer .answer-display{min-height:28px!important;margin-bottom:5px!important;padding:4px 6px!important;font-size:.76rem!important}
-body.is-game-screen .nm-question-layer .numeric-keyboard{gap:3px!important}
-body.is-game-screen .nm-question-layer .key-btn{min-height:24px!important;padding:2px 4px!important;font-size:.58rem!important;border-radius:6px!important}
-body.is-game-screen .nm-question-layer .key-btn.ok{min-height:28px!important}
+body.is-game-screen .nm-question-layer h3{font-size:.84rem!important;line-height:1.1!important;margin:0 0 4px!important}
+body.is-game-screen .nm-question-layer .question-text{font-size:1.12rem!important;line-height:1.15!important;letter-spacing:-.02em!important;margin:0 0 12px!important}
+body.is-game-screen .nm-question-layer .answer-display{min-height:42px!important;margin-bottom:9px!important;padding:6px 10px!important;font-size:1rem!important}
+body.is-game-screen .nm-question-layer .numeric-keyboard{gap:6px!important}
+body.is-game-screen .nm-question-layer .key-btn{min-height:42px!important;padding:5px 6px!important;font-size:.82rem!important;border-radius:8px!important}
+body.is-game-screen .nm-question-layer .key-btn.ok{min-height:46px!important}
 body.is-game-screen .nm-question-layer .question-hint{margin-top:3px!important;font-size:.38rem!important;line-height:1.1!important}
 
 /* ===== Small tile/detail polish retained from v71 ===== */
@@ -341,8 +325,7 @@ body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.5
 
 /* ===== Mobile landscape keeps the same architecture; only scale, never re-position by selector wars ===== */
 @media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .game-screen{--nm-header-h:34px;--nm-logo-w:56px;--nm-logo-h:40px;--nm-dice-top:30%;--nm-skill-top:48%;--nm-roll-top:74%;}
-  body.is-game-screen .nm-hud-mode{font-size:.57rem!important}
+  body.is-game-screen .game-screen{--nm-header-h:34px;--nm-dice-top:30%;--nm-skill-top:48%;--nm-roll-top:74%;}
   body.is-game-screen .nm-hud-dice-pair{gap:8px!important;min-height:70px!important}
   body.is-game-screen .nm-hud-dice-pair .dice-3d-mini-wrap{width:64px!important;height:64px!important}
   body.is-game-screen .nm-hud-dice-pair .dice-3d{width:58px!important;height:58px!important}
@@ -359,21 +342,28 @@ body.is-game-screen .tile-info-modal .btn{min-height:28px!important;font-size:.5
 }
 
 @media (max-width:560px) and (orientation:landscape){
-  body.is-game-screen .game-screen{--nm-header-h:34px;--nm-logo-w:54px;--nm-logo-h:38px;}
-  body.is-game-screen .nm-hud-mode{font-size:.53rem!important}
+  body.is-game-screen .game-screen{--nm-header-h:34px;}
   body.is-game-screen .nm-hud-skill{width:238px!important}
 }
 
 /* ===== v74 canonical finishing controls ===== */
 body.is-game-screen .nm-hud-roll{top:74%!important;width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important;border-radius:50%!important;padding:0!important}
-body.is-game-screen .nm-question-layer .question-card{width:min(58vw,520px)!important;max-width:520px!important}
 @media (max-width:900px) and (orientation:landscape){
   body.is-game-screen .nm-hud-roll{top:73%!important;width:62px!important;height:62px!important;min-width:62px!important;min-height:62px!important;font-size:.50rem!important}
-  body.is-game-screen .nm-question-layer .question-card{width:min(68vw,500px)!important;max-width:500px!important}
+  body.is-game-screen .nm-question-layer .question-card{
+    width:min(82vw,560px)!important;max-width:560px!important;
+    min-height:340px!important;padding:20px 18px 18px!important
+  }
+  body.is-game-screen .nm-question-layer .question-text{font-size:1.12rem!important}
 }
 @media (max-width:560px) and (orientation:landscape){
   body.is-game-screen .nm-hud-roll{top:72%!important;width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;font-size:.47rem!important}
-  body.is-game-screen .nm-question-layer .question-card{width:min(72vw,470px)!important;max-width:470px!important}
+  body.is-game-screen .nm-question-layer .question-card{
+    width:min(86vw,600px)!important;max-width:600px!important;
+    min-height:350px!important;padding:20px 18px 18px!important
+  }
+  body.is-game-screen .nm-question-layer .question-text{font-size:1.18rem!important}
+  body.is-game-screen .nm-question-layer .key-btn{min-height:44px!important;font-size:.86rem!important}
 }
 
 /* ===== v74 movement camera: fit both endpoints with a safe top/header margin ===== */
@@ -396,11 +386,3 @@ body.is-game-screen .board-cell .token{width:clamp(70px,8.2vw,108px)!important;h
 .fireworks i{position:absolute;left:calc(12% + ((var(--burst) * 17)%76)*1%);top:calc(18% + ((var(--burst) * 29)%60)*1%);width:5px;height:5px;border-radius:50%;background:hsl(var(--hue),100%,68%);box-shadow:0 0 10px currentColor,0 0 22px currentColor;opacity:0;animation:megaFirework 1.55s cubic-bezier(.15,.7,.2,1) infinite;animation-delay:var(--delay);transform-origin:center}
 @keyframes megaFirework{0%{opacity:0;transform:rotate(var(--angle)) translateX(0) scale(.15)}12%{opacity:1}62%{opacity:1;transform:rotate(var(--angle)) translateX(55px) scale(1.35)}100%{opacity:0;transform:rotate(var(--angle)) translateX(115px) scale(.05)}}
 .win-card{z-index:20!important}
-
-/* ===== v76 VICTORY FIREWORKS: launch from bottom -> explode overhead ===== */
-.win-layer .fireworks{position:absolute!important;inset:0!important;overflow:hidden!important;z-index:8!important;pointer-events:none!important}
-.win-layer .firework-burst{position:absolute!important;left:var(--x)!important;bottom:4%!important;width:0!important;height:0!important;display:block!important;animation:fwLaunch 1.55s cubic-bezier(.2,.72,.18,1) var(--delay) infinite!important}
-.win-layer .firework-burst .rocket{position:absolute!important;left:-2px!important;bottom:0!important;width:4px!important;height:54px!important;border-radius:50%!important;background:linear-gradient(to top,transparent,rgba(255,255,255,.95))!important;box-shadow:0 0 8px rgba(255,255,255,.9)!important;opacity:.9!important}
-.win-layer .firework-burst i{position:absolute!important;left:0!important;top:0!important;width:5px!important;height:5px!important;margin:-2.5px!important;border-radius:50%!important;background:hsl(var(--hue),100%,68%)!important;box-shadow:0 0 8px currentColor,0 0 18px currentColor!important;opacity:0!important;transform:rotate(var(--angle)) translateX(0)!important;animation:fwBurst 1.55s ease-out var(--delay) infinite!important;animation-fill-mode:both!important}
-@keyframes fwLaunch{0%{transform:translateY(0);opacity:1}38%{transform:translateY(-42vh);opacity:1}43%{transform:translateY(-42vh);opacity:0}100%{transform:translateY(-42vh);opacity:0}}
-@keyframes fwBurst{0%,38%{opacity:0;transform:rotate(var(--angle)) translateX(0) scale(.2)}43%{opacity:1;transform:rotate(var(--angle)) translateX(10px) scale(1)}72%{opacity:1;transform:rotate(var(--angle)) translateX(var(--radius)) scale(1)}100%{opacity:0;transform:rotate(var(--angle)) translateX(calc(var(--radius) + 18px)) scale(.65)}}
