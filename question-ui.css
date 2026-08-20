@@ -1,33 +1,65 @@
 /* =========================================================
-   PERBAIKAN TOTAL: QUESTION CARD & KEYBOARD NUMERIK DENGAN OK BESAR
+   PERBAIKAN TOTAL: QUESTION CARD, HEADER, & NUMERIC KEYBOARD
    ========================================================= */
 
 /* 1. CONTAINER CARD UTAMA */
 .question-card { 
-  width: min(92%, 420px) !important;
-  padding: 16px 18px !important;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(91,228,255,0.15) !important;
+  width: min(92%, 440px) !important;
+  padding: 18px 20px !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 35px rgba(91,228,255,0.18) !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   box-sizing: border-box !important;
-  border-radius: 16px !important;
+  border-radius: 18px !important;
 }
 
-/* 2. TEKS SOAL & INPUT JAWABAN */
+/* 2. HEADER: SOAL UNTUK, SEDANG, & TIMER (DIPERBESAR & DIRAPIKAN) */
+.question-card .question-for,
+.question-card [class*="question-for"],
+.question-card [class*="header"] { 
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 0 10px 0 !important;
+  color: var(--cyan, #5be4ff) !important;
+  font-size: 0.85rem !important; /* Diperbesar dari 0.57rem */
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important; 
+}
+
+.question-card .question-for strong { 
+  color: #ffffff !important; 
+  letter-spacing: 0.03em !important;
+  margin-left: 4px !important; /* Memberi spasi agar tidak menempel */
+  font-size: 0.85rem !important;
+}
+
+/* Memperbesar Lencana "Sedang" & Kotak Waktu "9s" */
+.question-card [class*="badge"],
+.question-card [class*="difficulty"],
+.question-card [class*="timer"],
+.question-card [class*="level"] {
+  font-size: 0.8rem !important;
+  padding: 4px 12px !important;
+  font-weight: 700 !important;
+  border-radius: 20px !important;
+}
+
+/* 3. TEKS SOAL & INPUT JAWABAN */
 .question-card .question-text { 
-  font-size: clamp(1.2rem, 3.5vw, 1.6rem) !important;
-  margin: 6px 0 10px 0 !important;
+  font-size: clamp(1.3rem, 3.8vw, 1.7rem) !important;
+  margin: 4px 0 12px 0 !important;
   text-align: center !important;
   font-weight: 800 !important;
   color: #ffffff !important;
 }
 
 .question-card .answer-display { 
-  min-height: 42px !important;
-  height: 42px !important;
-  margin-bottom: 12px !important;
-  font-size: 1.1rem !important;
+  min-height: 44px !important;
+  height: 44px !important;
+  margin-bottom: 14px !important;
+  font-size: 1.15rem !important;
   width: 100% !important;
   box-sizing: border-box !important;
   border-radius: 10px !important;
@@ -36,17 +68,17 @@
   justify-content: center !important;
 }
 
-/* 3. LAYOUT GRID KEYBOARD (3 KOLOM ANGKA + 1 KOLOM OK) */
+/* 4. LAYOUT GRID KEYBOARD (3 KOLOM ANGKA + 1 KOLOM OK) */
 .question-card .numeric-keyboard { 
   display: grid !important;
-  grid-template-columns: repeat(3, 1fr) 1.25fr !important; /* 3 Kolom Angka, 1 Kolom OK */
-  grid-template-rows: repeat(4, 42px) !important;            /* 4 Baris Seimbang */
-  gap: 8px !important; 
+  grid-template-columns: repeat(3, 1fr) 1.25fr !important;
+  grid-template-rows: repeat(4, 42px) !important;
+  gap: 8px !important; /* Jarak pas antar baris & kolom */
   width: 100% !important;
   box-sizing: border-box !important;
 }
 
-/* 4. TAMPILAN TOMBOL ANGKA (DESAIN BERSIH & MENGHILANGKAN TUMPUKAN) */
+/* 5. TAMPILAN TOMBOL ANGKA */
 .question-card .key-btn { 
   position: relative !important;
   display: flex !important;
@@ -72,7 +104,7 @@
   transition: all 0.12s ease !important;
 }
 
-/* RESET TOTAL: Hapus efek garis/kotak ganda bawaan di dalam tombol */
+/* Reset tumpukan/efek kotak ganda bawaan */
 .question-card .key-btn::before,
 .question-card .key-btn::after {
   content: none !important;
@@ -85,8 +117,6 @@
   box-shadow: none !important;
   margin: 0 !important;
   padding: 0 !important;
-  height: auto !important;
-  min-height: 0 !important;
 }
 
 .question-card .key-btn:active {
@@ -94,7 +124,11 @@
   background: rgba(255, 255, 255, 0.22) !important;
 }
 
-/* 5. MENGHILANGKAN TOMBOL "HAPUS" TEKS (Agar tidak ada baris ke-5 yang merusak tampilan) */
+/* 6. HILANGKAN TEKS PETUNJUK "Tekan OK untuk lanjut" & TOMBOL HAPUS EKSTRA */
+.question-card .question-hint,
+.question-card .hint-text,
+.question-card .hint,
+.question-card small,
 .question-card .key-btn.clear,
 .question-card .key-btn.hapus,
 .question-card .key-btn.btn-hapus,
@@ -102,11 +136,11 @@
   display: none !important;
 }
 
-/* 6. TOMBOL "OK" BESAR DI SEBELAH KANAN (Tinggi Penuh 4 Baris) */
+/* 7. TOMBOL "OK" BESAR DI SEBELAH KANAN */
 .question-card .key-btn.ok { 
   display: flex !important;
-  grid-column: 4 !important;           /* Menempati kolom paling kanan */
-  grid-row: 1 / span 4 !important;     /* Memanjang dari atas ke bawah */
+  grid-column: 4 !important;
+  grid-row: 1 / span 4 !important;
   height: 100% !important;
   min-height: 100% !important;
   background: #5be4ff !important;
@@ -115,7 +149,7 @@
   font-weight: 800 !important;
   border: none !important;
   border-radius: 10px !important;
-  box-shadow: 0 0 15px rgba(91, 228, 255, 0.3) !important;
+  box-shadow: 0 0 18px rgba(91, 228, 255, 0.35) !important;
 }
 
 .question-card .key-btn.ok:active {
@@ -123,24 +157,33 @@
   transform: scale(0.97) !important;
 }
 
-/* 7. HINT / TEKS PETUNJUK DI BAWAH */
-.question-card .question-hint {
-  margin-top: 8px !important;
-  font-size: 0.65rem !important;
-  opacity: 0.7 !important;
-}
-
 /* =========================================================
-   RESPONSIF HP MODE LANDSCAPE (LAYAR PENDEK SEPERTI DI FOTO)
+   RESPONSIF HP MODE LANDSCAPE (SEPERTI DI FOTO ANDA)
    ========================================================= */
 @media (max-width: 900px) and (orientation: landscape) {
   .question-card {
-    width: min(95%, 390px) !important;
-    padding: 10px 14px !important;
+    width: min(95%, 410px) !important;
+    padding: 10px 16px !important;
+  }
+
+  .question-card .question-for,
+  .question-card [class*="question-for"] {
+    font-size: 0.75rem !important;
+    margin-bottom: 6px !important;
+  }
+  
+  .question-card .question-for strong {
+    font-size: 0.75rem !important;
+  }
+
+  .question-card [class*="badge"],
+  .question-card [class*="timer"] {
+    font-size: 0.7rem !important;
+    padding: 2px 8px !important;
   }
 
   .question-card .question-text {
-    font-size: 1.1rem !important;
+    font-size: 1.15rem !important;
     margin: 2px 0 6px 0 !important;
   }
 
@@ -152,17 +195,17 @@
   }
 
   .question-card .numeric-keyboard {
-    grid-template-rows: repeat(4, 32px) !important; /* Ukuran pas untuk HP Landscape */
-    gap: 5px !important;
+    grid-template-rows: repeat(4, 34px) !important; /* Proporsi tinggi tombol sempurna */
+    gap: 6px !important;
   }
 
   .question-card .key-btn {
     font-size: 0.95rem !important;
-    border-radius: 7px !important;
+    border-radius: 8px !important;
   }
 
   .question-card .key-btn.ok {
-    font-size: 1rem !important;
-    border-radius: 7px !important;
+    font-size: 1.05rem !important;
+    border-radius: 8px !important;
   }
 }
