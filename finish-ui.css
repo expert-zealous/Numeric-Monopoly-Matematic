@@ -386,3 +386,75 @@ body.is-game-screen .board-cell .token{width:clamp(70px,8.2vw,108px)!important;h
 .fireworks i{position:absolute;left:calc(12% + ((var(--burst) * 17)%76)*1%);top:calc(18% + ((var(--burst) * 29)%60)*1%);width:5px;height:5px;border-radius:50%;background:hsl(var(--hue),100%,68%);box-shadow:0 0 10px currentColor,0 0 22px currentColor;opacity:0;animation:megaFirework 1.55s cubic-bezier(.15,.7,.2,1) infinite;animation-delay:var(--delay);transform-origin:center}
 @keyframes megaFirework{0%{opacity:0;transform:rotate(var(--angle)) translateX(0) scale(.15)}12%{opacity:1}62%{opacity:1;transform:rotate(var(--angle)) translateX(55px) scale(1.35)}100%{opacity:0;transform:rotate(var(--angle)) translateX(115px) scale(.05)}}
 .win-card{z-index:20!important}
+
+
+/* Ranking: crop full-body PNG into a clear face/avatar instead of showing the whole character. */
+.rank-user .avatar,.leader-row .avatar,.podium-card .avatar{overflow:hidden!important;position:relative!important;}
+.rank-character-image{width:145%!important;height:145%!important;max-width:none!important;max-height:none!important;object-fit:contain!important;object-position:center top!important;transform:translate(-15%,2%) scale(1.15)!important;transform-origin:top center!important;display:block!important;}
+.rank-user .rank-character-image,.leader-row .rank-character-image{width:145%!important;height:145%!important;}
+.podium-card .rank-character-image{width:150%!important;height:150%!important;transform:translate(-16%,0) scale(1.18)!important;}
+
+/* ===== v78 FINAL: theme PNGs and ranking avatars ===== */
+.shop-art .asset-preview{
+  position:relative!important;
+  z-index:3!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  background:transparent!important;
+}
+.shop-art .theme-asset-fallback{display:none;position:relative;z-index:2;place-items:center;font-size:2.7rem;}
+.shop-art .asset-preview[style*="display: none"] + .theme-asset-fallback{display:grid!important;}
+.shop-art::before{z-index:0!important;}
+.rank-user .avatar,.podium-card .avatar,.leader-row .avatar{display:grid!important;place-items:center!important;overflow:hidden!important;}
+.rank-character-image{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;display:block!important;pointer-events:none!important;}
+.rank-user .avatar{width:29px!important;height:29px!important;border-radius:9px!important;font-size:0!important;}
+.podium-card .avatar{width:42px!important;height:42px!important;border-radius:14px!important;font-size:0!important;}
+.leader-row .avatar{width:29px!important;height:29px!important;border-radius:9px!important;font-size:0!important;}
+.character-avatar-fallback,.token-fallback{display:none!important;}
+.token img,.character-avatar-image,.asset-preview,.rank-character-image{user-select:none!important;-webkit-user-drag:none!important;}
+
+
+/* ================================================================
+   v78 R5 — DICE RESTORED TO THE V77 TRUE 3D CUBE
+   The V77 cube architecture is kept intact because it correctly
+   rotates in 3D and retains the final result. Neon Prism is only
+   a visual skin on the six real cube faces. No flat PNG is placed
+   over the cube and no nested 3D wrapper is used.
+   ================================================================ */
+.dice-cube.has-dice-theme{
+  transform-style:preserve-3d!important;
+  overflow:visible!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+.dice-cube.has-dice-theme .dice-cube-face{
+  backface-visibility:hidden!important;
+}
+.dice-cube.has-dice-theme.theme-neon-prism .dice-cube-face{
+  background:
+    radial-gradient(circle at 22% 18%,rgba(255,255,255,.38),transparent 24%),
+    linear-gradient(145deg,#20e7ff 0%,#5866ff 36%,#c93fe8 70%,#ff7b8f 100%)!important;
+  border:2px solid rgba(165,255,255,.95)!important;
+  box-shadow:
+    inset 4px 4px 10px rgba(255,255,255,.48),
+    inset -6px -8px 14px rgba(28,0,100,.38),
+    0 0 9px rgba(52,239,255,.95),
+    0 0 19px rgba(240,55,225,.52),
+    0 8px 16px rgba(0,0,0,.30)!important;
+}
+.dice-cube.has-dice-theme.theme-neon-prism .dice-cube-face .dice-pips .pip.on{
+  background:#ffffff!important;
+  box-shadow:0 0 4px #fff,0 0 9px #61ffff,0 0 15px rgba(255,75,232,.95)!important;
+}
+.dice-cube.has-dice-theme.theme-neon-prism .dice-cube-face .dice-question{
+  color:#fff!important;
+  text-shadow:0 0 8px #62ffff,0 0 15px #ff58e9!important;
+}
+.dice-rolling .dice-cube.has-dice-theme{
+  animation:diceCubeRoll 1.05s linear infinite!important;
+}

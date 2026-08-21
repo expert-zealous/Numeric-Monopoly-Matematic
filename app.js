@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '77';
+const ASSET_VERSION = '78r4';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -347,8 +347,9 @@ function characterAsset(playerIndex = 0) {
 
 function characterMarkup(playerIndex = 0, player = null, className = 'character-avatar-image') {
   const asset = characterAsset(playerIndex);
-  const fallback = escapeHtml(player?.avatar || (playerIndex === 0 ? state.player.avatar : '🤖'));
-  return `<img class="${className}" src="${versionedAsset(asset)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'" /><span class="character-avatar-fallback">${fallback}</span>`;
+  if (!asset) return '';
+  // PNG adalah satu-satunya visual karakter. Glyph/emoji lama sengaja tidak dirender.
+  return `<img class="${className}" src="${versionedAsset(asset)}" alt="" draggable="false" loading="eager" onerror="this.remove()" />`;
 }
 
 function logoMarkup() {
@@ -433,7 +434,6 @@ function renderShell() {
 function renderNav(mobile) {
   const items = [
     ['dashboard', '⌂', 'Beranda'],
-    ['game', '◈', 'Main'],
     ['battle', '⚔', 'Battle'],
     ['auction', '⚖', 'Lelang'],
     ['properties', '⌂', 'Aset'],
@@ -491,7 +491,7 @@ function renderQuestList() {
 
 function renderMiniLeaderboard() {
   const current = { name: state.player.name, avatar: state.player.avatar, characterAsset: characterAsset(0), score: state.stats.points, change: '—' };
-  return [...LEADERBOARD.slice(0, 3), current].sort((a, b) => b.score - a.score).slice(0, 4).map((person, index) => `<div class="leader-row"><div class="rank-number">${index + 1}</div><div class="avatar" style="width:29px;height:29px;border-radius:9px;font-size:.82rem">${person.avatar}</div><div class="leader-info"><div class="leader-name">${escapeHtml(person.name)}${person.name === state.player.name ? ' <span style="color:var(--cyan)">(kamu)</span>' : ''}</div><div class="leader-score">${formatNumber(person.score)} rating</div></div><div class="leader-points">${person.change}</div></div>`).join('');
+  return [...LEADERBOARD.slice(0, 3), current].sort((a, b) => b.score - a.score).slice(0, 4).map((person, index) => `<div class="leader-row"><div class="rank-number">${index + 1}</div>${leaderboardAvatarMarkup(person, index)}<div class="leader-info"><div class="leader-name">${escapeHtml(person.name)}${person.name === state.player.name ? ' <span style="color:var(--cyan)">(kamu)</span>' : ''}</div><div class="leader-score">${formatNumber(person.score)} rating</div></div><div class="leader-points">${person.change}</div></div>`).join('');
 }
 
 function boardGridPosition(index) {
@@ -511,7 +511,7 @@ function tokenMarkup(player, playerIndex) {
   // v57: top-row characters stay fully inside the camera's safe area.
   // The artwork keeps its full size; only its anchor point changes.
   const character = selectedItem('character') || SHOP_DATA.character[0];
-  return `<span class="token ${playerIndex === 1 ? 'ai ai-token' : 'player-token'}" data-player-index="${playerIndex}" style="--token-color:${playerColor(playerIndex)}" title="${escapeHtml(player.name)}"><img src="${versionedAsset(character.asset)}" alt="" onerror="this.style.display='none'" /><span class="token-fallback">${player.avatar}</span></span>`;
+  return `<span class="token ${playerIndex === 1 ? 'ai ai-token' : 'player-token'}" data-player-index="${playerIndex}" style="--token-color:${playerColor(playerIndex)}" title="${escapeHtml(player.name)}"><img src="${versionedAsset(character.asset)}" alt="" draggable="false" loading="eager" onerror="this.remove()" /></span>`;
 }
 
 function renderAnswerNotice() {
@@ -553,7 +553,9 @@ function diceCubeMarkup(value, asset) {
   const number = Number(value);
   const label = Number.isInteger(number) && number >= 1 && number <= 6 ? number : (value === '?' ? '?' : '—');
   const orientation = diceOrientationClass(number);
-  return `<span class="dice-cube ${orientation}" aria-label="Dadu ${label}">
+  const themed = asset && !String(asset).includes('dice-theme-00-standard');
+  const themeClass = themed ? (String(asset).includes('dice-theme-01-neon-prism') ? 'theme-neon-prism' : 'theme-custom') : '';
+  return `<span class="dice-cube ${orientation} ${themed ? `has-dice-theme ${themeClass}` : ''}" aria-label="Dadu ${label}">
     ${diceFace(1, 'face-front')}
     ${diceFace(6, 'face-back')}
     ${diceFace(2, 'face-right')}
@@ -943,21 +945,34 @@ function renderShopCard(item, type, index) {
   if (item.custom) {
     return `<article class="shop-card custom-slot"><div class="shop-art"><div class="theme-glyph">＋</div></div><h3>${item.name}</h3><p>${item.description}</p><div class="shop-card-foot"><span class="item-status">Siap dikembangkan</span><button class="btn btn-ghost" style="min-height:30px;padding:0 8px;font-size:.6rem" data-action="custom-slot" data-shop-type="${type}">Detail</button></div></article>`;
   }
-  const visual = type === 'dice' ? `<div class="theme-dice">${item.glyph}</div>` : `<div class="theme-glyph theme-${type === 'character' ? 'character' : 'glyph'}">${item.glyph}</div>`;
+  const fallbackVisual = `<span class="theme-asset-fallback" aria-hidden="true">${item.glyph}</span>`;
   const actionLabel = owned ? (selected ? 'Dipakai' : 'Pakai') : available ? 'Buka' : 'Terkunci';
   const action = owned || available ? `<button class="btn ${selected ? 'btn-ghost' : 'btn-primary'}" style="min-height:30px;padding:0 9px;font-size:.6rem" data-action="shop-item" data-shop-type="${type}" data-item-id="${item.id}">${actionLabel}</button>` : `<span class="item-status">Urutan ${index}</span>`;
-  return `<article class="shop-card ${selected ? 'selected' : ''} ${!available && !owned ? 'locked' : ''}">${!owned ? `<span class="lock-tag">${available ? '◇' : '🔒'}</span>` : '<span class="lock-tag" style="color:var(--success)">✓</span>'}<div class="shop-art"><img class="asset-preview" src="${item.asset}" alt="" onerror="this.style.display='none'" />${visual}</div><h3>${item.name}</h3><p>${item.description}</p><div class="shop-card-foot"><span class="item-price ${item.cost === 0 ? 'free' : ''}">${item.cost === 0 ? 'Gratis' : `◆ ${formatNumber(item.cost)}`}</span>${action}</div></article>`;
+  const asset = versionedAsset(item.asset);
+  return `<article class="shop-card ${selected ? 'selected' : ''} ${!available && !owned ? 'locked' : ''}">${!owned ? `<span class="lock-tag">${available ? '◇' : '🔒'}</span>` : '<span class="lock-tag" style="color:var(--success)">✓</span>'}<div class="shop-art"><img class="asset-preview" src="${asset}" alt="${escapeHtml(item.name)}" draggable="false" loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" />${fallbackVisual}</div><h3>${item.name}</h3><p>${item.description}</p><div class="shop-card-foot"><span class="item-price ${item.cost === 0 ? 'free' : ''}">${item.cost === 0 ? 'Gratis' : `◆ ${formatNumber(item.cost)}`}</span>${action}</div></article>`;
+}
+
+function leaderboardCharacterAsset(person, index) {
+  if (person?.current) return characterAsset(0);
+  const map = ['character-01','character-02','character-03','character-04','character-05'];
+  const id = person?.characterId || map[index % map.length] || 'character-standard';
+  return SHOP_DATA.character.find(item => item.id === id)?.asset || SHOP_DATA.character[0].asset;
+}
+
+function leaderboardAvatarMarkup(person, index, className = '') {
+  const asset = leaderboardCharacterAsset(person, index);
+  return `<span class="avatar ${className}"><img class="rank-character-image" src="${versionedAsset(asset)}" alt="" draggable="false" loading="eager" onerror="this.remove()" /></span>`;
 }
 
 function renderLeaderboard() {
-  const all = [...LEADERBOARD, { name: state.player.name, avatar: state.player.avatar, score: state.stats.points, change: '—', current: true }].sort((a, b) => b.score - a.score);
+  const all = [...LEADERBOARD, { name: state.player.name, avatar: state.player.avatar, score: state.stats.points, change: '—', current: true, characterId: state.selectedThemes.character }].sort((a, b) => b.score - a.score);
   const podium = all.slice(0, 3);
-  return `<section><div class="shop-head"><div><p class="eyebrow">Season 08 • Aurora League</p><h2 class="title-lg">Main cerdas, <span class="gradient-text">naik peringkat.</span></h2><p>Menang, kumpulkan rating, jadi #1.</p></div><div class="shop-balance"><div class="shop-balance-label">Peringkatmu</div><div class="shop-balance-value" style="color:var(--cyan)">#${all.findIndex((person) => person.current) + 1}</div></div></div><div class="leaderboard-layout"><div class="panel"><div class="podium">${podium.map((person, index) => renderPodiumCard(person, index)).join('')}</div><div class="rank-table"><div class="rank-table-head"><span>#</span><span>Pemain</span><span>Rating</span><span>Trend</span></div>${all.map((person, index) => `<div class="rank-table-row ${person.current ? 'current' : ''}"><span class="rank-col">${index + 1}</span><span class="rank-user"><span class="avatar">${person.avatar}</span><span class="rank-user-name">${escapeHtml(person.name)}${person.current ? ' (kamu)' : ''}</span></span><span class="rank-points">${formatNumber(person.score)}</span><span class="rank-change">${person.change === '—' ? '•' : `↑ ${person.change}`}</span></div>`).join('')}</div></div><aside class="ranking-card panel"><p class="eyebrow">Your season</p><h3>Perjalanan menuju #1</h3><p>Menang arena untuk naik rating.</p><div class="ranking-number">${formatNumber(state.stats.points)}</div><div class="muted small">rating saat ini</div><div class="divider"></div><div class="row between"><span class="muted small">Target top 3</span><strong style="color:var(--cyan);font-size:.8rem">${Math.min(100, Math.round((state.stats.points / 8870) * 100))}%</strong></div><div style="height:9px"></div><div class="progress-track"><div class="progress-bar" style="width:${Math.min(100, Math.round((state.stats.points / 8870) * 100))}%"></div></div><div style="height:18px"></div><button class="btn btn-primary btn-wide" data-action="begin-game">Kejar rating</button></aside></div></section>`;
+  return `<section><div class="shop-head"><div><p class="eyebrow">Season 08 • Aurora League</p><h2 class="title-lg">Main cerdas, <span class="gradient-text">naik peringkat.</span></h2><p>Menang, kumpulkan rating, jadi #1.</p></div><div class="shop-balance"><div class="shop-balance-label">Peringkatmu</div><div class="shop-balance-value" style="color:var(--cyan)">#${all.findIndex((person) => person.current) + 1}</div></div></div><div class="leaderboard-layout"><div class="panel"><div class="podium">${podium.map((person, index) => renderPodiumCard(person, index)).join('')}</div><div class="rank-table"><div class="rank-table-head"><span>#</span><span>Pemain</span><span>Rating</span><span>Trend</span></div>${all.map((person, index) => `<div class="rank-table-row ${person.current ? 'current' : ''}"><span class="rank-col">${index + 1}</span><span class="rank-user">${leaderboardAvatarMarkup(person, index)}<span class="rank-user-name">${escapeHtml(person.name)}${person.current ? ' (kamu)' : ''}</span></span><span class="rank-points">${formatNumber(person.score)}</span><span class="rank-change">${person.change === '—' ? '•' : `↑ ${person.change}`}</span></div>`).join('')}</div></div><aside class="ranking-card panel"><p class="eyebrow">Your season</p><h3>Perjalanan menuju #1</h3><p>Menang arena untuk naik rating.</p><div class="ranking-number">${formatNumber(state.stats.points)}</div><div class="muted small">rating saat ini</div><div class="divider"></div><div class="row between"><span class="muted small">Target top 3</span><strong style="color:var(--cyan);font-size:.8rem">${Math.min(100, Math.round((state.stats.points / 8870) * 100))}%</strong></div><div style="height:9px"></div><div class="progress-track"><div class="progress-bar" style="width:${Math.min(100, Math.round((state.stats.points / 8870) * 100))}%"></div></div><div style="height:18px"></div><button class="btn btn-primary btn-wide" data-action="begin-game">Kejar rating</button></aside></div></section>`;
 }
 
 function renderPodiumCard(person, index) {
   const classes = ['first', 'second', 'third'];
-  return `<div class="podium-card ${classes[index]}"><div class="avatar" style="width:42px;height:42px;border-radius:14px;font-size:1.2rem">${person.avatar}</div><div class="podium-name">${escapeHtml(person.name)}</div><div class="podium-points">${formatNumber(person.score)} rating</div><div class="podium-rank">${index + 1}</div></div>`;
+  return `<div class="podium-card ${classes[index]}">${leaderboardAvatarMarkup(person, index)}<div class="podium-name">${escapeHtml(person.name)}</div><div class="podium-points">${formatNumber(person.score)} rating</div><div class="podium-rank">${index + 1}</div></div>`;
 }
 
 function renderOnline() {
@@ -1037,7 +1052,7 @@ function renderModal() {
   }
   if (modal.type === 'win') {
     const sparks = Array.from({length:72},(_,i)=>{ const burst=i%9; const group=Math.floor(i/9); const angle=(burst*40)-20; const hue=(group*47+burst*9)%360; const delay=((i%9)*-0.08-(group%3)*0.35).toFixed(2); return `<i style="--angle:${angle}deg;--hue:${hue};--delay:${delay}s;--burst:${group}"></i>`; }).join('');
-    return `<div class="modal-layer win-layer"><div class="fireworks" aria-hidden="true">${sparks}</div><div class="victory-glow"></div><div class="modal-card win-card" style="text-align:center"><div class="win-trophy">🏆</div><p class="eyebrow">GAME OVER • VICTORY</p><h3>Selamat, ${escapeHtml(modal.winnerName || 'Pemenang')}!</h3><p>${escapeHtml(modal.reason || 'Permainan selesai.')} <strong>${escapeHtml(modal.winnerName || 'Pemenang')}</strong> menjadi pemenang Numeric Monopoly Matematic.</p><div class="row" style="justify-content:center;gap:9px;margin-top:14px"><span class="soft-chip">+${modal.points} rating</span><span class="soft-chip">◆ ${modal.diamond} bonus</span></div><div class="modal-actions" style="justify-content:center"><button class="btn btn-ghost" data-action="go-screen" data-screen="leaderboard">Lihat ranking</button><button class="btn btn-primary" data-action="begin-game">Main lagi</button></div></div></div>`;
+    return `<div class="modal-layer win-layer"><div class="fireworks" aria-hidden="true">${sparks}</div><div class="victory-glow"></div><div class="modal-card win-card" style="text-align:center"><div class="win-trophy">🏆</div><p class="eyebrow">GAME OVER • VICTORY</p><h3>Selamat, ${escapeHtml(modal.winnerName || 'Pemenang')}!</h3><p>${escapeHtml(modal.reason || 'Permainan selesai.')} <strong>${escapeHtml(modal.winnerName || 'Pemenang')}</strong> menjadi pemenang Numeric Monopoly Matematic.</p><div class="row" style="justify-content:center;gap:9px;margin-top:14px"><span class="soft-chip">+${modal.points} rating</span><span class="soft-chip">◆ ${modal.diamond} bonus</span></div><div class="modal-actions" style="justify-content:center"><button class="btn btn-ghost" data-action="go-screen" data-screen="leaderboard">Lihat ranking</button></div></div></div>`;
   }
   return '';
 }
@@ -1915,7 +1930,7 @@ function resolveLanding(index) {
           aiHandleLandingFinish();
           return;
         }
-        state.modal = { type: 'manage', tile, tileIndex: index, source: 'landing' };
+        state.modal = { type: 'manage', tile, tileIndex: index, source: state.players[state.activePlayer]?.position === index ? 'landing' : 'board' };
         return;
       }
       if (state.mode === 'ai' && state.activePlayer === 1) {
@@ -2045,10 +2060,10 @@ function buyProperty() {
   addActivity('♛', `<strong>${escapeHtml(player.name)}</strong> membeli ${escapeHtml(tile.name)}.`);
   showToast(`${tile.name} resmi menjadi milikmu.`, 'good');
   state.modal = null;
-  render();
-  // Pembelian properti menyelesaikan fase landing langsung.
-  // Tidak ada lagi modal PETAK TUJUAN kedua yang dapat membuat giliran tersangkut.
-  window.setTimeout(() => finishTurn(), 120);
+  persist();
+  // Pembelian properti langsung menutup fase landing dan meneruskan giliran.
+  // Tidak memakai timer tambahan agar callback lama tidak bisa memakan giliran berikutnya.
+  finishTurn();
 }
 
 function randomChanceCard() {
@@ -2208,7 +2223,9 @@ function buyHouse(tileIndex, fromLanding = false) {
   addActivity('⌂', `<strong>${escapeHtml(player.name)}</strong> membangun rumah di ${escapeHtml(tile.name)}.`);
   showToast(`Rumah ${tile.houses}/4 dibangun. Sewa grup naik.`, 'good');
   state.modal = null;
-  render();
+  persist();
+  if (fromLanding && !state.canRoll) finishTurn();
+  else render();
 }
 
 function buyHotel(tileIndex, fromLanding = false) {
@@ -2232,7 +2249,9 @@ function buyHotel(tileIndex, fromLanding = false) {
   addActivity('🏨', `<strong>${escapeHtml(player.name)}</strong> membangun hotel di ${escapeHtml(tile.name)}.`);
   showToast('Hotel aktif. Sewa melonjak signifikan.', 'good');
   state.modal = null;
-  render();
+  persist();
+  if (fromLanding && !state.canRoll) finishTurn();
+  else render();
 }
 
 function openAuction() {
@@ -2614,6 +2633,10 @@ function render() {
 }
 
 function navigate(screen) {
+  if (screen === 'game' && state.players.length && state.players.some(player => player.eliminated)) {
+    startGame(state.mode);
+    return;
+  }
   state.screen = screen;
   if (screen !== 'game') {
     state.gameMenuOpen = false;
@@ -2635,7 +2658,7 @@ function handleClick(event) {
     const tile = state.tiles[index] || TILE_BLUEPRINT[index];
     if (tile) {
       if (state.screen === 'game' && tile.type === 'property' && tile.owner === state.activePlayer && state.activePlayer === state.localPlayerIndex) {
-        state.modal = { type: 'manage', tile, tileIndex: index, source: 'landing' };
+        state.modal = { type: 'manage', tile, tileIndex: index, source: state.players[state.activePlayer]?.position === index ? 'landing' : 'board' };
       } else {
         state.modal = { type: 'tile-info', tile, tileIndex: index };
       }
@@ -2901,6 +2924,12 @@ app.addEventListener('pointercancel', () => stopDiceSkill(false));
 app.addEventListener('pointerleave', () => {
   if (state.dicePressing) stopDiceSkill(true);
 });
+app.addEventListener('contextmenu', (event) => {
+  if (event.target.closest('.token, .token img, .character-avatar-image, .asset-preview, .cell-art, .dice-3d, .dice-cube')) event.preventDefault();
+});
+app.addEventListener('dragstart', (event) => {
+  if (event.target.closest('img, .token, .dice-3d')) event.preventDefault();
+});
 app.addEventListener('click', handleClick);
 document.addEventListener('pointerdown', tryUnlockMusic, { once: true, passive: true });
 document.addEventListener('keydown', tryUnlockMusic, { once: true });
@@ -2916,7 +2945,7 @@ window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; re
 window.addEventListener('resize', updateOrientationLock, { passive: true });
 window.addEventListener('orientationchange', () => window.setTimeout(updateOrientationLock, 80), { passive: true });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=74').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=78r5').catch(() => {}));
 }
 
 function preloadTileAssets() {
