@@ -458,3 +458,46 @@ body.is-game-screen .board-cell .token{width:clamp(70px,8.2vw,108px)!important;h
 .dice-rolling .dice-cube.has-dice-theme{
   animation:diceCubeRoll 1.05s linear infinite!important;
 }
+
+/* ===== v78 R7 finishing: labels, mode lane, and browser gesture cleanup ===== */
+body.is-game-screen .nm-hud-mode{
+  top:18%!important;
+  z-index:230!important;
+  pointer-events:none!important;
+}
+.board-cell,
+.board-cell .cell-name-outside,
+.board-cell .cell-art,
+.board-cell .token,
+.board-cell .token img{
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+.board-cell .cell-name-outside{cursor:pointer!important;}
+@media (max-width:900px){
+  body.is-game-screen .nm-hud-mode{top:20%!important;}
+  body.is-game-screen .board-cell .cell-name-outside.edge-bottom,
+  body.is-game-screen .board-cell .cell-name-outside.edge-top{
+    width:88px!important;
+    max-width:88px!important;
+    white-space:normal!important;
+    line-height:1.02!important;
+    text-align:center!important;
+    overflow:visible!important;
+    word-break:normal!important;
+    overflow-wrap:anywhere!important;
+    font-size:.34rem!important;
+  }
+  body.is-game-screen .board-cell .cell-name-outside.edge-bottom{top:-17px!important;bottom:auto!important;}
+  body.is-game-screen .board-cell .cell-name-outside.edge-top{bottom:-17px!important;top:auto!important;}
+}
+@media (max-width:560px){
+  body.is-game-screen .nm-hud-mode{top:21%!important;font-size:.88rem!important;}
+  body.is-game-screen .board-cell .cell-name-outside.edge-bottom,
+  body.is-game-screen .board-cell .cell-name-outside.edge-top{
+    width:82px!important;max-width:82px!important;font-size:.32rem!important;
+  }
+  body.is-game-screen .board-cell .cell-name-outside.edge-bottom{top:-16px!important;}
+  body.is-game-screen .board-cell .cell-name-outside.edge-top{bottom:-16px!important;}
+}

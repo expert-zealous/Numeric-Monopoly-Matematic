@@ -93,7 +93,7 @@ const TILE_BLUEPRINT = [
   { name: 'NEXUS', icon: '◈', type: 'property', color: '#65d7ff', price: 520, rent: 145 }
 ];
 
-const ASSET_VERSION = '78r4';
+const ASSET_VERSION = '78r7';
 
 function versionedAsset(path) {
   if (!path) return '';
@@ -1023,6 +1023,27 @@ function renderModal() {
     const owned = state.tiles.map((tile, index) => ({ tile, index })).filter(({ tile }) => tile.owner === state.activePlayer);
     return `<div class="modal-layer"><div class="modal-card emergency-modal"><div class="modal-property-icon">🏦</div><p class="eyebrow">DANA DARURAT</p><h3>${escapeHtml(modal.reason || (modal.paymentType === 'rent' ? 'Bayar rent' : 'Bayar pajak'))}</h3><p>Butuh <strong style="color:var(--danger)">${formatCurrency(need)}</strong> lagi. Pilih pinjaman bank atau jual properti.</p><div class="emergency-summary"><span>Uang ${formatCurrency(player?.cash || 0)}</span><span>Pinjaman max ${formatCurrency(maxLoan)}</span></div><div class="emergency-assets">${owned.length ? owned.map(({ tile, index }) => `<button class="emergency-asset" data-action="emergency-sell" data-tile-index="${index}"><span style="--asset-color:${tile.color}">${tile.icon}</span><b>${escapeHtml(tile.name)}</b><small>Jual ${formatCurrency(Math.floor(tile.price * .6))}</small></button>`).join('') : '<span class="muted small">Tidak ada properti untuk dijual.</span>'}</div><div class="modal-actions">${maxLoan > 0 ? `<button class="btn btn-primary" data-action="borrow-bank" data-loan-amount="${Math.min(need, maxLoan)}">Pinjam ${formatCurrency(Math.min(need, maxLoan))}</button>` : ''}<button class="btn btn-danger" data-action="declare-bankruptcy">Bangkrut</button></div></div></div>`;
   }
+  if (modal.type === 'manage-group') {
+    const tile = modal.tile;
+    const group = propertyGroup(tile);
+    const options = groupBuildOptions(tile, state.activePlayer);
+    const groupText = group.map(candidate => `${candidate.name}: ${candidate.hotel ? 'HOTEL' : `${candidate.houses || 0} rumah`}`).join(' • ');
+    const optionRows = group.map((candidate) => {
+      const tileIndex = state.tiles.indexOf(candidate);
+      const hotel = canBuildHotelOn(candidate, state.activePlayer);
+      const house = canBuildHouseOn(candidate, state.activePlayer);
+      const cost = houseCost(candidate);
+      const canAfford = (state.players[state.activePlayer]?.cash || 0) >= (hotel ? cost * 2 : cost);
+      let action = '';
+      if (hotel && canAfford) action = `<button class="property-action" data-action="buy-hotel" data-tile-index="${tileIndex}" title="Bangun hotel">🏨</button>`;
+      else if (house && canAfford) action = `<button class="property-action" data-action="buy-house" data-tile-index="${tileIndex}" title="Bangun rumah">＋</button>`;
+      else if (hotel) action = '<span class="soft-chip">HOTEL</span>';
+      else if (house) action = '<span class="soft-chip">SALDO KURANG</span>';
+      else action = '<span class="soft-chip">TUNGGU MERATA</span>';
+      return `<div class="owned-property manage-build-row"><span class="property-color" style="background:${candidate.color}"></span><div class="owned-property-copy"><strong>${escapeHtml(candidate.name)}</strong><small>${candidate.hotel ? 'Hotel aktif' : `${candidate.houses || 0} rumah`} · ${formatCurrency(hotel ? cost * 2 : cost)}</small></div>${action}</div>`;
+    }).join('');
+    return `<div class="modal-layer"><div class="modal-card property-modal manage-group-modal"><div class="modal-property-icon">⌂</div><p class="eyebrow">BANGUN RUMAH • SATU GRUP</p><h3>${escapeHtml(tile.group || 'GRUP PROPERTI')}</h3><p>Pilih petak dalam grup ini. Karakter boleh tetap berada di petak tujuan.</p><div class="manage-group-status"><strong>STATUS GRUP</strong><small>${escapeHtml(groupText)}</small></div><div class="manage-build-list">${optionRows || '<span class="build-rule-note">Belum ada rumah/hotel yang memenuhi syarat untuk dibangun.</span>'}</div><div class="modal-actions"><button class="btn btn-ghost" data-action="modal-close">Tutup</button></div></div></div>`;
+  }
   if (modal.type === 'manage') {
     const tile = modal.tile;
     const availability = buildAvailability(tile, state.activePlayer);
@@ -1790,6 +1811,21 @@ function propertyGroup(tile) {
   return tile?.type === 'property' ? state.tiles.filter((candidate) => candidate.type === 'property' && candidate.group === tile.group) : [];
 }
 
+// R7: ketika pemain mendarat di properti miliknya yang sudah melengkapi satu grup,
+// tampilkan seluruh grup sekaligus agar pembangunan tidak bergantung pada klik petak
+// yang bisa tertutup token. Pemain tetap memilih petak rumah dari dialog grup.
+function groupBuildOptions(tile, playerIndex) {
+  if (!tile || tile.type !== 'property' || !ownsFullGroup(tile, playerIndex)) return [];
+  return propertyGroup(tile).map((candidate, index) => {
+    const tileIndex = state.tiles.indexOf(candidate);
+    const hotel = canBuildHotelOn(candidate, playerIndex);
+    const house = canBuildHouseOn(candidate, playerIndex);
+    const cost = houseCost(candidate);
+    const player = state.players[playerIndex];
+    return { candidate, tileIndex, hotel, house, affordable: !!player && player.cash >= (hotel ? cost * 2 : cost) };
+  }).filter(item => item.house || item.hotel);
+}
+
 function canBuildHouseOn(tile, playerIndex) {
   if (!tile || tile.type !== 'property' || tile.owner !== playerIndex || tile.hotel || tile.houses >= 4) return false;
   if (!ownsFullGroup(tile, playerIndex)) return false;
@@ -1930,7 +1966,13 @@ function resolveLanding(index) {
           aiHandleLandingFinish();
           return;
         }
-        state.modal = { type: 'manage', tile, tileIndex: index, source: state.players[state.activePlayer]?.position === index ? 'landing' : 'board' };
+        const isLanding = state.players[state.activePlayer]?.position === index;
+        const groupOptions = isLanding ? groupBuildOptions(tile, state.activePlayer) : [];
+        if (isLanding && ownsFullGroup(tile, state.activePlayer) && groupOptions.length) {
+          state.modal = { type: 'manage-group', tile, tileIndex: index, source: 'landing' };
+        } else {
+          state.modal = { type: 'manage', tile, tileIndex: index, source: isLanding ? 'landing' : 'board' };
+        }
         return;
       }
       if (state.mode === 'ai' && state.activePlayer === 1) {
@@ -2925,7 +2967,9 @@ app.addEventListener('pointerleave', () => {
   if (state.dicePressing) stopDiceSkill(true);
 });
 app.addEventListener('contextmenu', (event) => {
-  if (event.target.closest('.token, .token img, .character-avatar-image, .asset-preview, .cell-art, .dice-3d, .dice-cube')) event.preventDefault();
+  if (event.target.closest('.token, .token img, .character-avatar-image, .asset-preview, .cell-art, .cell-name-outside, .board-cell, .dice-3d, .dice-cube')) {
+    event.preventDefault();
+  }
 });
 app.addEventListener('dragstart', (event) => {
   if (event.target.closest('img, .token, .dice-3d')) event.preventDefault();
