@@ -502,166 +502,112 @@ body.is-game-screen .nm-hud-mode{
   body.is-game-screen .board-cell .cell-name-outside.edge-top{bottom:-16px!important;}
 }
 
-
 /* ============================================================
-   v78 R8 — FINAL BOARD PROPORTION POLISH
-   Goal:
-   1) Top/bottom Monopoly spaces are wider, like a classic board.
-   2) Left/right spaces are slightly taller.
-   3) Board remains a perfect square, so camera zoom/movement stays stable.
-   4) On mobile landscape, the board uses the available screen edge space.
-   5) Mode text lives in the HUD lane below the board area and never becomes
-      part of the board camera transform.
+   v78 R14 — MOBILE BOARD GEOMETRY FINAL
+   User-approved concept:
+   - Top/bottom tiles become horizontal rectangles.
+   - Board spans the usable mobile width edge-to-edge.
+   - Left/right tiles automatically become vertical rectangles.
+   - Tile names return to normal, centered labels; no special corner hacks.
+   - Mode remains in the upper HUD lane, independent of the board camera.
    ============================================================ */
 
-/* Classic Monopoly proportions:
-   corners are a little wider/taller, perimeter property spaces have more
-   horizontal breathing room on top/bottom. */
+/* Restore the board's normal square-grid definition first. */
 body.is-game-screen .board{
-  grid-template-columns: 1.20fr repeat(9, 1fr) 1.20fr !important;
-  grid-template-rows: 1.20fr repeat(9, 1fr) 1.20fr !important;
+  grid-template-columns:repeat(11,1fr)!important;
+  grid-template-rows:repeat(11,1fr)!important;
 }
 
-/* The top/bottom labels now have room to breathe because their cells are
-   wider. Keep labels outside the tile, centered on their own cell. */
+/* Normal tile-name behavior. No tile-index-specific offsets. */
 body.is-game-screen .board-cell .cell-name-outside.edge-top,
 body.is-game-screen .board-cell .cell-name-outside.edge-bottom{
-  width:100% !important;
-  max-width:100% !important;
-  box-sizing:border-box !important;
-  padding-left:2px !important;
-  padding-right:2px !important;
-  white-space:normal !important;
-  overflow:visible !important;
-  text-align:center !important;
-  word-break:normal !important;
-  overflow-wrap:anywhere !important;
+  left:50%!important;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  transform:translateX(-50%)!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  text-align:center!important;
+  padding-left:2px!important;
+  padding-right:2px!important;
 }
-
-/* Do not let the label touch the neighboring tile. */
 body.is-game-screen .board-cell .cell-name-outside.edge-bottom{
-  top:-18px !important;
+  top:-15px!important;
+  bottom:auto!important;
 }
 body.is-game-screen .board-cell .cell-name-outside.edge-top{
-  bottom:-18px !important;
+  bottom:-15px!important;
+  top:auto!important;
 }
 
-/* The board itself reaches the usable edge of the mobile arena.
-   The board size remains height-safe, so it does not get clipped vertically. */
+/* Mobile landscape: use the full horizontal screen width. Because the
+   board is wider than it is tall, top/bottom cells are horizontal rectangles
+   and left/right cells automatically become vertical rectangles. */
 @media (max-width:900px) and (orientation:landscape){
   body.is-game-screen .board-wrap{
-    padding:0 !important;
+    padding:0!important;
   }
   body.is-game-screen .board-camera{
-    padding:0 !important;
-    justify-content:center !important;
+    width:100%!important;
+    height:100%!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    overflow:hidden!important;
   }
   body.is-game-screen .board-camera .board{
-    width:min(100%, calc(100svh - 34px)) !important;
-    height:min(100%, calc(100svh - 34px)) !important;
-    max-width:none !important;
-    max-height:none !important;
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    max-width:none!important;
+    max-height:none!important;
+    aspect-ratio:auto!important;
   }
-
-  /* The wider top/bottom cells are now the spacing solution; do not force
-     fixed 82/88px labels that can collide on short phones. */
   body.is-game-screen .board-cell .cell-name-outside.edge-top,
   body.is-game-screen .board-cell .cell-name-outside.edge-bottom{
-    width:100% !important;
-    max-width:100% !important;
-    font-size:.33rem !important;
-    line-height:1.05 !important;
-    padding:1px 1px !important;
+    width:100%!important;
+    max-width:100%!important;
+    font-size:.33rem!important;
+    line-height:1!important;
   }
 }
 
-/* Keep the HUD independent from board-camera. The mode label sits in the
-   lower HUD lane, outside the board's transform coordinate system. */
+/* The mode is a HUD element, never a board element. Put it near the top of
+   the HUD, immediately below the fixed player header. */
 body.is-game-screen .nm-hud-mode{
-  top:auto !important;
-  bottom:2px !important;
-  z-index:230 !important;
-  pointer-events:none !important;
+  top:8%!important;
+  bottom:auto!important;
+  z-index:230!important;
+  pointer-events:none!important;
 }
-
 @media (max-width:900px) and (orientation:landscape){
   body.is-game-screen .nm-hud-mode{
-    bottom:2px !important;
+    top:4%!important;
+    bottom:auto!important;
+    font-size:.88rem!important;
   }
 }
-
 @media (max-width:560px) and (orientation:landscape){
   body.is-game-screen .nm-hud-mode{
-    bottom:1px !important;
-    font-size:.82rem !important;
+    top:3%!important;
+    bottom:auto!important;
+    font-size:.84rem!important;
   }
 }
 
-/* v78 R8: names are informational, never browser-selectable/callout targets. */
+/* Never allow mobile browsers to select/callout a tile name. */
 body.is-game-screen .board-cell .cell-name-outside{
-  -webkit-user-select:none !important;
-  user-select:none !important;
-  -webkit-touch-callout:none !important;
-  pointer-events:none !important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+  pointer-events:none!important;
+  cursor:default!important;
 }
 
-/* ============================================================
-   v78 R13 — FINAL HUD + EDGE LABEL POLISH
-   - Mode stays in the upper HUD lane, never the bottom lane.
-   - Do not resize the board/camera.
-   - Push only the four near-corner top/bottom labels outward so
-     long names do not collide with their neighbors on small phones.
-   ============================================================ */
-body.is-game-screen .nm-hud-mode{
-  top:10% !important;
-  bottom:auto !important;
-  z-index:230 !important;
-  pointer-events:none !important;
-}
-
-/* Mobile: keep Mode above the dice/control stack. */
-@media (max-width:900px){
-  body.is-game-screen .nm-hud-mode{
-    top:10% !important;
-    bottom:auto !important;
-    font-size:.92rem !important;
-  }
-}
-
-/* Small phones: slightly higher, still below the header. */
-@media (max-width:560px){
-  body.is-game-screen .nm-hud-mode{
-    top:9% !important;
-    bottom:auto !important;
-    font-size:.88rem !important;
-  }
-}
-
-/* Near-corner labels: use the free space toward the screen edge.
-   These are the first/last non-corner cells on the top and bottom rows.
-   The board itself is NOT enlarged, so zoom geometry stays untouched. */
-body.is-game-screen .board-cell[data-tile-index="1"] .cell-name-outside,
-body.is-game-screen .board-cell[data-tile-index="29"] .cell-name-outside{
-  width:calc(100% + 18px) !important;
-  max-width:none !important;
-  transform:translateX(8px) !important;
-}
-body.is-game-screen .board-cell[data-tile-index="9"] .cell-name-outside,
-body.is-game-screen .board-cell[data-tile-index="21"] .cell-name-outside{
-  width:calc(100% + 18px) !important;
-  max-width:none !important;
-  transform:translateX(-8px) !important;
-}
-
-@media (max-width:560px){
-  body.is-game-screen .board-cell[data-tile-index="1"] .cell-name-outside,
-  body.is-game-screen .board-cell[data-tile-index="29"] .cell-name-outside{
-    width:calc(100% + 22px) !important;
-    transform:translateX(10px) !important;
-  }
-  body.is-game-screen .board-cell[data-tile-index="9"] .cell-name-outside,
-  body.is-game-screen .board-cell[data-tile-index="21"] .cell-name-outside{
-    width:calc(100% + 22px) !important;
-    transform:translateX(-10px) !important;
-  }
-}
