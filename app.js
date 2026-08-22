@@ -342,13 +342,19 @@ function updateMusic() {
   }
 }
 
-function characterAsset(playerIndex = 0) {
-  // Satu tema karakter aktif dipakai konsisten di seluruh HUD, papan, owner badge, dan token.
-  return selectedItem('character')?.asset || SHOP_DATA.character[0]?.asset || '';
+function characterAsset(playerIndex = 0, player = null) {
+  // Player 0 mengikuti karakter yang dipilih pemain. AI/rival memiliki karakter sendiri.
+  if (player?.characterId) {
+    const item = SHOP_DATA.character.find((entry) => entry.id === player.characterId);
+    if (item?.asset) return item.asset;
+  }
+  if (playerIndex === 0) return selectedItem('character')?.asset || SHOP_DATA.character[0]?.asset || '';
+  const fallbackPool = SHOP_DATA.character.filter((entry) => entry.asset && entry.id !== state.selectedThemes.character);
+  return fallbackPool[Math.max(0, (playerIndex - 1) % Math.max(1, fallbackPool.length))]?.asset || SHOP_DATA.character[0]?.asset || '';
 }
 
 function characterMarkup(playerIndex = 0, player = null, className = 'character-avatar-image') {
-  const asset = characterAsset(playerIndex);
+  const asset = characterAsset(playerIndex, player);
   if (!asset) return '';
   // PNG adalah satu-satunya visual karakter. Glyph/emoji lama sengaja tidak dirender.
   return `<img class="${className}" src="${versionedAsset(asset)}" alt="" draggable="false" loading="eager" onerror="this.remove()" />`;
@@ -512,8 +518,8 @@ function tokenMarkup(player, playerIndex) {
   const pos = boardGridPosition(player?.position ?? 0);
   // v57: top-row characters stay fully inside the camera's safe area.
   // The artwork keeps its full size; only its anchor point changes.
-  const character = selectedItem('character') || SHOP_DATA.character[0];
-  return `<span class="token ${playerIndex === 1 ? 'ai ai-token' : 'player-token'}" data-player-index="${playerIndex}" style="--token-color:${playerColor(playerIndex)}" title="${escapeHtml(player.name)}"><img src="${versionedAsset(character.asset)}" alt="" draggable="false" loading="eager" onerror="this.remove()" /></span>`;
+  const asset = characterAsset(playerIndex, player);
+  return `<span class="token ${playerIndex === 1 ? 'ai ai-token' : 'player-token'}" data-player-index="${playerIndex}" style="--token-color:${playerColor(playerIndex)}" title="${escapeHtml(player.name)}"><img src="${versionedAsset(asset)}" alt="" draggable="false" loading="eager" onerror="this.remove()" /></span>`;
 }
 
 function renderAnswerNotice() {
@@ -1101,8 +1107,16 @@ function resetGame() {
     players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }];
     for (let i = 1; i < count; i += 1) players.push({ id: i, name: names[i - 1] || `Rival ${i}`, avatar: avatars[i - 1] || '🤖', position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 });
   } else {
-    const opponent = state.mode === 'ai' ? { id: 1, name: 'Luna Logic', avatar: '🤖', position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 } : { id: 1, name: 'Pemain 2', avatar: '🦊', position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 };
-    players = [{ id: 0, name: state.player.name, avatar: state.player.avatar, position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }, opponent];
+    const playerCharacterId = state.selectedThemes.character || 'character-standard';
+    const aiPool = SHOP_DATA.character.filter((entry) => entry.id !== playerCharacterId && entry.asset);
+    const aiCharacterId = aiPool[0]?.id || 'character-standard';
+    const opponent = state.mode === 'ai'
+      ? { id: 1, name: 'Luna Logic', avatar: '🤖', characterId: aiCharacterId, position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 }
+      : { id: 1, name: 'Pemain 2', avatar: '🦊', characterId: aiCharacterId, position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 };
+    players = [
+      { id: 0, name: state.player.name, avatar: state.player.avatar, characterId: playerCharacterId, position: 0, cash: 5000, debt: 0, eliminated: false, inJail: false, jailAttempts: 0 },
+      opponent
+    ];
   }
   state.players = players;
   state.tiles = TILE_BLUEPRINT.map((tile) => ({ ...tile, owner: null, houses: 0, hotel: false }));
