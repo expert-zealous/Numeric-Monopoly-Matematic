@@ -604,3 +604,64 @@ body.is-game-screen .board-cell .cell-name-outside{
   -webkit-touch-callout:none !important;
   pointer-events:none !important;
 }
+
+/* ============================================================
+   v78 R13 — FINAL HUD + EDGE LABEL POLISH
+   - Mode stays in the upper HUD lane, never the bottom lane.
+   - Do not resize the board/camera.
+   - Push only the four near-corner top/bottom labels outward so
+     long names do not collide with their neighbors on small phones.
+   ============================================================ */
+body.is-game-screen .nm-hud-mode{
+  top:10% !important;
+  bottom:auto !important;
+  z-index:230 !important;
+  pointer-events:none !important;
+}
+
+/* Mobile: keep Mode above the dice/control stack. */
+@media (max-width:900px){
+  body.is-game-screen .nm-hud-mode{
+    top:10% !important;
+    bottom:auto !important;
+    font-size:.92rem !important;
+  }
+}
+
+/* Small phones: slightly higher, still below the header. */
+@media (max-width:560px){
+  body.is-game-screen .nm-hud-mode{
+    top:9% !important;
+    bottom:auto !important;
+    font-size:.88rem !important;
+  }
+}
+
+/* Near-corner labels: use the free space toward the screen edge.
+   These are the first/last non-corner cells on the top and bottom rows.
+   The board itself is NOT enlarged, so zoom geometry stays untouched. */
+body.is-game-screen .board-cell[data-tile-index="1"] .cell-name-outside,
+body.is-game-screen .board-cell[data-tile-index="29"] .cell-name-outside{
+  width:calc(100% + 18px) !important;
+  max-width:none !important;
+  transform:translateX(8px) !important;
+}
+body.is-game-screen .board-cell[data-tile-index="9"] .cell-name-outside,
+body.is-game-screen .board-cell[data-tile-index="21"] .cell-name-outside{
+  width:calc(100% + 18px) !important;
+  max-width:none !important;
+  transform:translateX(-8px) !important;
+}
+
+@media (max-width:560px){
+  body.is-game-screen .board-cell[data-tile-index="1"] .cell-name-outside,
+  body.is-game-screen .board-cell[data-tile-index="29"] .cell-name-outside{
+    width:calc(100% + 22px) !important;
+    transform:translateX(10px) !important;
+  }
+  body.is-game-screen .board-cell[data-tile-index="9"] .cell-name-outside,
+  body.is-game-screen .board-cell[data-tile-index="21"] .cell-name-outside{
+    width:calc(100% + 22px) !important;
+    transform:translateX(-10px) !important;
+  }
+}
