@@ -994,8 +994,8 @@ body.is-game-screen .turn-focus-banner { z-index:30 !important; }
 .token::after { display: none !important; }
 @media (max-width: 900px) {
   .token { width: 84px !important; height: 84px !important; }
-  .token.player-token { left: -15px !important; top: -14px !important; }
-  .token.ai-token { right: -15px !important; top: -14px !important; }
+  .token.player-token { left: -15px !important; top: -8px !important; }
+  .token.ai-token { right: -15px !important; top: -8px !important; }
 }
 @media (max-width: 560px) {
   .board-cell .cell-name { font-size: .32rem !important; padding: 2px 3px !important; }
@@ -1004,8 +1004,8 @@ body.is-game-screen .turn-focus-banner { z-index:30 !important; }
   .board-cell.edge-left .cell-content { left: -2px !important; bottom: 50% !important; }
   .board-cell.edge-right .cell-content { right: -2px !important; bottom: 50% !important; }
   .token { width: 78px !important; height: 78px !important; }
-  .token.player-token { left: -13px !important; top: -12px !important; }
-  .token.ai-token { right: -13px !important; top: -12px !important; }
+  .token.player-token { left: -13px !important; top: -6px !important; }
+  .token.ai-token { right: -13px !important; top: -6px !important; }
 }
 
 /* v45 visual cleanup: artwork-first board */

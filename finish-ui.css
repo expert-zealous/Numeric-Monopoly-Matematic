@@ -460,11 +460,7 @@ body.is-game-screen .board-cell .token{width:clamp(70px,8.2vw,108px)!important;h
 }
 
 /* ===== v78 R7 finishing: labels, mode lane, and browser gesture cleanup ===== */
-body.is-game-screen .nm-hud-mode{
-  top:18%!important;
-  z-index:230!important;
-  pointer-events:none!important;
-}
+body.is-game-screen .nm-hud-mode{z-index:230!important;pointer-events:none!important;}
 .board-cell,
 .board-cell .cell-name-outside,
 .board-cell .cell-art,
@@ -476,7 +472,6 @@ body.is-game-screen .nm-hud-mode{
 }
 .board-cell .cell-name-outside{cursor:pointer!important;}
 @media (max-width:900px){
-  body.is-game-screen .nm-hud-mode{top:20%!important;}
   body.is-game-screen .board-cell .cell-name-outside.edge-bottom,
   body.is-game-screen .board-cell .cell-name-outside.edge-top{
     width:88px!important;
@@ -493,7 +488,6 @@ body.is-game-screen .nm-hud-mode{
   body.is-game-screen .board-cell .cell-name-outside.edge-top{bottom:-17px!important;top:auto!important;}
 }
 @media (max-width:560px){
-  body.is-game-screen .nm-hud-mode{top:21%!important;font-size:.88rem!important;}
   body.is-game-screen .board-cell .cell-name-outside.edge-bottom,
   body.is-game-screen .board-cell .cell-name-outside.edge-top{
     width:82px!important;max-width:82px!important;font-size:.32rem!important;
@@ -570,27 +564,18 @@ body.is-game-screen .board-cell .cell-name-outside.edge-top{
   }
 }
 
-/* The mode is a HUD element, never a board element. Put it near the top of
-   the HUD, immediately below the fixed player header. */
+
+/* ===== v78 R16 — authoritative HUD mode position =====
+   Mode sits above the dice, independent from board zoom/camera. */
 body.is-game-screen .nm-hud-mode{
-  top:39%!important;
+  top:24%!important;
   bottom:auto!important;
   z-index:230!important;
   pointer-events:none!important;
 }
 @media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .nm-hud-mode{top:39%!important;font-size:.88rem!important;}
+  body.is-game-screen .nm-hud-mode{top:24%!important;font-size:.88rem!important;}
 }
 @media (max-width:560px) and (orientation:landscape){
-  body.is-game-screen .nm-hud-mode{top:39%!important;font-size:.84rem!important;}
+  body.is-game-screen .nm-hud-mode{top:24%!important;font-size:.84rem!important;}
 }
-
-/* Never allow mobile browsers to select/callout a tile name. */
-body.is-game-screen .board-cell .cell-name-outside{
-  -webkit-user-select:none!important;
-  user-select:none!important;
-  -webkit-touch-callout:none!important;
-  pointer-events:none!important;
-  cursor:default!important;
-}
-
