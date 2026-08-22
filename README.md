@@ -75,3 +75,10 @@ Ikuti semua nama file di `ASSETS.md`. Fallback CSS/emoji akan tetap tampil jika 
 
 ## v63 FINAL MOBILE FIX
 All cache-busting URLs and Service Worker registration use v63. Added finish-ui.css as the last stylesheet so legacy v47-v62 rules cannot override the final mobile layout. Landscape phone board is kept square and centered with safe margins; center logo, Mode, dice, skill arc and roll button are spaced explicitly.
+
+## v78 R9 — Character 06 & 07
+- Added `character-06-math-buddy.png` as a free character.
+- Added `character-07-shadow-master.png` as a paid/locked character.
+- Character theme shop now lists both new entries.
+- Leaderboard fallback character rotation includes both new character IDs.
+- The PNG files are expected at `assets/characters/` and are not replaced by this package if your local folder already contains your own versions.

@@ -147,11 +147,13 @@ const SHOP_DATA = {
   ],
   character: [
     { id: 'character-standard', name: 'Nova Starter', description: 'Karakter awal yang seimbang.', cost: 0, glyph: '🧠', asset: 'assets/characters/character-00-nova-starter.png' },
+    { id: 'character-06', name: 'Math Buddy', description: 'Teman belajar sederhana yang gratis untuk semua pemain.', cost: 0, glyph: '📚', asset: 'assets/characters/character-06-math-buddy.png' },
     { id: 'character-01', name: 'Astro Fox', description: 'Lincah, berani, dan siap mengorbit.', cost: 1000, glyph: '🦊', asset: 'assets/characters/character-01-astro-fox.png' },
     { id: 'character-02', name: 'Robo Knight', description: 'Penjaga data dengan armor premium.', cost: 2200, glyph: '🤖', asset: 'assets/characters/character-02-robo-knight.png' },
     { id: 'character-03', name: 'Crystal Golem', description: 'Kokoh seperti angka yang tak terbantahkan.', cost: 3800, glyph: '💎', asset: 'assets/characters/character-03-crystal-golem.png' },
     { id: 'character-04', name: 'Dragon Spark', description: 'Api kecil, ambisi besar, langkah cepat.', cost: 6200, glyph: '🐉', asset: 'assets/characters/character-04-dragon-spark.png' },
     { id: 'character-05', name: 'Void Prince', description: 'Karakter 3D langka dari dimensi tak hingga.', cost: 10000, glyph: '🪐', asset: 'assets/characters/character-05-void-prince.png' },
+    { id: 'character-07', name: 'Shadow Master', description: 'Penguasa bayangan dengan aura premium.', cost: 12000, glyph: '🌑', asset: 'assets/characters/character-07-shadow-master.png' },
     { id: 'character-custom', name: 'Slot Custom', description: 'Tempat karakter 3D PNG milikmu sendiri.', cost: null, custom: true, glyph: '+' }
   ]
 };
@@ -954,7 +956,7 @@ function renderShopCard(item, type, index) {
 
 function leaderboardCharacterAsset(person, index) {
   if (person?.current) return characterAsset(0);
-  const map = ['character-01','character-02','character-03','character-04','character-05'];
+  const map = ['character-01','character-02','character-03','character-04','character-05','character-06','character-07'];
   const id = person?.characterId || map[index % map.length] || 'character-standard';
   return SHOP_DATA.character.find(item => item.id === id)?.asset || SHOP_DATA.character[0].asset;
 }
