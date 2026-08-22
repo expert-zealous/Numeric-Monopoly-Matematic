@@ -864,7 +864,7 @@ function renderBoardCell(tile, index) {
   const ownerColor = owner !== null && owner !== undefined ? playerColor(owner) : tile.color;
   const ownerPlayer = owner !== null && owner !== undefined ? state.players[owner] : null;
   const isBuyable = tile.type === 'property' || tile.type === 'utility';
-  const ownerBadge = isBuyable && ownerPlayer ? `<div class="owner-marker" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}" aria-label="Milik ${escapeHtml(ownerPlayer.name)}"><span>${escapeHtml(ownerPlayer.name.slice(0, 8))}</span></div>` : '';
+  const ownerBadge = isBuyable && ownerPlayer ? `<div class="owner-marker" style="--owner-color:${ownerColor}" title="Milik ${escapeHtml(ownerPlayer.name)}" aria-label="Milik ${escapeHtml(ownerPlayer.name)}"><span>${escapeHtml(ownerPlayer.name)}</span></div>` : '';
   const building = tile.hotel ? '<span class="building-badge hotel">🏨</span>' : tile.houses ? `<span class="building-badge">${'▴'.repeat(tile.houses)}</span>` : '';
   const tileKey = TILE_ASSET_KEYS[index] || '';
   const tileNo = String(index + 1).padStart(2, '0');

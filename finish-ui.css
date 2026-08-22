@@ -548,58 +548,41 @@ body.is-game-screen .board-cell .cell-name-outside.edge-top{
    board is wider than it is tall, top/bottom cells are horizontal rectangles
    and left/right cells automatically become vertical rectangles. */
 @media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .board-wrap{
-    padding:0!important;
-  }
+  body.is-game-screen .board-wrap{padding:0!important;}
   body.is-game-screen .board-camera{
-    width:100%!important;
-    height:100%!important;
-    padding:0!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
+    width:100%!important;height:100%!important;padding:0!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
     overflow:hidden!important;
   }
   body.is-game-screen .board-camera .board{
     flex:0 0 auto!important;
-    width:100%!important;
-    height:100%!important;
-    min-width:0!important;
-    min-height:0!important;
-    max-width:none!important;
-    max-height:none!important;
+    width:100%!important;height:100%!important;
+    min-width:0!important;min-height:0!important;
+    max-width:none!important;max-height:none!important;
     aspect-ratio:auto!important;
+    gap:0!important;
   }
+  body.is-game-screen .board-cell{min-width:0!important;min-height:0!important;}
   body.is-game-screen .board-cell .cell-name-outside.edge-top,
   body.is-game-screen .board-cell .cell-name-outside.edge-bottom{
-    width:100%!important;
-    max-width:100%!important;
-    font-size:.33rem!important;
-    line-height:1!important;
+    width:100%!important;max-width:100%!important;
+    font-size:.33rem!important;line-height:1!important;
   }
 }
 
 /* The mode is a HUD element, never a board element. Put it near the top of
    the HUD, immediately below the fixed player header. */
 body.is-game-screen .nm-hud-mode{
-  top:8%!important;
+  top:39%!important;
   bottom:auto!important;
   z-index:230!important;
   pointer-events:none!important;
 }
 @media (max-width:900px) and (orientation:landscape){
-  body.is-game-screen .nm-hud-mode{
-    top:4%!important;
-    bottom:auto!important;
-    font-size:.88rem!important;
-  }
+  body.is-game-screen .nm-hud-mode{top:39%!important;font-size:.88rem!important;}
 }
 @media (max-width:560px) and (orientation:landscape){
-  body.is-game-screen .nm-hud-mode{
-    top:3%!important;
-    bottom:auto!important;
-    font-size:.84rem!important;
-  }
+  body.is-game-screen .nm-hud-mode{top:39%!important;font-size:.84rem!important;}
 }
 
 /* Never allow mobile browsers to select/callout a tile name. */
