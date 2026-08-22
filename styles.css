@@ -1527,12 +1527,3 @@ body.is-game-screen .game-layout { height: calc(100% - 32px) !important; }
 }
 
 .dice-skill-svg .perfect-label { dominant-baseline: middle !important; }
-/* v78 R11: restore Mode HUD to upper lane, R8-style. */
-@media (max-width: 900px) {
-  #modeDisplay, #mode-display, .mode-display, .game-mode, .mode-indicator {
-    position: relative !important;
-    top: auto !important; bottom: auto !important;
-    transform: none !important; z-index: 30 !important;
-    margin-bottom: 4px !important;
-  }
-}
